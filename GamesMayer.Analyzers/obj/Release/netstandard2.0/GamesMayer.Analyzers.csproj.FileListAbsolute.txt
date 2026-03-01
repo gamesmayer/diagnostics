@@ -1,0 +1,10 @@
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/bin/Release/netstandard2.0/GamesMayer.Analyzers.deps.json
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/bin/Release/netstandard2.0/GamesMayer.Analyzers.dll
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/bin/Release/netstandard2.0/GamesMayer.Analyzers.pdb
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.csproj.AssemblyReference.cache
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.GeneratedMSBuildEditorConfig.editorconfig
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.AssemblyInfoInputs.cache
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.AssemblyInfo.cs
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.csproj.CoreCompileInputs.cache
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.dll
+/Users/carlossalasamper/projects/gamesmayer-analyzers/GamesMayer.Analyzers/obj/Release/netstandard2.0/GamesMayer.Analyzers.pdb
