@@ -9,7 +9,7 @@
     <RootNamespace>GamesMayer.Analyzers</RootNamespace>
     <AssemblyName>GamesMayer.Analyzers</AssemblyName>
     <PackageId>GamesMayer.Analyzers</PackageId>
-    <Version>1.0.0</Version>
+    <Version>0.1.0</Version>
     <Authors>GamesMayer</Authors>
     <Description>GamesMayer custom Roslyn analyzers for C# code style</Description>
     <IncludeBuildOutput>false</IncludeBuildOutput>
