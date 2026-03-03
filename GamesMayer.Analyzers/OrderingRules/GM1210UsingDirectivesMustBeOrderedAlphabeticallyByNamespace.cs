@@ -63,9 +63,13 @@ namespace GamesMayer.Analyzers
 
             foreach (var usingDirective in usings)
             {
-                // Skip alias and static usings — handled by GM1211 and GM1217
+                // Skip alias and static usings — handled by GM1211 and GM1217; they also act as group separators
                 if (usingDirective.Alias != null || !usingDirective.StaticKeyword.IsKind(SyntaxKind.None))
+                {
+                    prevSystemUsing = null;
+                    prevNonSystemUsing = null;
                     continue;
+                }
 
                 if (usingDirective.Name == null)
                     continue;

@@ -51,7 +51,6 @@ namespace GamesMayer.Analyzers
 
             bool prevWasNonConst = false;
             AccessLevel prevAccessLevel = AccessLevel.NotSpecified;
-            bool prevWasStatic = false;
 
             foreach (var member in members)
             {
@@ -59,15 +58,13 @@ namespace GamesMayer.Analyzers
                 {
                     prevWasNonConst = false;
                     prevAccessLevel = AccessLevel.NotSpecified;
-                    prevWasStatic = false;
                     continue;
                 }
 
                 AccessLevel currentAccessLevel = OrderingHelpers.GetAccessLevel(field.Modifiers);
                 bool isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
-                bool isStatic = isConst || field.Modifiers.Any(SyntaxKind.StaticKeyword);
 
-                bool sameGroup = currentAccessLevel == prevAccessLevel && isStatic == prevWasStatic;
+                bool sameGroup = currentAccessLevel == prevAccessLevel;
 
                 if (sameGroup)
                 {
@@ -88,7 +85,6 @@ namespace GamesMayer.Analyzers
                     prevWasNonConst = true;
 
                 prevAccessLevel = currentAccessLevel;
-                prevWasStatic = isStatic;
             }
         }
     }

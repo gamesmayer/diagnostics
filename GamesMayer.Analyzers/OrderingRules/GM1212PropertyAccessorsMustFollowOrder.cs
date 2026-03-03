@@ -62,7 +62,7 @@ namespace GamesMayer.Analyzers
             if ((accessors[0].IsKind(SyntaxKind.SetAccessorDeclaration) || accessors[0].IsKind(SyntaxKind.InitAccessorDeclaration))
                 && accessors[1].IsKind(SyntaxKind.GetAccessorDeclaration))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, accessors[0].GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, accessors[0].Keyword.GetLocation()));
             }
         }
     }
