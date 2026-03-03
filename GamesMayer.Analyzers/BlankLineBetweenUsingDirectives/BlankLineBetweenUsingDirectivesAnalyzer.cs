@@ -11,7 +11,7 @@ namespace GamesMayer.Analyzers
     {
         public const string DiagnosticId = "GM0001";
 
-        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Blank line between using directives",
             messageFormat: "Remove the blank line between 'using {0}' and 'using {1}'",
@@ -21,7 +21,7 @@ namespace GamesMayer.Analyzers
             description: "Consecutive using directives must not be separated by blank lines.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Rule);
+            ImmutableArray.Create(Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -56,7 +56,7 @@ namespace GamesMayer.Analyzers
                     string currentName = current.Name?.ToString() ?? "?";
 
                     context.ReportDiagnostic(
-                        Diagnostic.Create(Rule, blankLine.GetLocation(),
+                        Diagnostic.Create(Descriptor, blankLine.GetLocation(),
                             previousName, currentName));
                 }
             }
