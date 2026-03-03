@@ -1,6 +1,6 @@
 # GAMESMAYER Analyzers
 
-Custom Roslyn analyzers for C# code style enforcement across GAMESMAYER projects.
+Custom Roslyn diagnostics for C# code style enforcement across GAMESMAYER projects.
 
 ## Installation
 
@@ -19,46 +19,46 @@ Then reference the package in `Directory.Build.props`:
 </PackageReference>
 ```
 
-## Rules
+## Diagnostics
 
-All rules default to `Warning` severity and can be suppressed per project or file via `.editorconfig`:
+All diagnostics default to `Warning` severity and can be suppressed per project or file via `.editorconfig`:
 
 ```ini
-dotnet_diagnostic.GM1200.severity = none
+dotnet_diagnostic.GM0001.severity = none
 ```
 
-### Custom Rules
+### Layout Diagnostics
 
-| ID | Description |
-| -- | ----------- |
-| [GM0001](docs/GM0001.md) | No blank lines between consecutive `using` directives |
-| [GM0002](docs/GM0002.md) | Auto-implemented property must be on a single line |
-| GM0003 | No blank line between an attribute and the member it decorates |
-| GM0004 | Member declaration must be on a new line after its attributes |
+| ID                              | Description                                                    | Fixable |
+| ------------------------------- | -------------------------------------------------------------- | ------- |
+| [GM0001](docs/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     |
+| [GM0002](docs/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     |
+| [GM0003](docs/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
+| [GM0004](docs/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
 
-### Ordering Rules
+### Ordering Diagnostics
 
-Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) (MIT License).
+Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers).
 
-| ID | Description |
-| -- | ----------- |
-| GM1200 | Using directives must be placed outside namespace declarations |
-| GM1201 | Elements must appear in the correct order |
-| GM1202 | Elements must be ordered by access level |
-| GM1203 | Constant fields must appear before non-constant fields |
-| GM1204 | Static elements must appear before instance elements |
-| GM1205 | Partial elements must declare an access modifier |
-| GM1206 | Declaration keywords must follow order (access → static → other) |
-| GM1207 | The keyword `protected` must come before `internal` |
-| GM1208 | System using directives must be placed before other using directives |
-| GM1209 | Using alias directives must be placed after other using directives |
-| GM1210 | Using directives must be ordered alphabetically by namespace |
-| GM1211 | Using alias directives must be ordered alphabetically by alias name |
-| GM1212 | A get accessor must appear before a set/init accessor |
-| GM1213 | An add accessor must appear before a remove accessor |
-| GM1214 | Readonly fields must appear before non-readonly fields |
-| GM1216 | Using static directives must be placed at the correct location |
-| GM1217 | Using static directives must be ordered alphabetically |
+| ID                                | Description                                                          | Fixable |
+| --------------------------------- | -------------------------------------------------------------------- | ------- |
+| [GM1200](docs/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      |
+| [GM1201](docs/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      |
+| [GM1202](docs/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      |
+| [GM1203](docs/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      |
+| [GM1204](docs/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      |
+| [GM1205](docs/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      |
+| [GM1206](docs/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      |
+| [GM1207](docs/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      |
+| [GM1208](docs/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      |
+| [GM1209](docs/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      |
+| [GM1210](docs/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      |
+| [GM1211](docs/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      |
+| [GM1212](docs/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      |
+| [GM1213](docs/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      |
+| [GM1214](docs/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      |
+| [GM1216](docs/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      |
+| [GM1217](docs/Ordering/GM1217.md) | Using static directives must be ordered alphabetically               | No      |
 
 ## Local Development
 
@@ -71,8 +71,11 @@ dotnet nuget locals all --clear
 
 # Force-restore consumer solution
 dotnet restore /path/to/consumer.sln --force
+```
 
-# Run tests
+## Testing
+
+```sh
 dotnet test GamesMayer.Analyzers.Tests/GamesMayer.Analyzers.Tests.csproj
 ```
 
