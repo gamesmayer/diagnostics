@@ -37,9 +37,15 @@ namespace GamesMayer.Analyzers
             if (!IsAutoImplemented(property))
                 return;
 
-            var lineSpan = property.GetLocation().GetLineSpan();
+            // Exclude leading attributes — measure only from the first non-attribute token.
+            var firstToken = property.AttributeLists.Count > 0
+                ? property.AttributeLists.Last().GetLastToken().GetNextToken()
+                : property.GetFirstToken();
 
-            if (lineSpan.StartLinePosition.Line != lineSpan.EndLinePosition.Line)
+            var startLine = firstToken.GetLocation().GetLineSpan().StartLinePosition.Line;
+            var endLine = property.GetLastToken().GetLocation().GetLineSpan().EndLinePosition.Line;
+
+            if (startLine != endLine)
             {
                 context.ReportDiagnostic(
                     Diagnostic.Create(Descriptor, property.GetLocation(), property.Identifier.Text));
