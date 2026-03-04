@@ -1,6 +1,6 @@
 # GAMESMAYER Analyzers
 
-Custom Roslyn diagnostics for C# code style enforcement across GAMESMAYER projects.
+GAMESMAYER C# code analyzers.
 
 ## Installation
 
@@ -19,46 +19,48 @@ Then reference the package in `Directory.Build.props`:
 </PackageReference>
 ```
 
-## Diagnostics
+## Analyzers
 
-All diagnostics default to `Warning` severity and can be suppressed per project or file via `.editorconfig`:
+All analyzers default to `Warning` severity and can be suppressed per project or file via `.editorconfig`:
 
 ```ini
 dotnet_diagnostic.GM0001.severity = none
 ```
 
-### Layout Diagnostics
+Analyzers are organized by category.
 
-| ID                              | Description                                                    | Fixable |
-| ------------------------------- | -------------------------------------------------------------- | ------- |
-| [GM0001](docs/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     |
-| [GM0002](docs/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     |
-| [GM0003](docs/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
-| [GM0004](docs/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
+### Layout Analyzers
 
-### Ordering Diagnostics
+| ID                                        | Description                                                    | Fixable |
+| ----------------------------------------- | -------------------------------------------------------------- | ------- |
+| [GM0001](docs/Analyzers/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     |
+| [GM0002](docs/Analyzers/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     |
+| [GM0003](docs/Analyzers/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
+| [GM0004](docs/Analyzers/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
+
+### Ordering Analyzers
 
 Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers).
 
-| ID                                | Description                                                          | Fixable |
-| --------------------------------- | -------------------------------------------------------------------- | ------- |
-| [GM1200](docs/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      |
-| [GM1201](docs/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      |
-| [GM1202](docs/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      |
-| [GM1203](docs/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      |
-| [GM1204](docs/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      |
-| [GM1205](docs/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      |
-| [GM1206](docs/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      |
-| [GM1207](docs/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      |
-| [GM1208](docs/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      |
-| [GM1209](docs/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      |
-| [GM1210](docs/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      |
-| [GM1211](docs/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      |
-| [GM1212](docs/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      |
-| [GM1213](docs/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      |
-| [GM1214](docs/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      |
-| [GM1216](docs/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      |
-| [GM1217](docs/Ordering/GM1217.md) | Using static directives must be ordered alphabetically               | No      |
+| ID                                          | Description                                                          | Fixable |
+| ------------------------------------------- | -------------------------------------------------------------------- | ------- |
+| [GM1200](docs/Analyzers/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      |
+| [GM1201](docs/Analyzers/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      |
+| [GM1202](docs/Analyzers/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      |
+| [GM1203](docs/Analyzers/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      |
+| [GM1204](docs/Analyzers/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      |
+| [GM1205](docs/Analyzers/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      |
+| [GM1206](docs/Analyzers/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      |
+| [GM1207](docs/Analyzers/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      |
+| [GM1208](docs/Analyzers/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      |
+| [GM1209](docs/Analyzers/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      |
+| [GM1210](docs/Analyzers/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      |
+| [GM1211](docs/Analyzers/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      |
+| [GM1212](docs/Analyzers/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      |
+| [GM1213](docs/Analyzers/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      |
+| [GM1214](docs/Analyzers/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      |
+| [GM1216](docs/Analyzers/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      |
+| [GM1217](docs/Analyzers/Ordering/GM1217.md) | Using static directives must be ordered alphabetically               | No      |
 
 ## Local Development
 
