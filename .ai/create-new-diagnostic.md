@@ -16,6 +16,7 @@ If one of the non-optional requirements is not provided, it will not be possible
 |     description     |                 A bit longer description of the issue                  |   true   |                 Infer from rule                  | "Consecutive using directives must not be separated by blank lines." |
 | withCodeFixProvider |      Whether or not to create a code fix provider for the analyzer     |   true   |                       false                      |                                false                                 |
 |      withTests      |  Whether or not to create tests for the analyzer and code fix provider |   true   |                       true                       |                                 true                                 |
+|   diagnosticLine    |                   Where should be located the issue                    |   true   |                  Infer from rule                 |                           "The blank line"                           |
 
 The requirements will be provided in JSON format. For example:
 

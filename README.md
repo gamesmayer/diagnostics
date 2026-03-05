@@ -38,6 +38,7 @@ Diagnostics are organized by category.
 | [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
 | [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
 | [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     |
+| [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     |
 
 ### Ordering Diagnostics
 
