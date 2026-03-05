@@ -13,17 +13,17 @@ Only the most relevant files and directories are mentioned in the following diag
 ├── .ai                                         # Documentation for artificial intelligence agents
 ├── docs                                        # Documentation files
 ├── GamesMayer.Diagnostics                        # Source code
-    └── Diagnostics
-        └── [CategoryName]                      # Layout, Ordering, etc.
-            └── GM0001
-                ├── GMOOO1Analyzer.cs           # GM0001 analyzer
-                └── GM0001CodeFixProvider.cs    # GM0001 code fix provider
+│   └── Diagnostics
+│      └── [CategoryName]                      # Layout, Ordering, etc.
+│           └── GM0001
+│               ├── GMOOO1Analyzer.cs           # GM0001 analyzer
+│               └── GM0001CodeFixProvider.cs    # GM0001 code fix provider
 ├── GamesMayer.Diagnostics.Tests                  # Tests source code
-    └── Diagnostics
-        └── [CategoryName]
-            └── GM0001
-                ├── GMOOO1AnalyzerTests.cs      # GM0001 analyzer tests
-                └── GM0001CodeFixProvider.cs    # GM0001 code fix provider tests
+│   └── Diagnostics
+│       └── [CategoryName]
+│           └── GM0001
+│               ├── GMOOO1AnalyzerTests.cs      # GM0001 analyzer tests
+│               └── GM0001CodeFixProvider.cs    # GM0001 code fix provider tests
 └── gamesmayer-diagnostics.slnx                   # C# solution
 ```
 
