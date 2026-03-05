@@ -2,7 +2,7 @@
 
 ## Requirements
 
-If one of the non-optional requirements is not provided, it will not be possible to create a new diagnostic.
+If one of the non-optional requirements is not provided, it will not be possible to execute the process.
 
 |     Requirement     |                              Description                               | Optional |                  Default Value                   |                               Example                                |
 | :-----------------: | :--------------------------------------------------------------------: | :------: | :----------------------------------------------: | :------------------------------------------------------------------: |
