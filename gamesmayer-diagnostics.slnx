@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj" />
+  <Project Path="GamesMayer.Diagnostics.Tests/GamesMayer.Diagnostics.Tests.csproj" />
+</Solution>

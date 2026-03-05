@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="GamesMayer.Analyzers/GamesMayer.Analyzers.csproj" />
-  <Project Path="GamesMayer.Analyzers.Tests/GamesMayer.Analyzers.Tests.csproj" />
-</Solution>
