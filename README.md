@@ -37,6 +37,7 @@ Diagnostics are organized by category.
 | [GM0002](docs/Diagnostics/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     |
 | [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
 | [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
+| [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     |
 
 ### Ordering Diagnostics
 
