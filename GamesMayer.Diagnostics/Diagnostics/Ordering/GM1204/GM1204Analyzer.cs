@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Static elements must appear before instance elements",
             messageFormat: "A static element must appear before an instance element",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A static element is placed beneath an instance element of the same type. Static elements should be placed above instance elements.");

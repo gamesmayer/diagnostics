@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "A get accessor appears after a set accessor within a property or indexer",
             messageFormat: "A get accessor must appear before a set accessor",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A get accessor appears after a set accessor within a property or indexer. To comply with this rule, the get accessor should appear before the set accessor.");

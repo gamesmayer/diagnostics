@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "An add accessor appears after a remove accessor within an event",
             messageFormat: "An add accessor must appear before a remove accessor",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "An add accessor appears after a remove accessor within an event. To comply with this rule, the add accessor should appear before the remove accessor.");

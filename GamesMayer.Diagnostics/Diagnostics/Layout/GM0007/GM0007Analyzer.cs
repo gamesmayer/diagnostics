@@ -15,7 +15,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Class members must be separated by a blank line",
             messageFormat: "Insert a blank line between '{0}' and '{1}'",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Class members must be separated by a blank line, including between consecutive fields.");

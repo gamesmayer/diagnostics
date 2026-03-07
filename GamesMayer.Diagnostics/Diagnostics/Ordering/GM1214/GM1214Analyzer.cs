@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Readonly elements must appear before non-readonly elements",
             messageFormat: "A readonly field must appear before a non-readonly field",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A readonly field is positioned beneath a non-readonly field of the same type. Readonly fields should be placed above non-readonly fields.");

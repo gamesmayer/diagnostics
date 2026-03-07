@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Using static directives must be ordered alphabetically",
             messageFormat: "A 'using static' directive for '{0}' must appear before a 'using static' directive for '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The using static directives within a C# code file are not sorted alphabetically by namespace.");

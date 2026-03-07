@@ -22,7 +22,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Elements must appear in the correct order",
             messageFormat: "A {0} should appear before a {1}",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "An element within a C# code file is out of order in relation to the other elements in the code.");

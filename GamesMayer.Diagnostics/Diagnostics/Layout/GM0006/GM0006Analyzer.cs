@@ -15,7 +15,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Blank lines between attributes",
             messageFormat: "Remove blank lines between attributes on '{0}'",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Attributes that apply to the same declaration must not be separated by blank lines.");

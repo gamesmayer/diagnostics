@@ -16,7 +16,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Member declaration must be on a new line after its attributes",
             messageFormat: "'{0}' must be on a new line after its attributes",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Member declarations must start on a new line following their attributes.");

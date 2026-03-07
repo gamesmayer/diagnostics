@@ -22,7 +22,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Using alias directives must be ordered alphabetically by alias name",
             messageFormat: "A using alias directive for '{0}' must appear before a using alias directive for '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The using-alias directives within a C# code file are not sorted alphabetically by alias name.");

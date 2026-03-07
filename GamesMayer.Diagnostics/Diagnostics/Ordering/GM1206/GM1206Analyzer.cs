@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Declaration keywords must follow order",
             messageFormat: "The keyword '{0}' must appear before keyword '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The keywords within the declaration of an element do not follow a standard ordering scheme. Within an element declaration, keywords must appear in a defined order: access modifiers first, then 'static', then all other keywords.");

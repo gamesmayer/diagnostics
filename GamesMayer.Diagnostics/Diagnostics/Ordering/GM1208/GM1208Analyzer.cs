@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "System using directives must be placed before other using directives",
             messageFormat: "A using directive for '{0}' must appear before a using directive for '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A using directive which declares a member of the System namespace appears after a using directive which declares a member of a different namespace.");

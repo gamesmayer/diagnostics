@@ -17,7 +17,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Blank line within argument or parameter list",
             messageFormat: "The blank line within the argument or parameter list must be removed",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "When invocation arguments or method declaration parameters are split across multiple lines, they must appear as a continuous block without blank lines.");

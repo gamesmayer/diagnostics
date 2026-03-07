@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Using directives must be ordered alphabetically by the namespaces",
             messageFormat: "A using directive for '{0}' must appear before a using directive for '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The using directives within a C# code file are not sorted alphabetically by namespace.");

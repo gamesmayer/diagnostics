@@ -15,7 +15,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Auto-implemented property must be on a single line",
             messageFormat: "Auto-implemented property '{0}' must be written on a single line",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Auto-implemented properties must not span multiple lines.");

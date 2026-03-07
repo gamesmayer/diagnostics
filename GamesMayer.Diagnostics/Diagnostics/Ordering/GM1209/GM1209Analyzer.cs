@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Using alias directives must be placed after other using directives",
             messageFormat: "A using alias directive must appear after all other using directives",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A using-alias directive is positioned before a regular using directive. Using-alias directives should appear after all other using directives.");

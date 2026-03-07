@@ -20,7 +20,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "The keyword 'protected' must come before 'internal'",
             messageFormat: "The keyword '{0}' must come before keyword '{1}'",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The keyword 'protected' must come before 'internal' in the modifier list of a C# element. The keywords 'private' and 'protected' must also be ordered correctly.");

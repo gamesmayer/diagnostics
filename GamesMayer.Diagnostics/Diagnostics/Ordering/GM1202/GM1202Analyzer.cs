@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Elements must be ordered by access",
             messageFormat: "An element with '{0}' access must appear before an element with '{1}' access",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "An element within a C# code file is out of order in relation to the other elements in the code. Adjacent elements of the same kind should be ordered from most accessible to least accessible.");

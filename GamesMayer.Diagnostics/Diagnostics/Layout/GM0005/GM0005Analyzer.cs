@@ -15,7 +15,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Attributes separated by commas",
             messageFormat: "Use separate attribute declarations",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Attributes should be declared in separate brackets instead of being separated by commas in the same bracket.");

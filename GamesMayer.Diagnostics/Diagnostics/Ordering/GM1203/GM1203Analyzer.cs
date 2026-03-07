@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Constants must appear before fields",
             messageFormat: "A constant field must appear before a non-constant field",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A constant field is placed beneath a non-constant field. Constants should be placed above fields to indicate that the two are fundamentally different types of elements.");

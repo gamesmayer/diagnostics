@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Using static directives must be placed at the correct location",
             messageFormat: "A 'using static' directive must appear after normal using directives and before alias using directives",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A using static directive is placed before a normal using directive or after an alias using directive. Using static directives should appear between normal and alias using directives.");

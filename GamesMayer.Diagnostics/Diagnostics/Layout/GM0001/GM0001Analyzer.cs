@@ -15,7 +15,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Blank line between using directives",
             messageFormat: "Remove the blank line between 'using {0}' and 'using {1}'",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Consecutive using directives must not be separated by blank lines.");

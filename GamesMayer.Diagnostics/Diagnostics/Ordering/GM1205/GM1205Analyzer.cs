@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Partial element does not have an access modifier defined",
             messageFormat: "Partial element does not have an access modifier defined",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A violation of this rule occurs when a partial element does not have an access modifier defined.");

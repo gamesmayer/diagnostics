@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "A C# using directive is placed inside a namespace element",
             messageFormat: "A using directive should appear outside a namespace declaration",
-            category: "Style",
+            category: "Ordering",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "A using directive is placed inside a namespace element. Using directives should appear outside namespace declarations.");

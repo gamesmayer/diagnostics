@@ -16,7 +16,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "Attribute must be on the line immediately before the member",
             messageFormat: "Attribute on '{0}' must be on the line immediately before the member with no blank lines",
-            category: "Style",
+            category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Attributes must appear on the line directly preceding the member they annotate, with no blank lines in between.");
