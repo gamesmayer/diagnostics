@@ -63,8 +63,8 @@ Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnal
 | [GM1212](docs/Diagnostics/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      |
 | [GM1213](docs/Diagnostics/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      |
 | [GM1214](docs/Diagnostics/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      |
+| [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | No      |
 | [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      |
-| [GM1217](docs/Diagnostics/Ordering/GM1217.md) | Using static directives must be ordered alphabetically               | No      |
 
 ## Local Development
 

@@ -13,9 +13,9 @@ namespace GamesMayer.Diagnostics
     using Microsoft.CodeAnalysis.Diagnostics;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM1217Analyzer : DiagnosticAnalyzer
+    public sealed class GM1215Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM1217";
+        public const string DiagnosticId = "GM1215";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,

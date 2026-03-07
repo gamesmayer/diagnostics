@@ -9,9 +9,9 @@ namespace GamesMayer.Diagnostics.Tests
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
     using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
-        GamesMayer.Diagnostics.GM1217Analyzer>;
+        GamesMayer.Diagnostics.GM1215Analyzer>;
 
-    public class GM1217AnalyzerTests
+    public class GM1215AnalyzerTests
     {
         [Fact]
         public async Task SystemStaticsAlphabetical_NoDiagnostic()
@@ -26,7 +26,7 @@ using static System.String;";
         {
             var testCode = @"using static Acme.Foo;
 using static Zoo.Bar;";
-            var test = new CSharpAnalyzerTest<GM1217Analyzer, XUnitVerifier>
+            var test = new CSharpAnalyzerTest<GM1215Analyzer, XUnitVerifier>
             {
                 TestCode = testCode,
                 CompilerDiagnostics = CompilerDiagnostics.None,
@@ -44,7 +44,7 @@ using static Zoo.Bar;";
         [Fact]
         public async Task SystemStaticsOutOfOrder_Diagnostic()
         {
-            var testCode = @"{|GM1217:using static System.String;|}
+            var testCode = @"{|GM1215:using static System.String;|}
 using static System.Math;";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
@@ -52,9 +52,9 @@ using static System.Math;";
         [Fact]
         public async Task NonSystemStaticsOutOfOrder_Diagnostic()
         {
-            var testCode = @"{|GM1217:using static Zoo.Bar;|}
+            var testCode = @"{|GM1215:using static Zoo.Bar;|}
 using static Acme.Foo;";
-            var test = new CSharpAnalyzerTest<GM1217Analyzer, XUnitVerifier>
+            var test = new CSharpAnalyzerTest<GM1215Analyzer, XUnitVerifier>
             {
                 TestCode = testCode,
                 CompilerDiagnostics = CompilerDiagnostics.None,
@@ -65,9 +65,9 @@ using static Acme.Foo;";
         [Fact]
         public async Task NonSystemStaticBeforeSystemStatic_Diagnostic()
         {
-            var testCode = @"{|GM1217:using static Zoo.Bar;|}
+            var testCode = @"{|GM1215:using static Zoo.Bar;|}
 using static System.Math;";
-            var test = new CSharpAnalyzerTest<GM1217Analyzer, XUnitVerifier>
+            var test = new CSharpAnalyzerTest<GM1215Analyzer, XUnitVerifier>
             {
                 TestCode = testCode,
                 CompilerDiagnostics = CompilerDiagnostics.None,
