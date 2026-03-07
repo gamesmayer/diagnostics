@@ -40,6 +40,7 @@ Diagnostics are organized by category.
 | [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     |
 | [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     |
 | [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                | Yes     |
+| [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     |
 
 ### Ordering Diagnostics
 
