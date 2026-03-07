@@ -41,6 +41,7 @@ Diagnostics are organized by category.
 | [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     |
 | [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                | Yes     |
 | [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     |
+| [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier         | Yes     |
 
 ### Ordering Diagnostics
 
