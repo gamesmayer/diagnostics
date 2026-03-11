@@ -4,19 +4,19 @@
 
 If one of the non-optional requirements is not provided, it will not be possible to execute the process.
 
-|     Requirement     |                              Description                               | Optional |                  Default Value                   |                               Example                                |
-| :-----------------: | :--------------------------------------------------------------------: | :------: | :----------------------------------------------: | :------------------------------------------------------------------: |
-|        rule         |                        Analyzer diagnostic rule                        |  false   |                        -                         |          "Don't allow blank lines between using directives"          |
-|         id          |                          Unique Diagnostic ID                          |   true   | The lowest available code. Starting with GM0001. |                                GM0001                                |
-|        title        |                      Short title describing issue                      |   true   |                 Infer from rule                  |                "Blank line between using directives"                 |
-|    messageFormat    |                     Short message to fix the issue                     |   true   |                 Infer from rule                  |     "Remove the blank line between 'using {0}' and 'using {1}'"      |
-|      category       |                     The category of the diagnostic                     |   true   |                     "Layout"                     |                               "Layout"                               |
-|   defaultSeverity   |                   Default severity of the diagnostic                   |   true   |            DiagnosticSeverity.Warning            |                      DiagnosticSeverity.Warning                      |
-| isEnabledByDefault  |                If the diagnostic is enabled by default                 |   true   |                       true                       |                                 true                                 |
-|     description     |                 A bit longer description of the issue                  |   true   |                 Infer from rule                  | "Consecutive using directives must not be separated by blank lines." |
-| withCodeFixProvider |      Whether or not to create a code fix provider for the analyzer     |   true   |                       false                      |                                false                                 |
-|      withTests      |  Whether or not to create tests for the analyzer and code fix provider |   true   |                       true                       |                                 true                                 |
-|   diagnosticLine    |                   Where should be located the issue                    |   true   |                  Infer from rule                 |                           "The blank line"                           |
+|     Requirement     |                              Description                              | Optional |                  Default Value                   |                                  Example                                   |
+| :-----------------: | :-------------------------------------------------------------------: | :------: | :----------------------------------------------: | :------------------------------------------------------------------------: |
+|        rule         |                       Analyzer diagnostic rule                        |  false   |                        -                         |             "Don't allow blank lines between using directives"             |
+|         id          |                         Unique Diagnostic ID                          |   true   | The lowest available code. Starting with GM0001. |                                   GM0001                                   |
+|        title        |                     Short title describing issue                      |   true   |                 Infer from rule                  |                   "Blank line between using directives"                    |
+|    messageFormat    |                    Short message to fix the issue                     |   true   |                 Infer from rule                  |        "Remove the blank line between 'using {0}' and 'using {1}'"         |
+|      category       |                    The category of the diagnostic                     |   true   |                     "Layout"                     |                                  "Layout"                                  |
+|   defaultSeverity   |                  Default severity of the diagnostic                   |   true   |            DiagnosticSeverity.Warning            |                         DiagnosticSeverity.Warning                         |
+| isEnabledByDefault  |                If the diagnostic is enabled by default                |   true   |                       true                       |                                    true                                    |
+|     description     |                 A bit longer description of the issue                 |   true   |                 Infer from rule                  |    "Consecutive using directives must not be separated by blank lines."    |
+| withCodeFixProvider |     Whether or not to create a code fix provider for the analyzer     |   true   |                       true                       |                                    true                                    |
+|      withTests      | Whether or not to create tests for the analyzer and code fix provider |   true   |                       true                       |                                    true                                    |
+|      examples       |          Code samples with issues to clarify how rule works           |   true   |                        []                        | ["using System;\n{\|GM0001:\|}\nusing System.Collections;\nclass Foo { }"] |
 
 The requirements will be provided in JSON format. For example:
 

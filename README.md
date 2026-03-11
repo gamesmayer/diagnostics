@@ -43,6 +43,7 @@ Diagnostics are organized by category.
 | [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     |
 | [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier         | Yes     |
 | [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                 | Yes     |
+| [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     |
 
 ### Ordering Diagnostics
 
