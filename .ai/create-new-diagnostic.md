@@ -17,6 +17,7 @@ If one of the non-optional requirements is not provided, it will not be possible
 | withCodeFixProvider |     Whether or not to create a code fix provider for the analyzer     |   true   |                       true                       |                                    true                                    |
 |      withTests      | Whether or not to create tests for the analyzer and code fix provider |   true   |                       true                       |                                    true                                    |
 |      examples       |          Code samples with issues to clarify how rule works           |   true   |                        []                        | ["using System;\n{\|GM0001:\|}\nusing System.Collections;\nclass Foo { }"] |
+|        notes        |       Additional details about the behaviour or implementation        |   true   |                        -                         | "Create a test case for consecutive blank lines between using directives"  |
 
 The requirements will be provided in JSON format. For example:
 
