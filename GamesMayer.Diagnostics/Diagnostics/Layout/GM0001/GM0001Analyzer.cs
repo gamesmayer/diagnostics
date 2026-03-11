@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace GamesMayer.Diagnostics
 {
@@ -38,26 +39,22 @@ namespace GamesMayer.Diagnostics
             for (int i = 1; i < usings.Count; i++)
             {
                 UsingDirectiveSyntax current = usings[i];
-                SyntaxTrivia blankLine = default;
+                UsingDirectiveSyntax previous = usings[i - 1];
+                string previousName = previous.Name?.ToString() ?? "?";
+                string currentName = current.Name?.ToString() ?? "?";
 
                 foreach (SyntaxTrivia trivia in current.GetLeadingTrivia())
                 {
                     if (trivia.IsKind(SyntaxKind.EndOfLineTrivia))
                     {
-                        blankLine = trivia;
-                        break;
+                        var location = Location.Create(
+                            context.Node.SyntaxTree,
+                            new TextSpan(trivia.SpanStart, 0));
+
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(Descriptor, location,
+                                previousName, currentName));
                     }
-                }
-
-                if (blankLine != default)
-                {
-                    UsingDirectiveSyntax previous = usings[i - 1];
-                    string previousName = previous.Name?.ToString() ?? "?";
-                    string currentName = current.Name?.ToString() ?? "?";
-
-                    context.ReportDiagnostic(
-                        Diagnostic.Create(Descriptor, blankLine.GetLocation(),
-                            previousName, currentName));
                 }
             }
         }

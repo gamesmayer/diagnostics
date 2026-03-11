@@ -28,8 +28,19 @@ class Foo { }";
         public async Task BlankLineBetweenUsings_Diagnostic()
         {
             var testCode = @"using System;
-{|GM0001:
-|}using System.Collections;
+{|GM0001:|}
+using System.Collections;
+class Foo { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultipleBlankLinesBetweenUsings_Diagnostic()
+        {
+            var testCode = @"using System;
+{|GM0001:|}
+{|GM0001:|}
+using System.Collections;
 class Foo { }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

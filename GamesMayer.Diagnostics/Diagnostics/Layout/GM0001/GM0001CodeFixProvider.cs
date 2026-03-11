@@ -56,11 +56,7 @@ namespace GamesMayer.Diagnostics
                     var trivia = leadingTrivia[j];
                     if (trivia.IsKind(SyntaxKind.EndOfLineTrivia) && trivia.SpanStart == blankLinePosition)
                     {
-                        var newTrivia = leadingTrivia;
-                        int k = j;
-                        while (k < newTrivia.Count && newTrivia[k].IsKind(SyntaxKind.EndOfLineTrivia))
-                            newTrivia = newTrivia.RemoveAt(k);
-                        var newUsingDirective = usingDirective.WithLeadingTrivia(newTrivia);
+                        var newUsingDirective = usingDirective.WithLeadingTrivia(leadingTrivia.RemoveAt(j));
                         var newRoot = root.ReplaceNode(usingDirective, newUsingDirective);
                         return document.WithSyntaxRoot(newRoot);
                     }

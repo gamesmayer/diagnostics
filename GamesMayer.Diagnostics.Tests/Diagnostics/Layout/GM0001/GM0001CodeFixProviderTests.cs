@@ -11,8 +11,8 @@ namespace GamesMayer.Diagnostics.Tests
         public async Task BlankLineBetweenUsings_Fix()
         {
             var testCode = @"using System;
-{|GM0001:
-|}using System.Collections;
+{|GM0001:|}
+using System.Collections;
 class Foo { }";
             var fixedCode = @"using System;
 using System.Collections;
@@ -29,8 +29,8 @@ class Foo { }";
         public async Task MultipleBlankLinesBetweenUsings_Fix()
         {
             var testCode = @"using System;
-{|GM0001:
-|}
+{|GM0001:|}
+{|GM0001:|}
 using System.Collections;
 class Foo { }";
             var fixedCode = @"using System;
@@ -40,6 +40,7 @@ class Foo { }";
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
+                NumberOfFixAllIterations = 2,
             };
             await test.RunAsync();
         }
