@@ -134,13 +134,9 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task MultipleBlankLinesBeforeBrace_OnlyLastFlagged()
+        public async Task MultipleBlankLinesBeforeBrace_AllFlagged()
         {
-            var testCode = @"class Foo
-
-{|GM0012:|}
-{
-}";
+            var testCode = "class Foo\n{|GM0012:|}\n{|GM0012:|}\n{\n}";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
     }

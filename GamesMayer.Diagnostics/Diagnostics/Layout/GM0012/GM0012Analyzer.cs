@@ -34,21 +34,23 @@ namespace GamesMayer.Diagnostics
             var tree = context.Tree;
             var text = tree.GetText(context.CancellationToken);
 
-            for (int i = 0; i < text.Lines.Count - 1; i++)
+            for (int i = 0; i < text.Lines.Count; i++)
             {
                 var line = text.Lines[i];
                 var lineText = text.ToString(line.Span);
 
-                if (string.IsNullOrWhiteSpace(lineText))
-                {
-                    var nextLine = text.Lines[i + 1];
-                    var nextLineText = text.ToString(nextLine.Span).TrimStart();
+                if (!string.IsNullOrWhiteSpace(lineText))
+                    continue;
 
-                    if (nextLineText.StartsWith("{"))
-                    {
-                        var location = Location.Create(tree, new TextSpan(line.Start, 0));
-                        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
-                    }
+                // Find the next non-blank line
+                int j = i + 1;
+                while (j < text.Lines.Count && string.IsNullOrWhiteSpace(text.ToString(text.Lines[j].Span)))
+                    j++;
+
+                if (j < text.Lines.Count && text.ToString(text.Lines[j].Span).TrimStart().StartsWith("{"))
+                {
+                    var location = Location.Create(tree, new TextSpan(line.Start, 0));
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
                 }
             }
         }

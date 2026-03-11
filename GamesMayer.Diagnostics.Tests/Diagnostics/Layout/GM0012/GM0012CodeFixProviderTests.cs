@@ -58,19 +58,13 @@ namespace GamesMayer.Diagnostics.Tests
         [Fact]
         public async Task MultipleBlankLinesBeforeBrace_Fix()
         {
-            var testCode = @"class Foo
-
-{|GM0012:|}
-{
-}";
-            var fixedCode = @"class Foo
-
-{
-}";
+            var testCode = "class Foo\n{|GM0012:|}\n{|GM0012:|}\n{\n}";
+            var fixedCode = "class Foo\n{\n}";
             var test = new CSharpCodeFixTest<GM0012Analyzer, GM0012CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
+                NumberOfIncrementalIterations = 2,
             };
             await test.RunAsync();
         }
