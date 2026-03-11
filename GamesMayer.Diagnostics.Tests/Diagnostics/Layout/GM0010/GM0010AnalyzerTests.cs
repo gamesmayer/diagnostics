@@ -75,5 +75,12 @@ namespace GamesMayer.Diagnostics.Tests
 class Foo { }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task TwoConsecutiveBlankLinesAtEndOfFile_Diagnostic()
+        {
+            var testCode = "class Foo { }\r\n\r\n{|GM0010:|}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

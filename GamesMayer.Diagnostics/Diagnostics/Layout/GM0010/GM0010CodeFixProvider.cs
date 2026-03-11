@@ -19,31 +19,37 @@ namespace GamesMayer.Diagnostics
         public override FixAllProvider? GetFixAllProvider() =>
             WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            if (root == null)
-                return;
-
             var diagnostic = context.Diagnostics[0];
+            var position = diagnostic.Location.SourceSpan.Start;
 
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: "Remove consecutive blank line",
-                    createChangedDocument: ct => RemoveBlankLineAsync(context.Document, diagnostic.Location.SourceSpan, ct),
+                    createChangedDocument: ct => RemoveBlankLineAsync(context.Document, position, ct),
                     equivalenceKey: nameof(GM0010CodeFixProvider)),
                 diagnostic);
+
+            return Task.CompletedTask;
         }
 
         private static async Task<Document> RemoveBlankLineAsync(
             Document document,
-            TextSpan span,
+            int position,
             CancellationToken cancellationToken)
         {
-            var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            var line = text.Lines.GetLineFromPosition(span.Start);
-            var newText = text.Replace(line.SpanIncludingLineBreak, "");
-            return document.WithText(newText);
+            var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+            var line = sourceText.Lines.GetLineFromPosition(position);
+
+            // Remove the line break that ends the previous line — this is what creates the
+            // current blank line. Using prevLine's break (rather than the current line's
+            // SpanIncludingLineBreak) ensures non-overlapping spans across all diagnostics,
+            // including consecutive blanks at EOF where the last line has no line break of its own.
+            var prevLine = sourceText.Lines[line.LineNumber - 1];
+            var spanToRemove = TextSpan.FromBounds(prevLine.Span.End, prevLine.SpanIncludingLineBreak.End);
+
+            return document.WithText(sourceText.WithChanges(new TextChange(spanToRemove, string.Empty)));
         }
     }
 }

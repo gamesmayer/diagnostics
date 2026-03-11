@@ -93,5 +93,31 @@ class Foo { }";
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task TwoConsecutiveBlankLinesAtEndOfFile_Fix()
+        {
+            var testCode = "class Foo { }\r\n\r\n{|GM0010:|}";
+            var fixedCode = "class Foo { }\r\n";
+            var test = new CSharpCodeFixTest<GM0010Analyzer, GM0010CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ThreeConsecutiveBlankLinesAtEndOfFile_Fix()
+        {
+            var testCode = "class Foo { }\r\n\r\n{|GM0010:|}\r\n{|GM0010:|}";
+            var fixedCode = "class Foo { }\r\n";
+            var test = new CSharpCodeFixTest<GM0010Analyzer, GM0010CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }
