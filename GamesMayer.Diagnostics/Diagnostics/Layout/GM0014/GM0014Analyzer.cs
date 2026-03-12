@@ -14,12 +14,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Namespace identifier must be on a single line",
-            messageFormat: "Place the namespace identifier on a single line",
+            title: "Namespace declaration must be on a single line",
+            messageFormat: "Place the namespace declaration on a single line",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Namespace identifiers must not span multiple lines. All segments of a qualified namespace name must appear on the same line.");
+            description: "The namespace keyword and its identifier must appear on the same line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -34,22 +34,19 @@ namespace GamesMayer.Diagnostics
 
         private static void Analyze(SyntaxNodeAnalysisContext context)
         {
-            var nameNode = context.Node is NamespaceDeclarationSyntax ns
-                ? ns.Name
-                : ((FileScopedNamespaceDeclarationSyntax)context.Node).Name;
+            var nsDecl = (BaseNamespaceDeclarationSyntax)context.Node;
+            var nsKeyword = nsDecl.NamespaceKeyword;
+            var nameNode = nsDecl.Name;
 
-            var firstToken = nameNode.GetFirstToken();
-            var lastToken = nameNode.GetLastToken();
+            var keywordLine = nsKeyword.GetLocation().GetLineSpan().StartLinePosition.Line;
+            var nameLastLine = nameNode.GetLastToken().GetLocation().GetLineSpan().EndLinePosition.Line;
 
-            var startLine = firstToken.GetLocation().GetLineSpan().StartLinePosition.Line;
-            var endLine = lastToken.GetLocation().GetLineSpan().EndLinePosition.Line;
-
-            if (startLine == endLine)
+            if (keywordLine == nameLastLine)
                 return;
 
             var location = Location.Create(
                 context.Node.SyntaxTree,
-                TextSpan.FromBounds(firstToken.SpanStart, lastToken.Span.End));
+                TextSpan.FromBounds(nsKeyword.SpanStart, nameNode.GetLastToken().Span.End));
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
         }
     }

@@ -27,7 +27,7 @@ namespace GamesMayer.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Place namespace identifier on a single line",
+                    title: "Place namespace declaration on a single line",
                     createChangedDocument: ct => CollapseNameAsync(context.Document, diagnostic, ct),
                     equivalenceKey: nameof(GM0014CodeFixProvider)),
                 diagnostic);
@@ -52,9 +52,9 @@ namespace GamesMayer.Diagnostics
 
             var nameNode = nsDecl.Name;
             var cleanName = string.Concat(nameNode.DescendantTokens().Select(t => t.Text));
-            var nameSpan = TextSpan.FromBounds(nameNode.GetFirstToken().SpanStart, nameNode.GetLastToken().Span.End);
+            var declSpan = TextSpan.FromBounds(nsDecl.NamespaceKeyword.SpanStart, nameNode.GetLastToken().Span.End);
 
-            return document.WithText(sourceText.WithChanges(new TextChange(nameSpan, cleanName)));
+            return document.WithText(sourceText.WithChanges(new TextChange(declSpan, "namespace " + cleanName)));
         }
     }
 }

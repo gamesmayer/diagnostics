@@ -33,9 +33,37 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task Namespace_NameOnMultipleLines_Diagnostic()
+        public async Task Namespace_KeywordOnDifferentLineThanIdentifier_Diagnostic()
         {
-            var testCode = @"namespace {|GM0014:Foo
+            var testCode = @"{|GM0014:namespace
+    Foo.Bar|}
+{
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Namespace_KeywordOnDifferentLineThanThreeSegmentIdentifier_Diagnostic()
+        {
+            var testCode = @"{|GM0014:namespace
+    Foo.Bar.Baz|}
+{
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FileScopedNamespace_KeywordOnDifferentLineThanIdentifier_Diagnostic()
+        {
+            var testCode = @"{|GM0014:namespace
+    Foo.Bar|};";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Namespace_IdentifierSpansMultipleLines_Diagnostic()
+        {
+            var testCode = @"{|GM0014:namespace Foo
     .Bar|}
 {
 }";
@@ -43,20 +71,9 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task Namespace_ThreeSegmentsOnMultipleLines_Diagnostic()
+        public async Task FileScopedNamespace_IdentifierSpansMultipleLines_Diagnostic()
         {
-            var testCode = @"namespace {|GM0014:Foo
-    .Bar
-    .Baz|}
-{
-}";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task FileScopedNamespace_NameOnMultipleLines_Diagnostic()
-        {
-            var testCode = @"namespace {|GM0014:Foo
+            var testCode = @"{|GM0014:namespace Foo
     .Bar|};";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
