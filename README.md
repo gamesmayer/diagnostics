@@ -46,6 +46,7 @@ Diagnostics are organized by category.
 | [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     |
 | [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                             | Yes     |
 | [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     |
+| [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                  | Yes     |
 
 ### Ordering Diagnostics
 
