@@ -45,6 +45,7 @@ Diagnostics are organized by category.
 | [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                 | Yes     |
 | [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     |
 | [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                             | Yes     |
+| [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     |
 
 ### Ordering Diagnostics
 
