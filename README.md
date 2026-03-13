@@ -48,6 +48,7 @@ Diagnostics are organized by category.
 | [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     |
 | [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                  | Yes     |
 | [GM0015](docs/Diagnostics/Layout/GM0015.md) | No blank line between control structure clauses                | Yes     |
+| [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                             | Yes     |
 
 ### Ordering Diagnostics
 
