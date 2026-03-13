@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace GamesMayer.Diagnostics
 {
@@ -47,8 +48,12 @@ namespace GamesMayer.Diagnostics
 
             if (startLine != endLine)
             {
+                var location = Location.Create(
+                    property.SyntaxTree!,
+                    TextSpan.FromBounds(firstToken.SpanStart, property.Span.End));
+
                 context.ReportDiagnostic(
-                    Diagnostic.Create(Descriptor, property.GetLocation(), property.Identifier.Text));
+                    Diagnostic.Create(Descriptor, location, property.Identifier.Text));
             }
         }
 

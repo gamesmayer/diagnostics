@@ -29,8 +29,10 @@ namespace GamesMayer.Diagnostics
 
             var diagnostic = context.Diagnostics[0];
             var node = root.FindNode(diagnostic.Location.SourceSpan);
+            var property = node as PropertyDeclarationSyntax
+                ?? node.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
 
-            if (node is not PropertyDeclarationSyntax property)
+            if (property == null)
                 return;
 
             context.RegisterCodeFix(

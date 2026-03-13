@@ -43,5 +43,21 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task MultiLineAutoPropertyWithAttribute_DiagnosticExcludesAttribute()
+        {
+            var testCode = @"using System;
+class Foo
+{
+    [Obsolete]
+    {|GM0002:public string Name
+    {
+        get;
+        set;
+    }|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

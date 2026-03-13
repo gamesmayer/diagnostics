@@ -52,5 +52,32 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task MultiLineAutoPropertyWithAttribute_Fix()
+        {
+            var testCode = @"using System;
+class Foo
+{
+    [Obsolete]
+    {|GM0002:public string Name
+    {
+        get;
+        set;
+    }|}
+}";
+            var fixedCode = @"using System;
+class Foo
+{
+    [Obsolete]
+    public string Name { get; set; }
+}";
+            var test = new CSharpCodeFixTest<GM0002Analyzer, GM0002CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }
