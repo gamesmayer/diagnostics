@@ -51,6 +51,7 @@ Diagnostics are organized by category.
 | [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                             | Yes     |
 | [GM0017](docs/Diagnostics/Layout/GM0017.md) | Control structure clause declaration must be on a single line  | Yes     |
 | [GM0018](docs/Diagnostics/Layout/GM0018.md) | Switch case clause declaration must be on a single line        | Yes     |
+| [GM0019](docs/Diagnostics/Layout/GM0019.md) | Empty braces enclosure must be on a single line                | Yes     |
 
 ### Ordering Diagnostics
 
