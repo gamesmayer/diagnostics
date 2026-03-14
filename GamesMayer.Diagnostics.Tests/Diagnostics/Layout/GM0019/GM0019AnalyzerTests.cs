@@ -175,5 +175,33 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task MethodBodyWithPreprocessorDirective_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public void Method()
+    {
+#if SOME_SYMBOL
+        _ = 1;
+#endif
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MethodBodyWithComment_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public void Method()
+    {
+        // TODO: implement
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

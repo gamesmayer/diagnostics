@@ -198,12 +198,44 @@ namespace GamesMayer.Diagnostics
             ReportIfBraceEnclosureInvalid(context, openBraceToken, closeBraceToken);
         }
 
+        private static bool HasCommentsOrDirectivesBetweenBraces(SyntaxToken openBraceToken, SyntaxToken closeBraceToken)
+        {
+            foreach (var trivia in openBraceToken.TrailingTrivia)
+            {
+                if (IsCommentOrDirectiveTrivia(trivia.Kind()))
+                    return true;
+            }
+
+            foreach (var trivia in closeBraceToken.LeadingTrivia)
+            {
+                if (IsCommentOrDirectiveTrivia(trivia.Kind()))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsCommentOrDirectiveTrivia(SyntaxKind kind)
+        {
+            return kind == SyntaxKind.SingleLineCommentTrivia
+                || kind == SyntaxKind.MultiLineCommentTrivia
+                || kind == SyntaxKind.SingleLineDocumentationCommentTrivia
+                || kind == SyntaxKind.MultiLineDocumentationCommentTrivia
+                || kind == SyntaxKind.DisabledTextTrivia
+                || SyntaxFacts.IsPreprocessorDirective(kind);
+        }
+
         private static void ReportIfBraceEnclosureInvalid(
             SyntaxNodeAnalysisContext context,
             SyntaxToken openBraceToken,
             SyntaxToken closeBraceToken)
         {
             if (openBraceToken.IsMissing || closeBraceToken.IsMissing)
+            {
+                return;
+            }
+
+            if (HasCommentsOrDirectivesBetweenBraces(openBraceToken, closeBraceToken))
             {
                 return;
             }
