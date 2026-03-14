@@ -30,7 +30,10 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeImplicitObjectCreation, SyntaxKind.ImplicitObjectCreationExpression);
             context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorDeclaration, SyntaxKind.ConstructorDeclaration);
         }
 
         private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
@@ -44,10 +47,45 @@ namespace GamesMayer.Diagnostics
                 argumentList.CloseParenToken);
         }
 
+        private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
+        {
+            var objectCreation = (ObjectCreationExpressionSyntax)context.Node;
+            if (objectCreation.ArgumentList == null)
+                return;
+            var argumentList = objectCreation.ArgumentList;
+            AnalyzeList(
+                context,
+                argumentList.Arguments,
+                argumentList.OpenParenToken,
+                argumentList.CloseParenToken);
+        }
+
+        private static void AnalyzeImplicitObjectCreation(SyntaxNodeAnalysisContext context)
+        {
+            var implicitCreation = (ImplicitObjectCreationExpressionSyntax)context.Node;
+            var argumentList = implicitCreation.ArgumentList;
+            AnalyzeList(
+                context,
+                argumentList.Arguments,
+                argumentList.OpenParenToken,
+                argumentList.CloseParenToken);
+        }
+
         private static void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
         {
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
             var parameterList = methodDeclaration.ParameterList;
+            AnalyzeList(
+                context,
+                parameterList.Parameters,
+                parameterList.OpenParenToken,
+                parameterList.CloseParenToken);
+        }
+
+        private static void AnalyzeConstructorDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var constructorDeclaration = (ConstructorDeclarationSyntax)context.Node;
+            var parameterList = constructorDeclaration.ParameterList;
             AnalyzeList(
                 context,
                 parameterList.Parameters,

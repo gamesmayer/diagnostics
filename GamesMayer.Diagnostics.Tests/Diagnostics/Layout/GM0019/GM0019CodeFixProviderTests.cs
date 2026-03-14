@@ -58,5 +58,52 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task EmptyIfBlock_BracesOnDifferentLine_Fix()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        if (true)
+        {|GM0019:{
+        }|}
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    void Method()
+    {
+        if (true)
+        { }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0019Analyzer, GM0019CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task EmptyConstructorBody_BracesWithoutSpace_Fix()
+        {
+            var testCode = @"class Foo
+{
+    public Foo() {|GM0019:{}|}
+}";
+            var fixedCode = @"class Foo
+{
+    public Foo() { }
+}";
+            var test = new CSharpCodeFixTest<GM0019Analyzer, GM0019CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

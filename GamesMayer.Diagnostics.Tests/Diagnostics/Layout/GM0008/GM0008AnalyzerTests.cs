@@ -146,5 +146,73 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ObjectCreationBlankLineBetweenArguments_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Bar()
+    {
+        var x = new Foo(
+            1,
+{|GM0008:
+|}            2);
+    }
+
+    Foo(int a, int b) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectCreationMultilineWithoutBlankLines_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Bar()
+    {
+        var x = new Foo(
+            1,
+            2);
+    }
+
+    Foo(int a, int b) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ImplicitObjectCreationBlankLineBetweenArguments_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Bar()
+    {
+        Foo x = new(
+            1,
+{|GM0008:
+|}            2);
+    }
+
+    Foo(int a, int b) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConstructorDeclarationBlankLineBetweenParameters_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public Foo(
+        int a,
+{|GM0008:
+|}        int b)
+    {
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
