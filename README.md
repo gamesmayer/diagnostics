@@ -31,54 +31,54 @@ Diagnostics are organized by category.
 
 ### Layout Diagnostics
 
-| ID                                          | Description                                                    | Fixable |
-| ------------------------------------------- | -------------------------------------------------------------- | ------- |
-| [GM0001](docs/Diagnostics/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     |
-| [GM0002](docs/Diagnostics/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     |
-| [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     |
-| [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     |
-| [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     |
-| [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     |
-| [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                | Yes     |
-| [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     |
-| [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier         | Yes     |
-| [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                 | Yes     |
-| [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     |
-| [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                             | Yes     |
-| [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     |
-| [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                  | Yes     |
-| [GM0015](docs/Diagnostics/Layout/GM0015.md) | No blank line between control structure clauses                | Yes     |
-| [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                             | Yes     |
-| [GM0017](docs/Diagnostics/Layout/GM0017.md) | Control structure clause declaration must be on a single line  | Yes     |
-| [GM0018](docs/Diagnostics/Layout/GM0018.md) | Switch case clause declaration must be on a single line        | Yes     |
-| [GM0019](docs/Diagnostics/Layout/GM0019.md) | Empty braces enclosure must be on a single line                | Yes     |
-| [GM0020](docs/Diagnostics/Layout/GM0020.md) | New line before open brace if braces are not empty             | Yes     |
-| [GM0021](docs/Diagnostics/Layout/GM0021.md) | Empty enclosure opening brace must stay on declaration line    | Yes     |
-| [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list            | Yes     |
+| ID                                          | Description                                                    | Fixable | Default |
+| ------------------------------------------- | -------------------------------------------------------------- | ------- | ------- |
+| [GM0001](docs/Diagnostics/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     | Yes     |
+| [GM0002](docs/Diagnostics/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     | Yes     |
+| [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     | Yes     |
+| [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     | Yes     |
+| [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     | Yes     |
+| [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     | Yes     |
+| [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                | Yes     | Yes     |
+| [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     | Yes     |
+| [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier         | Yes     | Yes     |
+| [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                 | Yes     | Yes     |
+| [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     | Yes     |
+| [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                             | Yes     | Yes     |
+| [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     | Yes     |
+| [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                  | Yes     | Yes     |
+| [GM0015](docs/Diagnostics/Layout/GM0015.md) | No blank line between control structure clauses                | Yes     | Yes     |
+| [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                             | Yes     | Yes     |
+| [GM0017](docs/Diagnostics/Layout/GM0017.md) | Control structure clause declaration must be on a single line  | Yes     | Yes     |
+| [GM0018](docs/Diagnostics/Layout/GM0018.md) | Switch case clause declaration must be on a single line        | Yes     | Yes     |
+| [GM0019](docs/Diagnostics/Layout/GM0019.md) | Empty braces enclosure must be on a single line                | Yes     | Yes     |
+| [GM0020](docs/Diagnostics/Layout/GM0020.md) | New line before open brace if braces are not empty             | Yes     | Yes     |
+| [GM0021](docs/Diagnostics/Layout/GM0021.md) | Empty enclosure opening brace must stay on declaration line    | Yes     | No      |
+| [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list            | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
 Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers).
 
-| ID                                            | Description                                                          | Fixable |
-| --------------------------------------------- | -------------------------------------------------------------------- | ------- |
-| [GM1200](docs/Diagnostics/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      |
-| [GM1201](docs/Diagnostics/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      |
-| [GM1202](docs/Diagnostics/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      |
-| [GM1203](docs/Diagnostics/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      |
-| [GM1204](docs/Diagnostics/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      |
-| [GM1205](docs/Diagnostics/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      |
-| [GM1206](docs/Diagnostics/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      |
-| [GM1207](docs/Diagnostics/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      |
-| [GM1208](docs/Diagnostics/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      |
-| [GM1209](docs/Diagnostics/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      |
-| [GM1210](docs/Diagnostics/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      |
-| [GM1211](docs/Diagnostics/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      |
-| [GM1212](docs/Diagnostics/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      |
-| [GM1213](docs/Diagnostics/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      |
-| [GM1214](docs/Diagnostics/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      |
-| [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | No      |
-| [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      |
+| ID                                            | Description                                                          | Fixable | Default |
+| --------------------------------------------- | -------------------------------------------------------------------- | ------- | ------- |
+| [GM1200](docs/Diagnostics/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      | Yes     |
+| [GM1201](docs/Diagnostics/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      | Yes     |
+| [GM1202](docs/Diagnostics/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      | Yes     |
+| [GM1203](docs/Diagnostics/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      | Yes     |
+| [GM1204](docs/Diagnostics/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      | Yes     |
+| [GM1205](docs/Diagnostics/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      | Yes     |
+| [GM1206](docs/Diagnostics/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      | Yes     |
+| [GM1207](docs/Diagnostics/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      | Yes     |
+| [GM1208](docs/Diagnostics/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      | Yes     |
+| [GM1209](docs/Diagnostics/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      | Yes     |
+| [GM1210](docs/Diagnostics/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      | Yes     |
+| [GM1211](docs/Diagnostics/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      | Yes     |
+| [GM1212](docs/Diagnostics/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      | Yes     |
+| [GM1213](docs/Diagnostics/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      | Yes     |
+| [GM1214](docs/Diagnostics/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      | Yes     |
+| [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | No      | Yes     |
+| [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      | Yes     |
 
 ## Local Development
 

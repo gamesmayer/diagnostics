@@ -19,7 +19,7 @@ namespace GamesMayer.Diagnostics
             messageFormat: "Place the opening brace on the declaration line for empty enclosures",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: "Opening braces for empty enclosures must remain on the declaration line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
