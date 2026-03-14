@@ -56,6 +56,7 @@ Diagnostics are organized by category.
 | [GM0021](docs/Diagnostics/Layout/GM0021.md) | Empty enclosure opening brace must stay on declaration line    | Yes     | No      |
 | [GM0022](docs/Diagnostics/Layout/GM0022.md) | New line required before opening brace for empty enclosure     | Yes     | Yes     |
 | [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list            | Yes     | Yes     |
+| [GM0024](docs/Diagnostics/Layout/GM0024.md) | Anonymous function incorrectly indented                        | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
