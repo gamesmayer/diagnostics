@@ -34,6 +34,8 @@ namespace GamesMayer.Diagnostics
             context.RegisterSyntaxNodeAction(AnalyzeImplicitObjectCreation, SyntaxKind.ImplicitObjectCreationExpression);
             context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeConstructorDeclaration, SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorInitializer, SyntaxKind.ThisConstructorInitializer);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorInitializer, SyntaxKind.BaseConstructorInitializer);
         }
 
         private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
@@ -91,6 +93,17 @@ namespace GamesMayer.Diagnostics
                 parameterList.Parameters,
                 parameterList.OpenParenToken,
                 parameterList.CloseParenToken);
+        }
+
+        private static void AnalyzeConstructorInitializer(SyntaxNodeAnalysisContext context)
+        {
+            var initializer = (ConstructorInitializerSyntax)context.Node;
+            var argumentList = initializer.ArgumentList;
+            AnalyzeList(
+                context,
+                argumentList.Arguments,
+                argumentList.OpenParenToken,
+                argumentList.CloseParenToken);
         }
 
         private static void AnalyzeList<TNode>(

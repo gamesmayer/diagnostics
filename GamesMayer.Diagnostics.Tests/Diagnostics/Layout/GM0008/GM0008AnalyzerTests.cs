@@ -214,5 +214,58 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ConstructorInitializerThisBlankLineBetweenArguments_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public Foo(int a) : this(
+        a,
+{|GM0008:
+|}        false)
+    {
+    }
+
+    public Foo(int a, bool b) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConstructorInitializerBaseBlankLineBetweenArguments_Diagnostic()
+        {
+            var testCode = @"class Base
+{
+    public Base(int a, bool b) { }
+}
+
+class Foo : Base
+{
+    public Foo(int a) : base(
+        a,
+{|GM0008:
+|}        false)
+    {
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConstructorInitializerMultilineWithoutBlankLines_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public Foo(int a) : this(
+        a,
+        false)
+    {
+    }
+
+    public Foo(int a, bool b) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
