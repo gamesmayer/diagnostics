@@ -7,18 +7,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace GamesMayer.Diagnostics
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM0027Analyzer : DiagnosticAnalyzer
+    public sealed class GM0029Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM0027";
+        public const string DiagnosticId = "GM0029";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Parenthesis K&R indentation style in multi-line list",
-            messageFormat: "Keep the opening parenthesis on the declaration line and start the list on the next line",
+            title: "Parenthesis Allman indentation style in multi-line list",
+            messageFormat: "Move the opening parenthesis to the line below the declaration",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: false,
-            description: "In multi-line argument or parameter lists, the opening parenthesis must stay on the declaration line and the first item must start on the next line.");
+            isEnabledByDefault: true,
+            description: "In multi-line argument or parameter lists, the opening parenthesis must be placed on a separate line below the declaration (Allman style).");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -71,15 +71,8 @@ namespace GamesMayer.Diagnostics
             }
 
             var declarationLine = tree.GetLineSpan(previousToken.Span).EndLinePosition.Line;
-            var firstItem = items[0].GetFirstToken();
-            if (firstItem == default)
-            {
-                return;
-            }
 
-            var firstItemLine = tree.GetLineSpan(firstItem.Span).StartLinePosition.Line;
-            
-            if (openParenLine != declarationLine || firstItemLine == openParenLine)
+            if (openParenLine == declarationLine)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, openParenToken.GetLocation()));
             }

@@ -61,6 +61,7 @@ Diagnostics are organized by category.
 | [GM0026](docs/Diagnostics/Layout/GM0026.md) | Closing parenthesis in multi-line argument/parameter list on own line   | Yes     | Yes     |
 | [GM0027](docs/Diagnostics/Layout/GM0027.md) | Opening parenthesis placement in multi-line argument/parameter list     | Yes     | Yes     |
 | [GM0028](docs/Diagnostics/Layout/GM0028.md) | Closing parenthesis indentation in multi-line argument/parameter list   | Yes     | Yes     |
+| [GM0029](docs/Diagnostics/Layout/GM0029.md) | Opening parenthesis must be on a new line in multi-line list            | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
