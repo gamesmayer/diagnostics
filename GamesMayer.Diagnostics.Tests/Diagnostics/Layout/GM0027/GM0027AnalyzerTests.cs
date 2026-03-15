@@ -3,9 +3,9 @@ namespace GamesMayer.Diagnostics.Tests
     using System.Threading.Tasks;
     using Xunit;
     using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
-        GamesMayer.Diagnostics.GM0026Analyzer>;
+        GamesMayer.Diagnostics.GM0027Analyzer>;
 
-    public class GM0026AnalyzerTests
+    public class GM0027AnalyzerTests
     {
         [Fact]
         public async Task SingleLineArgumentList_NoDiagnostic()
@@ -23,7 +23,7 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task MultiLineArgumentList_CloseParenOnOwnLine_NoDiagnostic()
+        public async Task MultiLineArgumentList_OpenParenOnDeclarationLine_FirstItemOnNextLine_NoDiagnostic()
         {
             var testCode = @"class C
 {
@@ -42,35 +42,15 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task MultiLineArgumentList_CloseParenOnLastItemLine_DiagnosticOnCloseParenOnly()
+        public async Task MultiLineArgumentList_FirstItemOnSameLineAsOpenParen_DiagnosticOnOpenParenOnly()
         {
             var testCode = @"class C
 {
     void M()
     {
-        Foo(
-            1,
-            2,
-            3{|GM0026:)|};
-    }
-
-    void Foo(int a, int b, int c) { }
-}";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task MultiLineArgumentList_BlankLineBeforeCloseParen_NoDiagnostic()
-        {
-            var testCode = @"class C
-{
-    void M()
-    {
-        Foo(
-            1,
+        Foo{|GM0027:(|}1,
             2,
             3
-
         );
     }
 
@@ -80,32 +60,56 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task MultiLineParameterList_CloseParenOnLastItemLine_DiagnosticOnCloseParenOnly()
+        public async Task MultiLineArgumentList_OpenParenOnSeparateLine_DiagnosticOnOpenParenOnly()
         {
             var testCode = @"class C
 {
-    void M(
-        int a,
+    void M()
+    {
+        Foo
+        {|GM0027:(|}
+            1,
+            2,
+            3
+        );
+    }
+
+    void Foo(int a, int b, int c) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultiLineArgumentList_BlankLineAfterOpenParen_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Foo(
+
+            1,
+            2,
+            3
+        );
+    }
+
+    void Foo(int a, int b, int c) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultiLineParameterList_FirstParameterOnSameLineAsOpenParen_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M{|GM0027:(|}int a,
         int b,
-        int c{|GM0026:)|}
+        int c
+    )
     {
     }
-}";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task EmptyMultiLineList_NoDiagnostic()
-        {
-            var testCode = @"class C
-{
-    void M()
-    {
-        Foo(
-        );
-    }
-
-    void Foo() { }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

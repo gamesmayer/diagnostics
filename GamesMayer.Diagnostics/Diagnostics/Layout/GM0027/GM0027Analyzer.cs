@@ -7,18 +7,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace GamesMayer.Diagnostics
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM0026Analyzer : DiagnosticAnalyzer
+    public sealed class GM0027Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM0026";
+        public const string DiagnosticId = "GM0027";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Closing parenthesis in multi-line list must be on a dedicated line",
-            messageFormat: "Place the closing parenthesis on the line below the last argument or parameter",
+            title: "Opening parenthesis placement in multi-line list",
+            messageFormat: "Keep the opening parenthesis on the declaration line and start the list on the next line",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "In multi-line argument or parameter lists, the closing parenthesis must be on its own line directly below the last item.");
+            description: "In multi-line argument or parameter lists, the opening parenthesis must stay on the declaration line and the first item must start on the next line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -59,20 +59,29 @@ namespace GamesMayer.Diagnostics
             var openParenLine = tree.GetLineSpan(openParenToken.Span).StartLinePosition.Line;
             var closeParenLine = tree.GetLineSpan(closeParenToken.Span).StartLinePosition.Line;
 
-            // The rule applies only to multi-line lists.
             if (openParenLine == closeParenLine)
             {
                 return;
             }
 
-            var lastItem = items[items.Count - 1];
-            var lastItemLine = tree.GetLineSpan(lastItem.Span).EndLinePosition.Line;
-
-            // Report only when ) is on the same line as the last item.
-            // A blank line (or more) between the last item and ) is allowed.
-            if (closeParenLine == lastItemLine)
+            var previousToken = openParenToken.GetPreviousToken(includeZeroWidth: true);
+            if (previousToken == default)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, closeParenToken.GetLocation()));
+                return;
+            }
+
+            var declarationLine = tree.GetLineSpan(previousToken.Span).EndLinePosition.Line;
+            var firstItem = items[0].GetFirstToken();
+            if (firstItem == default)
+            {
+                return;
+            }
+
+            var firstItemLine = tree.GetLineSpan(firstItem.Span).StartLinePosition.Line;
+            
+            if (openParenLine != declarationLine || firstItemLine == openParenLine)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, openParenToken.GetLocation()));
             }
         }
     }

@@ -73,42 +73,6 @@ namespace GamesMayer.Diagnostics.Tests
             await test.RunAsync();
         }
 
-        [Fact]
-        public async Task MultiLineArgumentList_BlankLineBeforeCloseParen_Fix()
-        {
-            var testCode = @"class C
-{
-    void M()
-    {
-        Foo(
-            1,
-            2,
-            3
 
-        {|GM0026:)|};
-    }
-
-    void Foo(int a, int b, int c) { }
-}";
-            var fixedCode = @"class C
-{
-    void M()
-    {
-        Foo(
-            1,
-            2,
-            3
-        );
-    }
-
-    void Foo(int a, int b, int c) { }
-}";
-            var test = new CSharpCodeFixTest<GM0026Analyzer, GM0026CodeFixProvider, XUnitVerifier>
-            {
-                TestCode = testCode,
-                FixedCode = fixedCode,
-            };
-            await test.RunAsync();
-        }
     }
 }
