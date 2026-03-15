@@ -58,6 +58,7 @@ Diagnostics are organized by category.
 | [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list                     | Yes     | Yes     |
 | [GM0024](docs/Diagnostics/Layout/GM0024.md) | Anonymous function incorrectly indented                                 | Yes     | Yes     |
 | [GM0025](docs/Diagnostics/Layout/GM0025.md) | Each argument or parameter must be on its own line in a multi-line list | Yes     | Yes     |
+| [GM0026](docs/Diagnostics/Layout/GM0026.md) | Closing parenthesis in multi-line argument/parameter list on own line   | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
