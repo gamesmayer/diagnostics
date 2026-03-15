@@ -31,32 +31,33 @@ Diagnostics are organized by category.
 
 ### Layout Diagnostics
 
-| ID                                          | Description                                                    | Fixable | Default |
-| ------------------------------------------- | -------------------------------------------------------------- | ------- | ------- |
-| [GM0001](docs/Diagnostics/Layout/GM0001.md) | No blank lines between consecutive `using` directives          | Yes     | Yes     |
-| [GM0002](docs/Diagnostics/Layout/GM0002.md) | Auto-implemented property must be on a single line             | Yes     | Yes     |
-| [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates | Yes     | Yes     |
-| [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes  | Yes     | Yes     |
-| [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                     | Yes     | Yes     |
-| [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration      | Yes     | Yes     |
-| [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                | Yes     | Yes     |
-| [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists              | Yes     | Yes     |
-| [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier         | Yes     | Yes     |
-| [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                 | Yes     | Yes     |
-| [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                         | Yes     | Yes     |
-| [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                             | Yes     | Yes     |
-| [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                    | Yes     | Yes     |
-| [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                  | Yes     | Yes     |
-| [GM0015](docs/Diagnostics/Layout/GM0015.md) | No blank line between control structure clauses                | Yes     | Yes     |
-| [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                             | Yes     | Yes     |
-| [GM0017](docs/Diagnostics/Layout/GM0017.md) | Control structure clause declaration must be on a single line  | Yes     | Yes     |
-| [GM0018](docs/Diagnostics/Layout/GM0018.md) | Switch case clause declaration must be on a single line        | Yes     | Yes     |
-| [GM0019](docs/Diagnostics/Layout/GM0019.md) | Empty braces enclosure must be on a single line                | Yes     | Yes     |
-| [GM0020](docs/Diagnostics/Layout/GM0020.md) | New line before open brace if braces are not empty             | Yes     | Yes     |
-| [GM0021](docs/Diagnostics/Layout/GM0021.md) | Empty enclosure opening brace must stay on declaration line    | Yes     | No      |
-| [GM0022](docs/Diagnostics/Layout/GM0022.md) | New line required before opening brace for empty enclosure     | Yes     | Yes     |
-| [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list            | Yes     | Yes     |
-| [GM0024](docs/Diagnostics/Layout/GM0024.md) | Anonymous function incorrectly indented                        | Yes     | Yes     |
+| ID                                          | Description                                                             | Fixable | Default |
+| ------------------------------------------- | ----------------------------------------------------------------------- | ------- | ------- |
+| [GM0001](docs/Diagnostics/Layout/GM0001.md) | No blank lines between consecutive `using` directives                   | Yes     | Yes     |
+| [GM0002](docs/Diagnostics/Layout/GM0002.md) | Auto-implemented property must be on a single line                      | Yes     | Yes     |
+| [GM0003](docs/Diagnostics/Layout/GM0003.md) | No blank line between an attribute and the member it decorates          | Yes     | Yes     |
+| [GM0004](docs/Diagnostics/Layout/GM0004.md) | Member declaration must be on a new line after its attributes           | Yes     | Yes     |
+| [GM0005](docs/Diagnostics/Layout/GM0005.md) | Attributes must not be separated by commas                              | Yes     | Yes     |
+| [GM0006](docs/Diagnostics/Layout/GM0006.md) | No blank lines between attributes on the same declaration               | Yes     | Yes     |
+| [GM0007](docs/Diagnostics/Layout/GM0007.md) | Class members must be separated by a blank line                         | Yes     | Yes     |
+| [GM0008](docs/Diagnostics/Layout/GM0008.md) | No blank lines within argument or parameter lists                       | Yes     | Yes     |
+| [GM0009](docs/Diagnostics/Layout/GM0009.md) | No line breaks between modifiers, type, and identifier                  | Yes     | Yes     |
+| [GM0010](docs/Diagnostics/Layout/GM0010.md) | No two consecutive blank lines                                          | Yes     | Yes     |
+| [GM0011](docs/Diagnostics/Layout/GM0011.md) | No blank line at the beginning of file                                  | Yes     | Yes     |
+| [GM0012](docs/Diagnostics/Layout/GM0012.md) | No blank line before opening brace                                      | Yes     | Yes     |
+| [GM0013](docs/Diagnostics/Layout/GM0013.md) | Switch case block must be wrapped in braces                             | Yes     | Yes     |
+| [GM0014](docs/Diagnostics/Layout/GM0014.md) | Namespace identifier must be on a single line                           | Yes     | Yes     |
+| [GM0015](docs/Diagnostics/Layout/GM0015.md) | No blank line between control structure clauses                         | Yes     | Yes     |
+| [GM0016](docs/Diagnostics/Layout/GM0016.md) | Attribute must be on a single line                                      | Yes     | Yes     |
+| [GM0017](docs/Diagnostics/Layout/GM0017.md) | Control structure clause declaration must be on a single line           | Yes     | Yes     |
+| [GM0018](docs/Diagnostics/Layout/GM0018.md) | Switch case clause declaration must be on a single line                 | Yes     | Yes     |
+| [GM0019](docs/Diagnostics/Layout/GM0019.md) | Empty braces enclosure must be on a single line                         | Yes     | Yes     |
+| [GM0020](docs/Diagnostics/Layout/GM0020.md) | New line before open brace if braces are not empty                      | Yes     | Yes     |
+| [GM0021](docs/Diagnostics/Layout/GM0021.md) | Empty enclosure opening brace must stay on declaration line             | Yes     | No      |
+| [GM0022](docs/Diagnostics/Layout/GM0022.md) | New line required before opening brace for empty enclosure              | Yes     | Yes     |
+| [GM0023](docs/Diagnostics/Layout/GM0023.md) | Misaligned parameter or argument in multi-line list                     | Yes     | Yes     |
+| [GM0024](docs/Diagnostics/Layout/GM0024.md) | Anonymous function incorrectly indented                                 | Yes     | Yes     |
+| [GM0025](docs/Diagnostics/Layout/GM0025.md) | Each argument or parameter must be on its own line in a multi-line list | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
