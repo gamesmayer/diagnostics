@@ -63,6 +63,7 @@ Diagnostics are organized by category.
 | [GM0028](docs/Diagnostics/Layout/GM0028.md) | Closing parenthesis indentation in multi-line argument/parameter list   | Yes     | Yes     |
 | [GM0029](docs/Diagnostics/Layout/GM0029.md) | Opening parenthesis must be on a new line in multi-line list            | Yes     | Yes     |
 | [GM0030](docs/Diagnostics/Layout/GM0030.md) | Prevent blank line between declaration and opening parenthesis          | Yes     | Yes     |
+| [GM0031](docs/Diagnostics/Layout/GM0031.md) | Empty parentheses must be on the same line as the declaration           | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
