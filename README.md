@@ -64,6 +64,7 @@ Diagnostics are organized by category.
 | [GM0029](docs/Diagnostics/Layout/GM0029.md) | Opening parenthesis must be on a new line in multi-line list            | Yes     | Yes     |
 | [GM0030](docs/Diagnostics/Layout/GM0030.md) | Prevent blank line between declaration and opening parenthesis          | Yes     | Yes     |
 | [GM0031](docs/Diagnostics/Layout/GM0031.md) | Empty parentheses must be on the same line as the declaration           | Yes     | Yes     |
+| [GM0032](docs/Diagnostics/Layout/GM0032.md) | Single-line parameter or argument list on declaration line              | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
