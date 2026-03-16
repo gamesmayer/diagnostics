@@ -67,6 +67,7 @@ Diagnostics are organized by category.
 | [GM0032](docs/Diagnostics/Layout/GM0032.md) | Single-line parameter or argument list on declaration line              | Yes     | Yes     |
 | [GM0033](docs/Diagnostics/Layout/GM0033.md) | Opening parenthesis on separate line must match declaration indentation | Yes     | Yes     |
 | [GM0034](docs/Diagnostics/Layout/GM0034.md) | First item in multi-line list must start below opening parenthesis      | Yes     | Yes     |
+| [GM0035](docs/Diagnostics/Layout/GM0035.md) | No blank lines between fluent-chain segments                            | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
