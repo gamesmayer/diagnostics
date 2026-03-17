@@ -69,6 +69,7 @@ Diagnostics are organized by category.
 | [GM0034](docs/Diagnostics/Layout/GM0034.md) | First item in multi-line list must start below opening parenthesis      | Yes     | Yes     |
 | [GM0035](docs/Diagnostics/Layout/GM0035.md) | No blank lines between fluent-chain segments                            | Yes     | Yes     |
 | [GM0036](docs/Diagnostics/Layout/GM0036.md) | Variable declaration header must be on a single line                    | Yes     | Yes     |
+| [GM0037](docs/Diagnostics/Layout/GM0037.md) | Parameter declaration header must be on a single line                   | Yes     | Yes     |
 
 ### Ordering Diagnostics
 
