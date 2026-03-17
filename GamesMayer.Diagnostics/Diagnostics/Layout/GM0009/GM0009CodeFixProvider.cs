@@ -210,7 +210,8 @@ namespace GamesMayer.Diagnostics
                 ? fieldDecl.AttributeLists.Last().GetLastToken().GetNextToken()
                 : fieldDecl.GetFirstToken();
 
-            var lastToken = fieldDecl.Declaration.Variables.FirstOrDefault()?.Identifier ?? fieldDecl.GetFirstToken();
+            var variable = fieldDecl.Declaration.Variables.FirstOrDefault();
+            var lastToken = variable?.Initializer?.EqualsToken ?? variable?.Identifier ?? fieldDecl.GetFirstToken();
             
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
@@ -232,7 +233,7 @@ namespace GamesMayer.Diagnostics
                 ? propertyDecl.AttributeLists.Last().GetLastToken().GetNextToken()
                 : propertyDecl.GetFirstToken();
 
-            var lastToken = propertyDecl.Identifier;
+            var lastToken = propertyDecl.Initializer?.EqualsToken ?? propertyDecl.Identifier;
             
             var tokens = new List<SyntaxToken>();
             var current = firstToken;

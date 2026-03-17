@@ -133,6 +133,26 @@ class Foo
         }
 
         [Fact]
+        public async Task FieldDeclarationWithInitializerLineBreakBeforeEquals_Fix()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:private int field
+        =|} 1;
+}";
+            var fixedCode = @"class Foo
+{
+    private int field = 1;
+}";
+            var test = new CSharpCodeFixTest<GM0009Analyzer, GM0009CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task PropertyDeclarationWithLineBreak_Fix()
         {
             var testCode = @"class Foo
@@ -143,6 +163,26 @@ class Foo
             var fixedCode = @"class Foo
 {
     public int Property { get; set; }
+}";
+            var test = new CSharpCodeFixTest<GM0009Analyzer, GM0009CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task PropertyDeclarationWithInitializerLineBreakBeforeEquals_Fix()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:public int Property
+        =|} 1;
+}";
+            var fixedCode = @"class Foo
+{
+    public int Property = 1;
 }";
             var test = new CSharpCodeFixTest<GM0009Analyzer, GM0009CodeFixProvider, XUnitVerifier>
             {

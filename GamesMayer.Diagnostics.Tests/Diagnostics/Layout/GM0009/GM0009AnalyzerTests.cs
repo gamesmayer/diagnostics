@@ -64,6 +64,30 @@ class Foo|}
         }
 
         [Fact]
+        public async Task FieldDeclarationWithInitializerAndLineBreakBeforeEquals_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:private int field
+        =|} 1;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FieldDeclarationWithInitializerAndMultilineValue_NoDiagnostic()
+        {
+            var testCode = @"using System.Linq;
+class Foo
+{
+    private int[] field = new[] { 1, 2, 3 }
+        .Where(x => x > 1)
+        .ToArray();
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task PropertyDeclarationOnSingleLine_NoDiagnostic()
         {
             var testCode = @"class Foo
@@ -80,6 +104,30 @@ class Foo|}
 {
     {|GM0009:public
     int Property|} { get; set; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task PropertyDeclarationWithInitializerAndLineBreakBeforeEquals_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:public int Property
+        =|} 1;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task PropertyDeclarationWithInitializerAndMultilineValue_NoDiagnostic()
+        {
+            var testCode = @"using System.Linq;
+class Foo
+{
+    public int[] Property = new[] { 1, 2, 3 }
+        .Where(x => x > 1)
+        .ToArray();
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

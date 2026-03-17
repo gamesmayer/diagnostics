@@ -13,12 +13,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "No line breaks between modifiers, type, and identifier",
-            messageFormat: "'{0}' declaration must not have line breaks between modifiers, type, and identifier",
+            title: "No line breaks in declaration header",
+            messageFormat: "'{0}' declaration header must not contain line breaks",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Class declarations and class member declarations must not have line breaks between modifiers, type, and identifier.");
+            description: "Class declarations and class member declarations must not have line breaks in their declaration header. For member declarations with initializers, this also includes the assignment operator.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -67,7 +67,8 @@ namespace GamesMayer.Diagnostics
         {
             var fieldDecl = (FieldDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(fieldDecl.AttributeLists, fieldDecl.GetFirstToken());
-            var lastToken = fieldDecl.Declaration.Variables.FirstOrDefault()?.Identifier ?? fieldDecl.GetLastToken();
+            var variable = fieldDecl.Declaration.Variables.FirstOrDefault();
+            var lastToken = variable?.Initializer?.EqualsToken ?? variable?.Identifier ?? fieldDecl.GetLastToken();
             
             if (HasLineBreaksBetween(firstToken, lastToken))
             {
@@ -81,10 +82,11 @@ namespace GamesMayer.Diagnostics
         {
             var propertyDecl = (PropertyDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(propertyDecl.AttributeLists, propertyDecl.GetFirstToken());
+            var lastToken = propertyDecl.Initializer?.EqualsToken ?? propertyDecl.Identifier;
             
-            if (HasLineBreaksBetween(firstToken, propertyDecl.Identifier))
+            if (HasLineBreaksBetween(firstToken, lastToken))
             {
-                var location = Location.Create(propertyDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, propertyDecl.Identifier.Span.End));
+                var location = Location.Create(propertyDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, lastToken.Span.End));
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, propertyDecl.Identifier.Text));
             }
         }
