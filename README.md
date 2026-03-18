@@ -71,6 +71,9 @@ Diagnostics are organized by category.
 | [GM0036](docs/Diagnostics/Layout/GM0036.md) | Variable declaration header must be on a single line                    | Yes     | Yes     |
 | [GM0037](docs/Diagnostics/Layout/GM0037.md) | Parameter declaration header must be on a single line                   | Yes     | Yes     |
 | [GM0038](docs/Diagnostics/Layout/GM0038.md) | Fluent-chain segment indentation                                        | Yes     | Yes     |
+| [GM0039](docs/Diagnostics/Layout/GM0039.md) | Dot must be on the same line as the next identifier in fluent chains    | Yes     | Yes     |
+| [GM0040](docs/Diagnostics/Layout/GM0040.md) | All fluent-chain segments must be on their own line if any segment is   | Yes     | Yes     |
+| [GM0041](docs/Diagnostics/Layout/GM0041.md) | Each segment in a multi-invocation fluent chain must be on its own line | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                        | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                        | Yes     | Yes     |
 
