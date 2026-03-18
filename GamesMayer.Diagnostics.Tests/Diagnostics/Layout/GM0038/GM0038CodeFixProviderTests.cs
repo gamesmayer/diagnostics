@@ -5,10 +5,10 @@ namespace GamesMayer.Diagnostics.Tests
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
 
-    public class GM0035CodeFixProviderTests
+    public class GM0038CodeFixProviderTests
     {
         [Fact]
-        public async Task BlankLineBetweenFluentSegments_Fix()
+        public async Task UnderIndentedSegment_Fix()
         {
             var testCode = @"using System.Linq;
 
@@ -17,9 +17,7 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-            .Where(x => x > 1)
-{|GM0035:
-|}            .Select(x => x * 2)
+        {|GM0038:.|}Where(x => x > 1)
             .ToList();
     }
 }";
@@ -31,12 +29,11 @@ class C
     {
         var values = new[] { 1, 2, 3 }
             .Where(x => x > 1)
-            .Select(x => x * 2)
             .ToList();
     }
 }";
 
-            var test = new CSharpCodeFixTest<GM0035Analyzer, GM0035CodeFixProvider, XUnitVerifier>
+            var test = new CSharpCodeFixTest<GM0038Analyzer, GM0038CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
@@ -46,41 +43,32 @@ class C
         }
 
         [Fact]
-        public async Task BlankLineBeforeFirstFluentSegment_Fix()
+        public async Task OverIndentedSegment_Fix()
         {
-            var testCode = @"class C
-{
-    CharacterDefinitionRepository characterDefinitionRepository;
+            var testCode = @"using System.Linq;
 
-    void M(string key)
+class C
+{
+    void M()
     {
-        var definition = characterDefinitionRepository
-{|GM0035:
-|}            .Find(key);
+        var values = new[] { 1, 2, 3 }
+                {|GM0038:.|}Where(x => x > 1)
+            .ToList();
     }
-}
-
-class CharacterDefinitionRepository
-{
-    public object Find(string key) => new object();
 }";
-            var fixedCode = @"class C
-{
-    CharacterDefinitionRepository characterDefinitionRepository;
+            var fixedCode = @"using System.Linq;
 
-    void M(string key)
+class C
+{
+    void M()
     {
-        var definition = characterDefinitionRepository
-            .Find(key);
+        var values = new[] { 1, 2, 3 }
+            .Where(x => x > 1)
+            .ToList();
     }
-}
-
-class CharacterDefinitionRepository
-{
-    public object Find(string key) => new object();
 }";
 
-            var test = new CSharpCodeFixTest<GM0035Analyzer, GM0035CodeFixProvider, XUnitVerifier>
+            var test = new CSharpCodeFixTest<GM0038Analyzer, GM0038CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
@@ -90,20 +78,53 @@ class CharacterDefinitionRepository
         }
 
         [Fact]
-        public async Task BlankLineInNestedFluentChainInsideArgument_Fix()
+        public async Task ReturnStatementUnderIndentedSegment_Fix()
+        {
+            var testCode = @"using System.Linq;
+
+class C
+{
+    int[] M()
+    {
+        return new[] { 1, 2, 3 }
+        {|GM0038:.|}Where(x => x > 1)
+            .ToArray();
+    }
+}";
+            var fixedCode = @"using System.Linq;
+
+class C
+{
+    int[] M()
+    {
+        return new[] { 1, 2, 3 }
+            .Where(x => x > 1)
+            .ToArray();
+    }
+}";
+
+            var test = new CSharpCodeFixTest<GM0038Analyzer, GM0038CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task NestedChainInArgumentUnderIndentedSegment_Fix()
         {
             var testCode = @"class C
 {
     void M()
     {
-        var rotationSequence = DOTween
-            .Sequence()
+        var rotationSequence = DOTween.Sequence()
             .Append
             (
                 geometryTransform.DOLocalRotate(new Vector3(rotationAngle, 0f, rotationAngle), rotationDuration)
-                    .SetRelative()
-{|GM0035:
-|}                    .SetEase(Ease.Linear)
+                {|GM0038:.|}SetRelative()
+                    .SetEase(Ease.Linear)
             );
     }
 
@@ -142,8 +163,7 @@ enum Ease
 {
     void M()
     {
-        var rotationSequence = DOTween
-            .Sequence()
+        var rotationSequence = DOTween.Sequence()
             .Append
             (
                 geometryTransform.DOLocalRotate(new Vector3(rotationAngle, 0f, rotationAngle), rotationDuration)
@@ -184,7 +204,7 @@ enum Ease
     Linear,
 }";
 
-            var test = new CSharpCodeFixTest<GM0035Analyzer, GM0035CodeFixProvider, XUnitVerifier>
+            var test = new CSharpCodeFixTest<GM0038Analyzer, GM0038CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,

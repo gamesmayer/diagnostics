@@ -121,5 +121,57 @@ class C
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task BlankLineInNestedFluentChainInsideArgument_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var rotationSequence = DOTween
+            .Sequence()
+            .Append
+            (
+                geometryTransform.DOLocalRotate(new Vector3(rotationAngle, 0f, rotationAngle), rotationDuration)
+                    .SetRelative()
+{|GM0035:
+|}                    .SetEase(Ease.Linear)
+            );
+    }
+
+    GeometryTransform geometryTransform;
+    float rotationAngle;
+    float rotationDuration;
+}
+
+class GeometryTransform
+{
+    public GeometryTransform DOLocalRotate(Vector3 value, float duration) => this;
+    public GeometryTransform SetRelative() => this;
+    public GeometryTransform SetEase(Ease ease) => this;
+}
+
+class Sequence
+{
+    public Sequence Append(GeometryTransform transform) => this;
+}
+
+static class DOTween
+{
+    public static Sequence Sequence() => new Sequence();
+}
+
+struct Vector3
+{
+    public Vector3(float x, float y, float z) { }
+}
+
+enum Ease
+{
+    Linear,
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

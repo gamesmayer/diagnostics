@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -9,18 +8,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace GamesMayer.Diagnostics
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM0035Analyzer : DiagnosticAnalyzer
+    public sealed class GM0038Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM0035";
+        public const string DiagnosticId = "GM0038";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "No blank lines between fluent-chain segments",
-            messageFormat: "Remove the blank line between fluent-chain segments",
+            title: "Fluent-chain segment indentation",
+            messageFormat: "Indent this fluent-chain segment one step right from the start indentation",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Fluent-chain segments must be contiguous with no blank lines between consecutive segments.");
+            description: "In a multi-line fluent-chain statement, each segment's leading dot must be indented exactly one step to the right of the chain's starting indentation.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -46,10 +45,8 @@ namespace GamesMayer.Diagnostics
             var declaration = (LocalDeclarationStatementSyntax)context.Node;
             foreach (var variable in declaration.Declaration.Variables)
             {
-                if (variable.Initializer?.Value is { } initializerExpression)
-                {
-                    AnalyzeExpression(context, initializerExpression);
-                }
+                if (variable.Initializer?.Value is { } value)
+                    AnalyzeExpression(context, value);
             }
         }
 
@@ -57,33 +54,29 @@ namespace GamesMayer.Diagnostics
         {
             var statement = (ReturnStatementSyntax)context.Node;
             if (statement.Expression is { } expression)
-            {
                 AnalyzeExpression(context, expression);
-            }
         }
 
         private static void AnalyzeArrowExpressionClause(SyntaxNodeAnalysisContext context)
         {
-            var arrowExpressionClause = (ArrowExpressionClauseSyntax)context.Node;
-            AnalyzeExpression(context, arrowExpressionClause.Expression);
+            var arrow = (ArrowExpressionClauseSyntax)context.Node;
+            AnalyzeExpression(context, arrow.Expression);
         }
 
         private static void AnalyzeExpression(SyntaxNodeAnalysisContext context, ExpressionSyntax expression)
         {
             var chainRoot = GetChainRoot(expression);
             if (chainRoot == null)
-            {
                 return;
-            }
 
-            var syntaxTree = context.Node.SyntaxTree;
-            var sourceText = syntaxTree.GetText(context.CancellationToken);
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
 
             foreach (var node in chainRoot.DescendantNodesAndSelf())
             {
                 if (node is ExpressionSyntax candidate && IsFluentChainStart(candidate))
                 {
-                    AnalyzeChain(context, candidate, syntaxTree, sourceText);
+                    AnalyzeChain(context, candidate, tree, sourceText);
                 }
             }
         }
@@ -91,7 +84,7 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeChain(
             SyntaxNodeAnalysisContext context,
             ExpressionSyntax chainExpression,
-            SyntaxTree syntaxTree,
+            SyntaxTree tree,
             Microsoft.CodeAnalysis.Text.SourceText sourceText)
         {
             var normalizedChain = GetChainRoot(chainExpression);
@@ -107,27 +100,22 @@ namespace GamesMayer.Diagnostics
                 return;
             }
 
+            var chainStartLine = tree.GetLineSpan(normalizedChain.GetFirstToken().Span).StartLinePosition.Line;
+            var baseIndentation = GM0023Analyzer.GetActualLineIndentation(sourceText, chainStartLine);
+            var indentSize = GetIndentSize(context);
+            var expectedIndentation = GetExpectedIndentation(baseIndentation, indentSize);
+
             foreach (var (leftExpression, dotToken) in boundaries)
             {
-                var previousEndLine = syntaxTree.GetLineSpan(leftExpression.GetLastToken().Span).EndLinePosition.Line;
-                var currentStartLine = syntaxTree.GetLineSpan(dotToken.Span).StartLinePosition.Line;
+                var previousEndLine = tree.GetLineSpan(leftExpression.GetLastToken().Span).EndLinePosition.Line;
+                var dotLine = tree.GetLineSpan(dotToken.Span).StartLinePosition.Line;
 
-                if (currentStartLine <= previousEndLine + 1)
-                {
+                if (dotLine <= previousEndLine)
                     continue;
-                }
 
-                for (var line = previousEndLine + 1; line < currentStartLine; line++)
-                {
-                    var lineText = sourceText.Lines[line].ToString();
-                    if (!string.IsNullOrWhiteSpace(lineText))
-                    {
-                        continue;
-                    }
-
-                    var lineSpan = sourceText.Lines[line].SpanIncludingLineBreak;
-                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(syntaxTree, lineSpan)));
-                }
+                var actualIndentation = GM0023Analyzer.GetActualLineIndentation(sourceText, dotLine);
+                if (actualIndentation != expectedIndentation)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, dotToken.GetLocation()));
             }
         }
 
@@ -160,21 +148,29 @@ namespace GamesMayer.Diagnostics
                     && invocation.Expression is MemberAccessExpressionSyntax);
         }
 
-        private static ExpressionSyntax? GetChainRoot(ExpressionSyntax expression)
+        internal static string GetExpectedIndentation(string baseIndentation, int indentSize)
+        {
+            string indentUnit = baseIndentation.Length > 0 && baseIndentation[0] == '\t'
+                ? "\t"
+                : new string(' ', indentSize);
+            return baseIndentation + indentUnit;
+        }
+
+        private static ExpressionSyntax GetChainRoot(ExpressionSyntax expression)
         {
             var current = expression;
             while (true)
             {
                 switch (current)
                 {
-                    case ParenthesizedExpressionSyntax parenthesizedExpression:
-                        current = parenthesizedExpression.Expression;
+                    case ParenthesizedExpressionSyntax p:
+                        current = p.Expression;
                         continue;
-                    case AwaitExpressionSyntax awaitExpression:
-                        current = awaitExpression.Expression;
+                    case AwaitExpressionSyntax a:
+                        current = a.Expression;
                         continue;
-                    case AssignmentExpressionSyntax assignmentExpression:
-                        current = assignmentExpression.Right;
+                    case AssignmentExpressionSyntax ae:
+                        current = ae.Right;
                         continue;
                     default:
                         return current;
@@ -186,19 +182,27 @@ namespace GamesMayer.Diagnostics
             ExpressionSyntax expression,
             List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken)> boundaries)
         {
-            if (expression is InvocationExpressionSyntax invocationExpression
-                && invocationExpression.Expression is MemberAccessExpressionSyntax invocationMemberAccess)
+            if (expression is InvocationExpressionSyntax invocation
+                && invocation.Expression is MemberAccessExpressionSyntax invMemberAccess)
             {
-                CollectFluentChainBoundaries(invocationMemberAccess.Expression, boundaries);
-                boundaries.Add((invocationMemberAccess.Expression, invocationMemberAccess.OperatorToken));
+                CollectFluentChainBoundaries(invMemberAccess.Expression, boundaries);
+                boundaries.Add((invMemberAccess.Expression, invMemberAccess.OperatorToken));
                 return;
             }
 
-            if (expression is MemberAccessExpressionSyntax memberAccessExpression)
+            if (expression is MemberAccessExpressionSyntax memberAccess)
             {
-                CollectFluentChainBoundaries(memberAccessExpression.Expression, boundaries);
-                boundaries.Add((memberAccessExpression.Expression, memberAccessExpression.OperatorToken));
+                CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
+                boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken));
             }
+        }
+
+        private static int GetIndentSize(SyntaxNodeAnalysisContext context)
+        {
+            var options = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
+            if (options.TryGetValue("indent_size", out var value) && int.TryParse(value, out var size) && size > 0)
+                return size;
+            return 4;
         }
     }
 }

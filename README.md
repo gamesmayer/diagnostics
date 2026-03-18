@@ -70,6 +70,17 @@ Diagnostics are organized by category.
 | [GM0035](docs/Diagnostics/Layout/GM0035.md) | No blank lines between fluent-chain segments                            | Yes     | Yes     |
 | [GM0036](docs/Diagnostics/Layout/GM0036.md) | Variable declaration header must be on a single line                    | Yes     | Yes     |
 | [GM0037](docs/Diagnostics/Layout/GM0037.md) | Parameter declaration header must be on a single line                   | Yes     | Yes     |
+| [GM0038](docs/Diagnostics/Layout/GM0038.md) | Fluent-chain segment indentation                                        | Yes     | Yes     |
+| [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                        | Yes     | Yes     |
+| [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                        | Yes     | Yes     |
+
+### Naming Diagnostics
+
+Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers).
+
+| ID                                          | Description                                  | Fixable | Default |
+| ------------------------------------------- | -------------------------------------------- | ------- | ------- |
+| [GM1300](docs/Diagnostics/Naming/GM1300.md) | Element must begin with an upper-case letter | No      | Yes     |
 
 ### Ordering Diagnostics
 
