@@ -8,18 +8,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace GamesMayer.Diagnostics
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM0038Analyzer : DiagnosticAnalyzer
+    public sealed class GM0039Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM0038";
+        public const string DiagnosticId = "GM0039";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Fluent-chain segment indentation",
-            messageFormat: "Indent this fluent-chain segment one step right from the start indentation",
+            title: "Fluent-chain dot must be on the same line as the next identifier",
+            messageFormat: "Move the dot to the beginning of the next line with the identifier",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "In a multi-line fluent-chain statement, each segment's leading dot must be indented exactly one step to the right of the chain's starting indentation.");
+            description: "In a multi-line fluent-chain statement, the dot must be on the same line as the next identifier, not at the end of the previous line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -70,13 +70,12 @@ namespace GamesMayer.Diagnostics
                 return;
 
             var tree = context.Node.SyntaxTree;
-            var sourceText = tree.GetText(context.CancellationToken);
 
             foreach (var node in chainRoot.DescendantNodesAndSelf())
             {
                 if (node is ExpressionSyntax candidate && IsFluentChainStart(candidate))
                 {
-                    AnalyzeChain(context, candidate, tree, sourceText);
+                    AnalyzeChain(context, candidate, tree);
                 }
             }
         }
@@ -84,37 +83,25 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeChain(
             SyntaxNodeAnalysisContext context,
             ExpressionSyntax chainExpression,
-            SyntaxTree tree,
-            Microsoft.CodeAnalysis.Text.SourceText sourceText)
+            SyntaxTree tree)
         {
             var normalizedChain = GetChainRoot(chainExpression);
             if (normalizedChain == null)
-            {
                 return;
-            }
 
-            var boundaries = new List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression)>();
+            var boundaries = new List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, SyntaxToken NextToken, ExpressionSyntax SegmentExpression)>();
             CollectFluentChainBoundaries(normalizedChain, boundaries);
             if (boundaries.Count == 0)
-            {
                 return;
-            }
 
-            var chainStartLine = tree.GetLineSpan(normalizedChain.GetFirstToken().Span).StartLinePosition.Line;
-            var baseIndentation = GM0023Analyzer.GetActualLineIndentation(sourceText, chainStartLine);
-            var indentSize = GetIndentSize(context);
-            var expectedIndentation = GetExpectedIndentation(baseIndentation, indentSize);
-
-            foreach (var (leftExpression, dotToken, segmentExpression) in boundaries)
+            foreach (var (leftExpression, dotToken, nextToken, segmentExpression) in boundaries)
             {
-                var previousEndLine = tree.GetLineSpan(leftExpression.GetLastToken().Span).EndLinePosition.Line;
                 var dotLine = tree.GetLineSpan(dotToken.Span).StartLinePosition.Line;
+                var nextTokenLine = tree.GetLineSpan(nextToken.Span).StartLinePosition.Line;
 
-                if (dotLine <= previousEndLine)
-                    continue;
-
-                var actualIndentation = GM0023Analyzer.GetActualLineIndentation(sourceText, dotLine);
-                if (actualIndentation != expectedIndentation)
+                // If the dot and the next identifier are on different lines, it's a violation
+                // The correct format is: identifier\n.nextIdentifier (not identifier.\nnextIdentifier)
+                if (dotLine < nextTokenLine)
                 {
                     var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(dotToken.SpanStart, segmentExpression.Span.End);
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
@@ -125,21 +112,15 @@ namespace GamesMayer.Diagnostics
         private static bool IsFluentChainStart(ExpressionSyntax expression)
         {
             if (!IsFluentChainExpression(expression))
-            {
                 return false;
-            }
 
             if (expression.Parent is InvocationExpressionSyntax parentInvocation
                 && parentInvocation.Expression == expression)
-            {
                 return false;
-            }
 
             if (expression.Parent is MemberAccessExpressionSyntax parentMemberAccess
                 && parentMemberAccess.Expression == expression)
-            {
                 return false;
-            }
 
             return true;
         }
@@ -149,14 +130,6 @@ namespace GamesMayer.Diagnostics
             return expression is MemberAccessExpressionSyntax
                 || (expression is InvocationExpressionSyntax invocation
                     && invocation.Expression is MemberAccessExpressionSyntax);
-        }
-
-        internal static string GetExpectedIndentation(string baseIndentation, int indentSize)
-        {
-            string indentUnit = baseIndentation.Length > 0 && baseIndentation[0] == '\t'
-                ? "\t"
-                : new string(' ', indentSize);
-            return baseIndentation + indentUnit;
         }
 
         private static ExpressionSyntax GetChainRoot(ExpressionSyntax expression)
@@ -183,29 +156,23 @@ namespace GamesMayer.Diagnostics
 
         private static void CollectFluentChainBoundaries(
             ExpressionSyntax expression,
-            List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression)> boundaries)
+            List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, SyntaxToken NextToken, ExpressionSyntax SegmentExpression)> boundaries)
         {
             if (expression is InvocationExpressionSyntax invocation
                 && invocation.Expression is MemberAccessExpressionSyntax invMemberAccess)
             {
                 CollectFluentChainBoundaries(invMemberAccess.Expression, boundaries);
-                boundaries.Add((invMemberAccess.Expression, invMemberAccess.OperatorToken, invocation));
+                var nextToken = invocation.ArgumentList.GetFirstToken();
+                boundaries.Add((invMemberAccess.Expression, invMemberAccess.OperatorToken, nextToken, invocation));
                 return;
             }
 
             if (expression is MemberAccessExpressionSyntax memberAccess)
             {
                 CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
-                boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, memberAccess));
+                var nextToken = memberAccess.Name.GetFirstToken();
+                boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, nextToken, memberAccess));
             }
-        }
-
-        private static int GetIndentSize(SyntaxNodeAnalysisContext context)
-        {
-            var options = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
-            if (options.TryGetValue("indent_size", out var value) && int.TryParse(value, out var size) && size > 0)
-                return size;
-            return 4;
         }
     }
 }

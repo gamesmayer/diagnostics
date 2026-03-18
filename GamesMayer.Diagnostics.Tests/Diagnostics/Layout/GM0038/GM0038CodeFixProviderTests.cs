@@ -17,7 +17,7 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-        {|GM0038:.|}Where(x => x > 1)
+        {|GM0038:.Where(x => x > 1)|}
             .ToList();
     }
 }";
@@ -52,7 +52,7 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-                {|GM0038:.|}Where(x => x > 1)
+                {|GM0038:.Where(x => x > 1)|}
             .ToList();
     }
 }";
@@ -87,7 +87,7 @@ class C
     int[] M()
     {
         return new[] { 1, 2, 3 }
-        {|GM0038:.|}Where(x => x > 1)
+        {|GM0038:.Where(x => x > 1)|}
             .ToArray();
     }
 }";
@@ -123,7 +123,7 @@ class C
             .Append
             (
                 geometryTransform.DOLocalRotate(new Vector3(rotationAngle, 0f, rotationAngle), rotationDuration)
-                {|GM0038:.|}SetRelative()
+                {|GM0038:.SetRelative()|}
                     .SetEase(Ease.Linear)
             );
     }

@@ -49,7 +49,7 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-        {|GM0038:.|}Where(x => x > 1)
+        {|GM0038:.Where(x => x > 1)|}
             .ToList();
     }
 }";
@@ -66,7 +66,7 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-                {|GM0038:.|}Where(x => x > 1)
+                {|GM0038:.Where(x => x > 1)|}
             .ToList();
     }
 }";
@@ -83,8 +83,8 @@ class C
     void M()
     {
         var values = new[] { 1, 2, 3 }
-        {|GM0038:.|}Where(x => x > 1)
-        {|GM0038:.|}ToList();
+        {|GM0038:.Where(x => x > 1)|}
+        {|GM0038:.ToList()|};
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
@@ -101,7 +101,7 @@ class C
     {
         var values = new[] { 1, 2, 3 }
             .Where(x => x > 1)
-        {|GM0038:.|}ToList();
+        {|GM0038:.ToList()|};
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
@@ -134,7 +134,7 @@ class C
     int[] M()
     {
         return new[] { 1, 2, 3 }
-        {|GM0038:.|}Where(x => x > 1)
+        {|GM0038:.Where(x => x > 1)|}
             .ToArray();
     }
 }";
@@ -163,7 +163,7 @@ class C
 class C
 {
     int[] M() => new[] { 1, 2, 3 }
-    {|GM0038:.|}Where(x => x > 1)
+    {|GM0038:.Where(x => x > 1)|}
         .ToArray();
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
@@ -200,7 +200,7 @@ class C
     {
         List<int> list = new List<int>();
         list
-        {|GM0038:.|}Where(x => x > 1)
+        {|GM0038:.Where(x => x > 1)|}
             .ToList();
     }
 }";
@@ -234,8 +234,8 @@ class C
             .Append
             (
                 geometryTransform.DOLocalRotate(new Vector3(rotationAngle, 0f, rotationAngle), rotationDuration)
-                {|GM0038:.|}SetRelative()
-                {|GM0038:.|}SetEase(Ease.Linear)
+                {|GM0038:.SetRelative()|}
+                {|GM0038:.SetEase(Ease.Linear)|}
             );
     }
 
