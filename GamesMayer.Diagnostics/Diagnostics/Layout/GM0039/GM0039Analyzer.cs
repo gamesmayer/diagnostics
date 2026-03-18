@@ -162,7 +162,7 @@ namespace GamesMayer.Diagnostics
                 && invocation.Expression is MemberAccessExpressionSyntax invMemberAccess)
             {
                 CollectFluentChainBoundaries(invMemberAccess.Expression, boundaries);
-                var nextToken = invocation.ArgumentList.GetFirstToken();
+                var nextToken = invMemberAccess.Name.GetFirstToken();
                 boundaries.Add((invMemberAccess.Expression, invMemberAccess.OperatorToken, nextToken, invocation));
                 return;
             }

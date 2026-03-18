@@ -40,6 +40,26 @@ class Test {
         }
 
         [Fact]
+        public async Task AllmanStyleParentheses_NoDiagnostic()
+        {
+            var testCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items
+            .Where
+            (
+                x => x > 1
+            )
+            .ToList();
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task DotAtEndOfLine_Diagnostic()
         {
             var testCode = @"
