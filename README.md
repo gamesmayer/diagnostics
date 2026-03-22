@@ -122,6 +122,27 @@ dotnet nuget locals all --clear
 dotnet restore /path/to/consumer.sln --force
 ```
 
+## Usage
+
+### Using with `dotnet format`
+
+`dotnet format --fix-analyzers` does **not** respect an analyzer's built-in default severity. Even if a diagnostic defaults to `Warning` inside the package, `dotnet format` will ignore it unless the severity is explicitly declared in `.editorconfig`.
+
+To enable all GamesMayer diagnostics for `dotnet format`, add explicit severity entries to your `.editorconfig`:
+
+```ini
+[*.cs]
+dotnet_analyzer_diagnostic.severity = default
+
+dotnet_diagnostic.GM0001.severity = warning
+dotnet_diagnostic.GM0002.severity = warning
+# ... and so on for each rule
+```
+
+A ready-to-use example covering all diagnostics is available at [`docs/.editorconfig.example`](docs/.editorconfig.example). Copy the relevant sections into your project's `.editorconfig`.
+
+> **Note:** Ordering and Naming diagnostics (GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
+
 ## Testing
 
 ```sh

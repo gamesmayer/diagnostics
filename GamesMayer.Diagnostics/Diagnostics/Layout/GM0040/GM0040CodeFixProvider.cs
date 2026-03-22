@@ -18,42 +18,66 @@ namespace GamesMayer.Diagnostics
         public override ImmutableArray<string> FixableDiagnosticIds =>
             ImmutableArray.Create(GM0040Analyzer.DiagnosticId);
 
-        // Returning null because a single fix already normalizes the entire chain,
-        // so batch-fixing multiple diagnostics in the same chain would produce
-        // conflicting changes.
-        public override FixAllProvider? GetFixAllProvider() => null;
+        public override FixAllProvider? GetFixAllProvider() =>
+            GM0040FixAllProvider.Instance;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics[0];
 
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: "Move segment to its own line",
-                    createChangedDocument: ct => MoveSegmentsToOwnLinesAsync(context.Document, diagnostic, ct),
+                    createChangedDocument: ct => FixDocumentAsync(context.Document, ImmutableArray.Create(diagnostic), ct),
                     equivalenceKey: nameof(GM0040CodeFixProvider)),
                 diagnostic);
+
+            return Task.CompletedTask;
         }
 
-        private static async Task<Document> MoveSegmentsToOwnLinesAsync(
+        internal static async Task<Document> FixDocumentAsync(
             Document document,
-            Diagnostic diagnostic,
+            ImmutableArray<Diagnostic> diagnostics,
             CancellationToken cancellationToken)
         {
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            if (root == null)
+                return document;
+
             var tree = root.SyntaxTree;
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var processedChainStarts = new HashSet<int>();
+            var allChanges = new List<TextChange>();
 
-            if (diagnosticSpan.Start >= sourceText.Length || sourceText[diagnosticSpan.Start] != '.')
+            foreach (var diagnostic in diagnostics)
+            {
+                var diagnosticSpan = diagnostic.Location.SourceSpan;
+                if (diagnosticSpan.Start >= sourceText.Length || sourceText[diagnosticSpan.Start] != '.')
+                    continue;
+
+                var chainTop = FindChainTop(root, diagnosticSpan.Start);
+                if (chainTop == null)
+                    continue;
+
+                if (!processedChainStarts.Add(chainTop.SpanStart))
+                    continue;
+
+                var changes = ComputeChainFixes(sourceText, tree, chainTop);
+                allChanges.AddRange(changes);
+            }
+
+            if (allChanges.Count == 0)
                 return document;
 
-            // Walk up from the diagnostic dot to the top of the fluent chain
-            var chainTop = FindChainTop(root, diagnosticSpan.Start);
-            if (chainTop == null)
-                return document;
+            allChanges.Sort((a, b) => a.Span.Start.CompareTo(b.Span.Start));
+            return document.WithText(sourceText.WithChanges(allChanges));
+        }
 
-            // Collect all boundaries and filter to invocations only (same logic as analyzer)
+        private static List<TextChange> ComputeChainFixes(
+            SourceText sourceText,
+            SyntaxTree tree,
+            ExpressionSyntax chainTop)
+        {
             var boundaries = new List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, SyntaxToken NextToken, ExpressionSyntax SegmentExpression)>();
             CollectFluentChainBoundaries(chainTop, boundaries);
 
@@ -65,9 +89,8 @@ namespace GamesMayer.Diagnostics
             }
 
             if (invocationBoundaries.Count == 0)
-                return document;
+                return new List<TextChange>();
 
-            // Compute the correct indentation from the chain root's line
             string correctIndent = ComputeCorrectIndent(sourceText, invocationBoundaries[0].LeftExpression);
             string newlineStr = DetectNewline(sourceText);
 
@@ -89,8 +112,6 @@ namespace GamesMayer.Diagnostics
 
                 if (!isOnOwnLine)
                 {
-                    // Insert newline + correct indent before the dot, removing any
-                    // horizontal whitespace that precedes it on the same line.
                     int removeStart = dotPos;
                     while (removeStart > 0 && (sourceText[removeStart - 1] == ' ' || sourceText[removeStart - 1] == '\t'))
                         removeStart--;
@@ -98,8 +119,6 @@ namespace GamesMayer.Diagnostics
                 }
                 else
                 {
-                    // Segment is already on its own line — fix its indentation if it differs
-                    // from the correct indentation so the whole chain is consistent.
                     int lineStart = dotPos;
                     while (lineStart > 0 && sourceText[lineStart - 1] != '\n' && sourceText[lineStart - 1] != '\r')
                         lineStart--;
@@ -111,15 +130,10 @@ namespace GamesMayer.Diagnostics
                 }
             }
 
-            if (changes.Count == 0)
-                return document;
-
-            var newSourceText = sourceText.WithChanges(changes);
-            return document.WithText(newSourceText);
+            return changes;
         }
 
-        // Walk up from the diagnostic dot to the outermost expression of the chain.
-        private static ExpressionSyntax FindChainTop(SyntaxNode root, int dotPos)
+        private static ExpressionSyntax? FindChainTop(SyntaxNode root, int dotPos)
         {
             var token = root.FindToken(dotPos);
             var current = token.Parent as ExpressionSyntax;
@@ -155,8 +169,6 @@ namespace GamesMayer.Diagnostics
             }
         }
 
-        // The correct indentation for chain segments is the leading whitespace of the
-        // line where the root expression starts, plus one standard indent level.
         private static string ComputeCorrectIndent(SourceText sourceText, ExpressionSyntax rootExpression)
         {
             var rootFirstToken = rootExpression.GetFirstToken();
@@ -180,6 +192,62 @@ namespace GamesMayer.Diagnostics
                 if (sourceText[i] == '\n') return "\n";
             }
             return "\n";
+        }
+
+        private sealed class GM0040FixAllProvider : FixAllProvider
+        {
+            public static readonly GM0040FixAllProvider Instance = new GM0040FixAllProvider();
+
+            public override async Task<CodeAction?> GetFixAsync(FixAllContext fixAllContext)
+            {
+                var entries = new List<(Document Document, ImmutableArray<Diagnostic> Diagnostics)>();
+
+                switch (fixAllContext.Scope)
+                {
+                    case FixAllScope.Document:
+                        if (fixAllContext.Document != null)
+                        {
+                            var diags = await fixAllContext.GetDocumentDiagnosticsAsync(fixAllContext.Document).ConfigureAwait(false);
+                            if (diags.Length > 0)
+                                entries.Add((fixAllContext.Document, diags));
+                        }
+                        break;
+                    case FixAllScope.Project:
+                        foreach (var doc in fixAllContext.Project.Documents)
+                        {
+                            var diags = await fixAllContext.GetDocumentDiagnosticsAsync(doc).ConfigureAwait(false);
+                            if (diags.Length > 0)
+                                entries.Add((doc, diags));
+                        }
+                        break;
+                    case FixAllScope.Solution:
+                        foreach (var project in fixAllContext.Solution.Projects)
+                        foreach (var doc in project.Documents)
+                        {
+                            var diags = await fixAllContext.GetDocumentDiagnosticsAsync(doc).ConfigureAwait(false);
+                            if (diags.Length > 0)
+                                entries.Add((doc, diags));
+                        }
+                        break;
+                }
+
+                if (entries.Count == 0)
+                    return null;
+
+                return CodeAction.Create(
+                    "Move segment to its own line",
+                    async ct =>
+                    {
+                        var solution = fixAllContext.Solution;
+                        foreach (var (document, diagnostics) in entries)
+                        {
+                            var newDoc = await FixDocumentAsync(document, diagnostics, ct).ConfigureAwait(false);
+                            solution = solution.WithDocumentText(document.Id, await newDoc.GetTextAsync(ct).ConfigureAwait(false));
+                        }
+                        return solution;
+                    },
+                    nameof(GM0040FixAllProvider));
+            }
         }
     }
 }
