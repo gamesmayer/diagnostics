@@ -63,6 +63,8 @@ dotnet_diagnostic.GM0040.severity = warning  # All fluent-chain segments must be
 dotnet_diagnostic.GM0041.severity = warning
 dotnet_diagnostic.GM0041.threshold = 2
 
+dotnet_diagnostic.GM0042.severity = warning  # Blank line required after last using directive
+
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
 

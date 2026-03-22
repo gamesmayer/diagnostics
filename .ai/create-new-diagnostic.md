@@ -36,5 +36,6 @@ The requirements will be provided in JSON format. For example:
 5. Create the diagnostic analyzer tests file if withTests is true: GamesMayer.Diagnostics.Tests/Diagnostics/{category}/{id}/{id}AnalyzerTests.cs
 6. Create the diagnostic code fix provider tests file if withTests is true and withCodeFixProvider is true: GamesMayer.Diagnostics.Tests/Diagnostics/{category}/{id}/{id}CodeFixProviderTests.cs
 7. Create the diagnostic documentation file: docs/Diagnostics/{category}/{id}/{id}.md
-8. Add the new diagnostic to [README.md](../README.md) file
-9. Run tests to check that everything is alright
+8. Add diagnostic with default severity to docs/.editorconfig.example file
+9. Add the new diagnostic to [README.md](../README.md) file
+10. Run tests to check that everything is alright
