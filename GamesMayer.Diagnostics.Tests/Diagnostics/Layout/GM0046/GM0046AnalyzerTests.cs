@@ -50,6 +50,22 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task ArithmeticOperators_AtEndOfLine_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int x = 0 +
+            1 -
+            2 *
+            3;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task AndOperator_AtStartOfNextLine_Diagnostic()
         {
             var testCode = @"class C
@@ -58,6 +74,22 @@ namespace GamesMayer.Diagnostics.Tests
     {
         bool b = a != null
             {|GM0046:&&|} a.Length > 0;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArithmeticOperator_AtStartOfNextLine_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int x = 0 +
+            1 -
+            2
+            {|GM0046:*|} 3;
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
@@ -103,6 +135,21 @@ namespace GamesMayer.Diagnostics.Tests
         bool b = a != null
             {|GM0046:&&|}
             a.Length > 0;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MixedArithmeticAndLogical_Violation_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(string a)
+    {
+        bool b = a != null
+            {|GM0046:&&|} a.Length +
+            1 > 0;
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);

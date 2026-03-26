@@ -63,6 +63,37 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task ArithmeticOperator_AtStartOfNextLine_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int x = 0 +
+            1 -
+            2
+            {|GM0046:*|} 3;
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        int x = 0 +
+            1 -
+            2 *
+            3;
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0046Analyzer, GM0046CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task ThreeOperands_AllViolations_Fix()
         {
             var testCode = @"class C
