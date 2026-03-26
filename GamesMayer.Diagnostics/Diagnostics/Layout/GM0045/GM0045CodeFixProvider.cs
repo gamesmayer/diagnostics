@@ -26,7 +26,7 @@ namespace GamesMayer.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Fix lambda body indentation",
+                    title: "Fix expression body indentation",
                     createChangedDocument: ct => FixIndentAsync(context.Document, diagnostic, ct),
                     equivalenceKey: nameof(GM0045CodeFixProvider)),
                 diagnostic);
@@ -46,16 +46,15 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            var lambda = FindContainingExpressionLambda(token.Parent);
-            if (lambda == null)
+            if (!TryFindArrowAndBody(token.Parent, out var arrowToken, out var body) || body == null)
                 return document;
 
             var tree = root.SyntaxTree;
-            var arrowLine = tree.GetLineSpan(lambda.ArrowToken.Span).EndLinePosition.Line;
+            var arrowLine = tree.GetLineSpan(arrowToken.Span).EndLinePosition.Line;
             int arrowIndent = GM0045Analyzer.CountLeadingWhitespace(sourceText.Lines[arrowLine].ToString());
             int expectedIndent = arrowIndent + 4;
 
-            var bodyFirstToken = lambda.Body.GetFirstToken();
+            var bodyFirstToken = body.GetFirstToken();
             var bodyTextLine = sourceText.Lines.GetLineFromPosition(bodyFirstToken.SpanStart);
             int actualIndent = GM0045Analyzer.CountLeadingWhitespace(bodyTextLine.ToString());
 
@@ -64,15 +63,28 @@ namespace GamesMayer.Diagnostics
             return document.WithText(updatedText);
         }
 
-        private static LambdaExpressionSyntax? FindContainingExpressionLambda(SyntaxNode? node)
+        private static bool TryFindArrowAndBody(SyntaxNode? node, out SyntaxToken arrowToken, out SyntaxNode? body)
         {
             while (node != null)
             {
                 if (node is LambdaExpressionSyntax lambda && !(lambda.Body is BlockSyntax))
-                    return lambda;
+                {
+                    arrowToken = lambda.ArrowToken;
+                    body = lambda.Body;
+                    return true;
+                }
+                if (node is ArrowExpressionClauseSyntax arrowClause)
+                {
+                    arrowToken = arrowClause.ArrowToken;
+                    body = arrowClause.Expression;
+                    return true;
+                }
                 node = node.Parent;
             }
-            return null;
+
+            arrowToken = default;
+            body = null;
+            return false;
         }
     }
 }

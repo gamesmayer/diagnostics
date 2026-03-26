@@ -74,6 +74,8 @@ dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arro
 
 dotnet_diagnostic.GM0045.severity = warning  # Lambda expression body must be indented one step from the arrow line
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
+dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
+dotnet_diagnostic.GM0048.severity = warning  # Expression body must start on the same line as '=>'
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line

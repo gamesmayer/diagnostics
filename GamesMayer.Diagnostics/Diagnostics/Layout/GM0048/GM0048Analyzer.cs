@@ -7,18 +7,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace GamesMayer.Diagnostics
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public sealed class GM0045Analyzer : DiagnosticAnalyzer
+    public sealed class GM0048Analyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "GM0045";
+        public const string DiagnosticId = "GM0048";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Expression body must be indented one step from the '=>' line",
-            messageFormat: "Indent the expression body one step from the '=>' line",
+            title: "Expression body must start on the same line as '=>'",
+            messageFormat: "Move the expression body to start on the same line as '=>'",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "When an expression body is on a different line from the '=>' token, it must be indented exactly one step (4 spaces) more than the leading whitespace of the '=>' line.");
+            description: "The body of a lambda expression or expression-bodied member must begin on the same line as the '=>' token.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -39,56 +39,45 @@ namespace GamesMayer.Diagnostics
             if (lambda.Body is BlockSyntax)
                 return;
 
+            var tree = lambda.SyntaxTree;
+
+            var arrowToken = lambda.ArrowToken;
             var bodyFirstToken = lambda.Body.GetFirstToken();
+
             if (bodyFirstToken == default)
                 return;
 
-            AnalyzeArrow(context, lambda.ArrowToken, bodyFirstToken, lambda.Body.Span);
+            var arrowLine = tree.GetLineSpan(arrowToken.Span).EndLinePosition.Line;
+            var bodyLine = tree.GetLineSpan(bodyFirstToken.Span).StartLinePosition.Line;
+
+            if (bodyLine != arrowLine)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    Descriptor,
+                    lambda.Body.GetLocation()));
+            }
         }
 
         private static void AnalyzeArrowExpressionClause(SyntaxNodeAnalysisContext context)
         {
             var arrowClause = (ArrowExpressionClauseSyntax)context.Node;
+            var tree = arrowClause.SyntaxTree;
 
+            var arrowToken = arrowClause.ArrowToken;
             var bodyFirstToken = arrowClause.Expression.GetFirstToken();
+
             if (bodyFirstToken == default)
                 return;
-
-            AnalyzeArrow(context, arrowClause.ArrowToken, bodyFirstToken, arrowClause.Expression.Span);
-        }
-
-        private static void AnalyzeArrow(
-            SyntaxNodeAnalysisContext context,
-            SyntaxToken arrowToken,
-            SyntaxToken bodyFirstToken,
-            Microsoft.CodeAnalysis.Text.TextSpan bodySpan)
-        {
-            var tree = context.Node.SyntaxTree;
-            var sourceText = tree.GetText(context.CancellationToken);
 
             var arrowLine = tree.GetLineSpan(arrowToken.Span).EndLinePosition.Line;
             var bodyLine = tree.GetLineSpan(bodyFirstToken.Span).StartLinePosition.Line;
 
-            if (bodyLine == arrowLine)
-                return;
-
-            var arrowLineText = sourceText.Lines[arrowLine].ToString();
-            int arrowIndent = CountLeadingWhitespace(arrowLineText);
-            int expectedIndent = arrowIndent + 4;
-
-            var bodyLineText = sourceText.Lines[bodyLine].ToString();
-            int actualIndent = CountLeadingWhitespace(bodyLineText);
-
-            if (actualIndent != expectedIndent)
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, bodySpan)));
-        }
-
-        internal static int CountLeadingWhitespace(string text)
-        {
-            int count = 0;
-            while (count < text.Length && (text[count] == ' ' || text[count] == '\t'))
-                count++;
-            return count;
+            if (bodyLine != arrowLine)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    Descriptor,
+                    arrowClause.Expression.GetLocation()));
+            }
         }
     }
 }

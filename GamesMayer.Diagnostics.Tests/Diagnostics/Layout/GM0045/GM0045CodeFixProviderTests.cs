@@ -133,5 +133,30 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task ExpressionBodiedProperty_WrongIndent_Fix()
+        {
+            var testCode = @"using System.Linq;
+class C
+{
+    string[] characters = new string[0];
+    string[] CharacterKeys =>
+    {|GM0045:characters.Select(c => c).ToArray()|};
+}";
+            var fixedCode = @"using System.Linq;
+class C
+{
+    string[] characters = new string[0];
+    string[] CharacterKeys =>
+        characters.Select(c => c).ToArray();
+}";
+            var test = new CSharpCodeFixTest<GM0045Analyzer, GM0045CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

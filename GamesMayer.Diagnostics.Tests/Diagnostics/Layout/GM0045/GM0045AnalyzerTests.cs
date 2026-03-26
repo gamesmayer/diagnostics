@@ -151,5 +151,42 @@ class C
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ExpressionBodiedProperty_OnNextLine_CorrectIndent_NoDiagnostic()
+        {
+            var testCode = @"using System.Linq;
+class C
+{
+    string[] characters = new string[0];
+    string[] CharacterKeys =>
+        characters.Select(c => c).ToArray();
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ExpressionBodiedProperty_OnNextLine_WrongIndent_Diagnostic()
+        {
+            var testCode = @"using System.Linq;
+class C
+{
+    string[] characters = new string[0];
+    string[] CharacterKeys =>
+    {|GM0045:characters.Select(c => c).ToArray()|};
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ExpressionBodiedMethod_OnNextLine_WrongIndent_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    int GetValue() =>
+    {|GM0045:42|};
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -79,6 +79,8 @@ Diagnostics are organized by category.
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                | Yes     | Yes     |
 | [GM0045](docs/Diagnostics/Layout/GM0045.md) | Lambda expression body must be indented one step from the arrow line       | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |
+| [GM0047](docs/Diagnostics/Layout/GM0047.md) | Multi-line assignment value must start on the same line as the assignment operator | Yes     | Yes     |
+| [GM0048](docs/Diagnostics/Layout/GM0048.md) | Expression body must start on the same line as '=>'                                 | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                           | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                           | Yes     | Yes     |
 
