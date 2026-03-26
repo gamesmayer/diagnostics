@@ -83,6 +83,8 @@ Diagnostics are organized by category.
 | [GM0048](docs/Diagnostics/Layout/GM0048.md) | Expression body must start on the same line as '=>'                                   | Yes     | Yes     |
 | [GM0049](docs/Diagnostics/Layout/GM0049.md) | Wrapped operator-expression item must be indented one step from expression start line | Yes     | Yes     |
 | [GM0050](docs/Diagnostics/Layout/GM0050.md) | No blank lines between multi-line operator-expression items                           | Yes     | Yes     |
+| [GM0051](docs/Diagnostics/Layout/GM0051.md) | Return expression must start on the same line as 'return'                             | Yes     | Yes     |
+| [GM0052](docs/Diagnostics/Layout/GM0052.md) | No blank lines between 'return' and returned expression                               | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 
