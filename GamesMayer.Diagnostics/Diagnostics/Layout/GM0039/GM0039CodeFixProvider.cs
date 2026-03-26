@@ -19,7 +19,7 @@ namespace GamesMayer.Diagnostics
         public override FixAllProvider? GetFixAllProvider() =>
             WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var diagnostic = context.Diagnostics[0];
 
@@ -29,6 +29,8 @@ namespace GamesMayer.Diagnostics
                     createChangedDocument: ct => MoveDotToNextLineAsync(context.Document, diagnostic, ct),
                     equivalenceKey: nameof(GM0039CodeFixProvider)),
                 diagnostic);
+
+            return Task.CompletedTask;
         }
 
         private static async Task<Document> MoveDotToNextLineAsync(
