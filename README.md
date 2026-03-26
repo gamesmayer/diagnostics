@@ -78,6 +78,7 @@ Diagnostics are organized by category.
 | [GM0043](docs/Diagnostics/Layout/GM0043.md) | Each operand in a multi-operand logical expression must be on its own line | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                | Yes     | Yes     |
 | [GM0045](docs/Diagnostics/Layout/GM0045.md) | Lambda expression body must be indented one step from the arrow line       | Yes     | Yes     |
+| [GM0046](docs/Diagnostics/Layout/GM0046.md) | Logical operator in multi-line expression must be at the end of the previous line | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                           | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                           | Yes     | Yes     |
 

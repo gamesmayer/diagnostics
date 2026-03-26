@@ -15,11 +15,11 @@ namespace GamesMayer.Diagnostics
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Control structure clause declaration must be on a single line",
-            messageFormat: "Write the control structure clause declaration on a single line",
+            messageFormat: "Write the control structure clause declaration on a single line, or extract the condition into a local variable",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Control structure clause declarations such as if (...), foreach (...), for (...), while (...), switch (...), catch (...), lock (...), and using (...) must be written on a single line.");
+            description: "Control structure clause declarations such as if (...), foreach (...), for (...), while (...), switch (...), catch (...), lock (...), and using (...) must be written on a single line. If readability suffers, extract the condition into a local variable and keep the clause declaration itself on one line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
