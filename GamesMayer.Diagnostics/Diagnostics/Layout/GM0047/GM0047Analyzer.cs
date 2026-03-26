@@ -39,6 +39,9 @@ namespace GamesMayer.Diagnostics
             var equalsToken = assignment.OperatorToken;
             var valueFirstToken = assignment.Right.GetFirstToken();
 
+            if (valueFirstToken.IsKind(SyntaxKind.OpenBraceToken))
+                return;
+
             var equalsLine = tree.GetLineSpan(equalsToken.Span).EndLinePosition.Line;
             var valueLine = tree.GetLineSpan(valueFirstToken.Span).StartLinePosition.Line;
 
@@ -61,6 +64,9 @@ namespace GamesMayer.Diagnostics
 
             var equalsToken = equalsValueClause.EqualsToken;
             var valueFirstToken = equalsValueClause.Value.GetFirstToken();
+
+            if (valueFirstToken.IsKind(SyntaxKind.OpenBraceToken))
+                return;
 
             var equalsLine = tree.GetLineSpan(equalsToken.Span).EndLinePosition.Line;
             var valueLine = tree.GetLineSpan(valueFirstToken.Span).StartLinePosition.Line;

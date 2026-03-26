@@ -128,5 +128,18 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task FieldDeclaration_ArrayInitializerOnNextLine_NoDiagnostic()
+        {
+            var testCode = @"class I18nLocaleSettings { public I18nLocaleSettings(string a, string b) { } }
+class C
+{
+    public I18nLocaleSettings[] locales =
+    { new I18nLocaleSettings(""en"", ""EN_NAME"") };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
     }
 }
