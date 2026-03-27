@@ -84,5 +84,36 @@ class C
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task SingleLineGenericTypeDeclaration_NoDiagnostic()
+        {
+            var testCode = @"using System.Collections.Generic;
+
+class C
+{
+    void M()
+    {
+        List<int> items = null;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersOnDifferentLines_Diagnostic()
+        {
+            var testCode = @"using System.Collections.Generic;
+
+class C
+{
+    void M()
+    {
+        {|GM0036:Dictionary<string,
+        int> items = null;|}
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

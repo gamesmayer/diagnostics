@@ -42,13 +42,14 @@ namespace GamesMayer.Diagnostics
 
             var variable = declaration.Variables[0];
             var tree = statement.SyntaxTree;
+            var typeStartLine = tree.GetLineSpan(declaration.Type.GetFirstToken().Span).StartLinePosition.Line;
             var typeLine = tree.GetLineSpan(declaration.Type.GetLastToken().Span).EndLinePosition.Line;
             var identifierLine = tree.GetLineSpan(variable.Identifier.Span).StartLinePosition.Line;
 
             if (variable.Initializer == null)
             {
                 var semicolonLine = tree.GetLineSpan(statement.SemicolonToken.Span).StartLinePosition.Line;
-                if (typeLine != identifierLine || identifierLine != semicolonLine)
+                if (typeStartLine != typeLine || typeLine != identifierLine || identifierLine != semicolonLine)
                 {
                     ReportStatementDiagnostic(context, statement);
                 }
@@ -57,7 +58,7 @@ namespace GamesMayer.Diagnostics
             }
 
             var equalsLine = tree.GetLineSpan(variable.Initializer.EqualsToken.Span).StartLinePosition.Line;
-            if (typeLine != identifierLine || identifierLine != equalsLine)
+            if (typeStartLine != typeLine || typeLine != identifierLine || identifierLine != equalsLine)
             {
                 ReportStatementDiagnostic(context, statement);
             }
