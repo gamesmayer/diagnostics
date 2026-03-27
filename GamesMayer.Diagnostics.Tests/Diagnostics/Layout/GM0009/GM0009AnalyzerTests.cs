@@ -15,6 +15,23 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task GenericClassDeclarationOnSingleLine_NoDiagnostic()
+        {
+            var testCode = @"public class Foo<T> { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task GenericClassDeclarationWithLineBreakBeforeTypeParams_Diagnostic()
+        {
+            var testCode = @"{|GM0009:public class Foo
+<T>|}
+{
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task ClassDeclarationWithLineBreak_Diagnostic()
         {
             var testCode = @"{|GM0009:public
@@ -138,6 +155,27 @@ class Foo
             var testCode = @"class Foo
 {
     public void Method() { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task GenericMethodDeclarationOnSingleLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public void Method<T>() { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task GenericMethodDeclarationWithLineBreakBeforeTypeParams_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:public void Method
+    <T>|}() { }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

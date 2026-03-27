@@ -193,6 +193,44 @@ class Foo
         }
 
         [Fact]
+        public async Task GenericClassDeclarationWithLineBreakBeforeTypeParams_Fix()
+        {
+            var testCode = @"{|GM0009:public class Foo
+<T>|}
+{
+}";
+            var fixedCode = @"public class Foo<T>
+{
+}";
+            var test = new CSharpCodeFixTest<GM0009Analyzer, GM0009CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task GenericMethodDeclarationWithLineBreakBeforeTypeParams_Fix()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0009:public void Method
+    <T>|}() { }
+}";
+            var fixedCode = @"class Foo
+{
+    public void Method<T>() { }
+}";
+            var test = new CSharpCodeFixTest<GM0009Analyzer, GM0009CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task MethodDeclarationWithLineBreak_Fix()
         {
             var testCode = @"class Foo

@@ -42,25 +42,25 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
         {
             var classDecl = (ClassDeclarationSyntax)context.Node;
-            AnalyzeTypeDeclaration(context, classDecl.Modifiers, classDecl.Keyword, classDecl.Identifier, "class");
+            AnalyzeTypeDeclaration(context, classDecl.Modifiers, classDecl.Keyword, classDecl.Identifier, classDecl.TypeParameterList?.GreaterThanToken, "class");
         }
 
         private static void AnalyzeStructDeclaration(SyntaxNodeAnalysisContext context)
         {
             var structDecl = (StructDeclarationSyntax)context.Node;
-            AnalyzeTypeDeclaration(context, structDecl.Modifiers, structDecl.Keyword, structDecl.Identifier, "struct");
+            AnalyzeTypeDeclaration(context, structDecl.Modifiers, structDecl.Keyword, structDecl.Identifier, structDecl.TypeParameterList?.GreaterThanToken, "struct");
         }
 
         private static void AnalyzeRecordDeclaration(SyntaxNodeAnalysisContext context)
         {
             var recordDecl = (RecordDeclarationSyntax)context.Node;
-            AnalyzeTypeDeclaration(context, recordDecl.Modifiers, recordDecl.Keyword, recordDecl.Identifier, "record");
+            AnalyzeTypeDeclaration(context, recordDecl.Modifiers, recordDecl.Keyword, recordDecl.Identifier, recordDecl.TypeParameterList?.GreaterThanToken, "record");
         }
 
         private static void AnalyzeInterfaceDeclaration(SyntaxNodeAnalysisContext context)
         {
             var interfaceDecl = (InterfaceDeclarationSyntax)context.Node;
-            AnalyzeTypeDeclaration(context, interfaceDecl.Modifiers, interfaceDecl.Keyword, interfaceDecl.Identifier, "interface");
+            AnalyzeTypeDeclaration(context, interfaceDecl.Modifiers, interfaceDecl.Keyword, interfaceDecl.Identifier, interfaceDecl.TypeParameterList?.GreaterThanToken, "interface");
         }
 
         private static void AnalyzeFieldDeclaration(SyntaxNodeAnalysisContext context)
@@ -95,10 +95,11 @@ namespace GamesMayer.Diagnostics
         {
             var methodDecl = (MethodDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(methodDecl.AttributeLists, methodDecl.GetFirstToken());
-            
-            if (HasLineBreaksBetween(firstToken, methodDecl.Identifier))
+            var lastToken = methodDecl.TypeParameterList?.GreaterThanToken ?? methodDecl.Identifier;
+
+            if (HasLineBreaksBetween(firstToken, lastToken))
             {
-                var location = Location.Create(methodDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, methodDecl.Identifier.Span.End));
+                var location = Location.Create(methodDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, lastToken.Span.End));
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, methodDecl.Identifier.Text));
             }
         }
@@ -132,13 +133,15 @@ namespace GamesMayer.Diagnostics
             SyntaxTokenList modifiers,
             SyntaxToken keyword,
             SyntaxToken identifier,
+            SyntaxToken? typeParamsGreaterThan,
             string typeName)
         {
             var firstToken = modifiers.Count > 0 ? modifiers[0] : keyword;
-            
-            if (HasLineBreaksBetween(firstToken, identifier))
+            var lastToken = typeParamsGreaterThan ?? identifier;
+
+            if (HasLineBreaksBetween(firstToken, lastToken))
             {
-                var location = Location.Create(context.Node.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, identifier.Span.End));
+                var location = Location.Create(context.Node.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, lastToken.Span.End));
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, identifier.Text));
             }
         }

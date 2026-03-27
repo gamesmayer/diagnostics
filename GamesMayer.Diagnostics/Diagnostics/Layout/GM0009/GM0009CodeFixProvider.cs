@@ -137,9 +137,7 @@ namespace GamesMayer.Diagnostics
                 classDecl.Modifiers,
                 classDecl.Keyword,
                 classDecl.Identifier,
-                (decl, mods) => decl.WithModifiers(mods),
-                (decl, keyword) => decl.WithKeyword(keyword),
-                (decl, id) => decl.WithIdentifier(id));
+                classDecl.TypeParameterList?.GreaterThanToken);
         }
 
         private static SyntaxNode RemoveLineBreaksFromStructDeclaration(StructDeclarationSyntax structDecl)
@@ -149,9 +147,7 @@ namespace GamesMayer.Diagnostics
                 structDecl.Modifiers,
                 structDecl.Keyword,
                 structDecl.Identifier,
-                (decl, mods) => decl.WithModifiers(mods),
-                (decl, keyword) => decl.WithKeyword(keyword),
-                (decl, id) => decl.WithIdentifier(id));
+                structDecl.TypeParameterList?.GreaterThanToken);
         }
 
         private static SyntaxNode RemoveLineBreaksFromRecordDeclaration(RecordDeclarationSyntax recordDecl)
@@ -161,9 +157,7 @@ namespace GamesMayer.Diagnostics
                 recordDecl.Modifiers,
                 recordDecl.Keyword,
                 recordDecl.Identifier,
-                (decl, mods) => decl.WithModifiers(mods),
-                (decl, keyword) => decl.WithKeyword(keyword),
-                (decl, id) => decl.WithIdentifier(id));
+                recordDecl.TypeParameterList?.GreaterThanToken);
         }
 
         private static SyntaxNode RemoveLineBreaksFromInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDecl)
@@ -173,9 +167,7 @@ namespace GamesMayer.Diagnostics
                 interfaceDecl.Modifiers,
                 interfaceDecl.Keyword,
                 interfaceDecl.Identifier,
-                (decl, mods) => decl.WithModifiers(mods),
-                (decl, keyword) => decl.WithKeyword(keyword),
-                (decl, id) => decl.WithIdentifier(id));
+                interfaceDecl.TypeParameterList?.GreaterThanToken);
         }
 
         private static T RemoveLineBreaksFromTypeDeclaration<T>(
@@ -183,12 +175,10 @@ namespace GamesMayer.Diagnostics
             SyntaxTokenList modifiers,
             SyntaxToken keyword,
             SyntaxToken identifier,
-            System.Func<T, SyntaxTokenList, T> withModifiers,
-            System.Func<T, SyntaxToken, T> withKeyword,
-            System.Func<T, SyntaxToken, T> withIdentifier) where T : SyntaxNode
+            SyntaxToken? typeParamsGreaterThan) where T : SyntaxNode
         {
             var firstToken = modifiers.Count > 0 ? modifiers[0] : keyword;
-            var lastToken = identifier;
+            var lastToken = typeParamsGreaterThan ?? identifier;
             
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
@@ -255,7 +245,7 @@ namespace GamesMayer.Diagnostics
                 ? methodDecl.AttributeLists.Last().GetLastToken().GetNextToken()
                 : methodDecl.GetFirstToken();
 
-            var lastToken = methodDecl.Identifier;
+            var lastToken = methodDecl.TypeParameterList?.GreaterThanToken ?? methodDecl.Identifier;
             
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
