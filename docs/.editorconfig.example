@@ -82,6 +82,9 @@ dotnet_diagnostic.GM0051.severity = warning  # Return expression must start on t
 dotnet_diagnostic.GM0052.severity = warning  # No blank lines between 'return' and returned expression
 dotnet_diagnostic.GM0053.severity = warning  # Each 'where' constraint clause must be on its own line
 dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be indented one step from the declaration
+dotnet_diagnostic.GM0055.severity = warning  # No blank lines between 'where' constraint clauses
+dotnet_diagnostic.GM0056.severity = warning  # 'where' constraint clause must be written on a single line
+dotnet_diagnostic.GM0057.severity = warning  # No blank lines between declaration and first 'where' constraint clause
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
