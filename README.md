@@ -85,6 +85,8 @@ Diagnostics are organized by category.
 | [GM0050](docs/Diagnostics/Layout/GM0050.md) | No blank lines between multi-line operator-expression items                           | Yes     | Yes     |
 | [GM0051](docs/Diagnostics/Layout/GM0051.md) | Return expression must start on the same line as 'return'                             | Yes     | Yes     |
 | [GM0052](docs/Diagnostics/Layout/GM0052.md) | No blank lines between 'return' and returned expression                               | Yes     | Yes     |
+| [GM0053](docs/Diagnostics/Layout/GM0053.md) | Each 'where' constraint clause must be on its own line                                | Yes     | Yes     |
+| [GM0054](docs/Diagnostics/Layout/GM0054.md) | 'where' constraint clause must be indented one step from the declaration              | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

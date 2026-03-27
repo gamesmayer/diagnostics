@@ -80,6 +80,8 @@ dotnet_diagnostic.GM0049.severity = warning  # Wrapped operator-expression item 
 dotnet_diagnostic.GM0050.severity = warning  # No blank lines between multi-line operator-expression items
 dotnet_diagnostic.GM0051.severity = warning  # Return expression must start on the same line as 'return'
 dotnet_diagnostic.GM0052.severity = warning  # No blank lines between 'return' and returned expression
+dotnet_diagnostic.GM0053.severity = warning  # Each 'where' constraint clause must be on its own line
+dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be indented one step from the declaration
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
