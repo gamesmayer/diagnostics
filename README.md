@@ -95,6 +95,7 @@ Diagnostics are organized by category.
 | [GM0060](docs/Diagnostics/Layout/GM0060/GM0060.md) | Property/field access chain must be on a single line                                  | Yes     | Yes     |
 | [GM0061](docs/Diagnostics/Layout/GM0061/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                     | Yes     | Yes     |
 | [GM0062](docs/Diagnostics/Layout/GM0062/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                   | Yes     | Yes     |
+| [GM0063](docs/Diagnostics/Layout/GM0063/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements          | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 
