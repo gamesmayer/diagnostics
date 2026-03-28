@@ -87,6 +87,7 @@ dotnet_diagnostic.GM0056.severity = warning  # 'where' constraint clause must be
 dotnet_diagnostic.GM0057.severity = warning  # No blank lines between declaration and first 'where' constraint clause
 dotnet_diagnostic.GM0058.severity = warning  # Inheritance list must be on the same line as the type declaration
 dotnet_diagnostic.GM0059.severity = warning  # Colon in named argument must be adjacent to parameter name
+dotnet_diagnostic.GM0060.severity = warning  # Property/field access chain must be on a single line
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line

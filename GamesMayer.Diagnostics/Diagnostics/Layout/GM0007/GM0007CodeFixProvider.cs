@@ -32,7 +32,7 @@ namespace GamesMayer.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Insert blank line between class members",
+                    title: "Insert blank line between members",
                     createChangedDocument: ct => InsertBlankLineAsync(context.Document, position, ct),
                     equivalenceKey: nameof(GM0007CodeFixProvider)),
                 diagnostic);
@@ -52,14 +52,19 @@ namespace GamesMayer.Diagnostics
             if (currentMember == null)
                 return document;
 
-            if (currentMember.Parent is not ClassDeclarationSyntax classDeclaration)
+            SyntaxList<MemberDeclarationSyntax> members;
+            if (currentMember.Parent is ClassDeclarationSyntax classDeclaration)
+                members = classDeclaration.Members;
+            else if (currentMember.Parent is InterfaceDeclarationSyntax interfaceDeclaration)
+                members = interfaceDeclaration.Members;
+            else
                 return document;
 
-            var memberIndex = classDeclaration.Members.IndexOf(currentMember);
+            var memberIndex = members.IndexOf(currentMember);
             if (memberIndex <= 0)
                 return document;
 
-            var previousMember = classDeclaration.Members[memberIndex - 1];
+            var previousMember = members[memberIndex - 1];
             var previousLastToken = previousMember.GetLastToken();
 
             var existingEndOfLine = previousLastToken.TrailingTrivia

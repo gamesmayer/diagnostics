@@ -92,6 +92,7 @@ Diagnostics are organized by category.
 | [GM0057](docs/Diagnostics/Layout/GM0057.md)        | No blank lines between declaration and first 'where' constraint clause                | Yes     | Yes     |
 | [GM0058](docs/Diagnostics/Layout/GM0058.md)        | Inheritance list must be on the same line as the type declaration                     | Yes     | Yes     |
 | [GM0059](docs/Diagnostics/Layout/GM0059.md)        | Colon in named argument must be adjacent to parameter name                            | Yes     | Yes     |
+| [GM0060](docs/Diagnostics/Layout/GM0060/GM0060.md) | Property/field access chain must be on a single line                                  | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

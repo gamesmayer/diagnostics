@@ -13,12 +13,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Class members must be separated by a blank line",
+            title: "Class and interface members must be separated by a blank line",
             messageFormat: "Insert a blank line between '{0}' and '{1}'",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Class members must be separated by a blank line, including between consecutive fields.");
+            description: "Class and interface members must be separated by a blank line, including between consecutive fields.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -27,13 +27,17 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.InterfaceDeclaration);
         }
 
         private static void Analyze(SyntaxNodeAnalysisContext context)
         {
-            var classDeclaration = (ClassDeclarationSyntax)context.Node;
-            var members = classDeclaration.Members;
+            var members = context.Node switch
+            {
+                ClassDeclarationSyntax classDeclaration => classDeclaration.Members,
+                InterfaceDeclarationSyntax interfaceDeclaration => interfaceDeclaration.Members,
+                _ => default
+            };
 
             for (var i = 1; i < members.Count; i++)
             {

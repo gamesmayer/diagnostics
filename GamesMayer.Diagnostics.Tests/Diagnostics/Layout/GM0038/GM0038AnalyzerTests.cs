@@ -274,6 +274,70 @@ enum Ease
         }
 
         [Fact]
+        public async Task AssignmentWithChainOnLeftSideWrongIndentation_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Wallet wallet = new Wallet();
+        Dto dto = new Dto();
+        wallet
+        {|GM0038:.Amount|}
+        {|GM0038:.Value|} = dto.amount;
+    }
+}
+
+class Amount
+{
+    public int Value { get; set; }
+}
+
+class Wallet
+{
+    public Amount Amount { get; }
+}
+
+class Dto
+{
+    public int amount;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AssignmentWithChainOnLeftSideCorrectIndentation_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Wallet wallet = new Wallet();
+        Dto dto = new Dto();
+        wallet
+            .Amount
+            .Value = dto.amount;
+    }
+}
+
+class Amount
+{
+    public int Value { get; set; }
+}
+
+class Wallet
+{
+    public Amount Amount { get; }
+}
+
+class Dto
+{
+    public int amount;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task NestedChainInArgumentCorrectIndentation_NoDiagnostic()
         {
             var testCode = @"class C

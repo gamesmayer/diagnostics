@@ -56,5 +56,30 @@ namespace GamesMayer.Diagnostics.Tests
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task InterfaceMembersWithoutBlankLine_Fix()
+        {
+            var testCode = @"interface IWallet
+{
+    int Amount { get; }
+    {|GM0007:void|} Earn(int amount);
+}";
+
+            var fixedCode = @"interface IWallet
+{
+    int Amount { get; }
+
+    void Earn(int amount);
+}";
+
+            var test = new CSharpCodeFixTest<GM0007Analyzer, GM0007CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -10,12 +11,12 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace GamesMayer.Diagnostics
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(GM0059CodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(GM0060CodeFixProvider))]
     [Shared]
-    public sealed class GM0059CodeFixProvider : CodeFixProvider
+    public sealed class GM0060CodeFixProvider : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds =>
-            ImmutableArray.Create(GM0059Analyzer.DiagnosticId);
+            ImmutableArray.Create(GM0060Analyzer.DiagnosticId);
 
         public override FixAllProvider? GetFixAllProvider() =>
             WellKnownFixAllProviders.BatchFixer;
@@ -26,15 +27,15 @@ namespace GamesMayer.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Remove whitespace before ':' in named argument",
-                    createChangedDocument: ct => FixAsync(context.Document, diagnostic, ct),
-                    equivalenceKey: nameof(GM0059CodeFixProvider)),
+                    title: "Write property/field access chain on a single line",
+                    createChangedDocument: ct => CollapseAccessAsync(context.Document, diagnostic, ct),
+                    equivalenceKey: nameof(GM0060CodeFixProvider)),
                 diagnostic);
 
             return Task.CompletedTask;
         }
 
-        private static async Task<Document> FixAsync(
+        private static async Task<Document> CollapseAccessAsync(
             Document document,
             Diagnostic diagnostic,
             CancellationToken cancellationToken)
@@ -45,18 +46,20 @@ namespace GamesMayer.Diagnostics
 
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
-            var node = root.FindNode(diagnostic.Location.SourceSpan);
-            if (node is not NameColonSyntax nameColon)
+            // The diagnostic span starts at the dot token.
+            var dotToken = root.FindToken(diagnostic.Location.SourceSpan.Start);
+            var memberAccess = dotToken.Parent?.AncestorsAndSelf()
+                .OfType<MemberAccessExpressionSyntax>()
+                .FirstOrDefault();
+            if (memberAccess == null)
                 return document;
 
-            var nameToken = nameColon.Name.Identifier;
-            var colonToken = nameColon.ColonToken;
+            // Replace everything between expression end and name start with ".".
+            // This removes any newlines/whitespace on either side of the dot.
+            var spanStart = memberAccess.Expression.GetLastToken().Span.End;
+            var spanEnd = memberAccess.Name.GetFirstToken().SpanStart;
 
-            if (nameToken == default || colonToken == default || nameToken.Span.End >= colonToken.Span.Start)
-                return document;
-
-            var whitespaceSpan = TextSpan.FromBounds(nameToken.Span.End, colonToken.Span.Start);
-            var updatedText = sourceText.WithChanges(new TextChange(whitespaceSpan, string.Empty));
+            var updatedText = sourceText.WithChanges(new TextChange(TextSpan.FromBounds(spanStart, spanEnd), "."));
             return document.WithText(updatedText);
         }
     }

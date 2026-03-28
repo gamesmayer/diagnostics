@@ -72,6 +72,15 @@ namespace GamesMayer.Diagnostics
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);
 
+            if (expression is AssignmentExpressionSyntax assignment)
+            {
+                foreach (var node in assignment.Left.DescendantNodesAndSelf())
+                {
+                    if (node is ExpressionSyntax candidate && IsFluentChainStart(candidate))
+                        AnalyzeChain(context, candidate, tree, sourceText);
+                }
+            }
+
             foreach (var node in chainRoot.DescendantNodesAndSelf())
             {
                 if (node is ExpressionSyntax candidate && IsFluentChainStart(candidate))

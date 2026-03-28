@@ -52,5 +52,28 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task InterfaceMembersSeparatedByBlankLine_NoDiagnostic()
+        {
+            var testCode = @"interface IWallet
+{
+    int Amount { get; }
+
+    void Earn(int amount);
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task InterfaceMembersWithoutBlankLine_Diagnostic()
+        {
+            var testCode = @"interface IWallet
+{
+    int Amount { get; }
+    {|GM0007:void|} Earn(int amount);
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
