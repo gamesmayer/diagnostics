@@ -122,6 +122,41 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task IfStatement_SharingLineWithPreviousStatement_AddsBlankLineBeforeIf()
+        {
+            var testCode = @"class Foo
+{
+    void M(bool condition)
+    {
+        int x = 0; {|GM0066:if|} (condition)
+        {
+            x++;
+        }
+    }
+}";
+
+            var fixedCode = @"class Foo
+{
+    void M(bool condition)
+    {
+        int x = 0;
+
+        if (condition)
+        {
+            x++;
+        }
+    }
+}";
+
+            var test = new CSharpCodeFixTest<GM0066Analyzer, GM0066CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task MultipleViolations_BatchFixed()
         {
             var testCode = @"class Foo

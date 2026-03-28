@@ -46,9 +46,28 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var line = sourceText.Lines.GetLineFromPosition(statement.SpanStart);
-            var insertPosition = line.Start;
+            var lineText = line.ToString();
+            var indentation = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
 
-            var newSourceText = sourceText.WithChanges(new TextChange(new TextSpan(insertPosition, 0), System.Environment.NewLine));
+            var positionOnLine = statement.SpanStart - line.Start;
+            var textBeforeOnLine = lineText.Substring(0, positionOnLine).TrimStart();
+
+            TextChange change;
+            if (textBeforeOnLine.Length > 0)
+            {
+                // Statement shares a line with a previous statement — scan back past whitespace and replace with newline + blank line + indentation
+                int replaceFrom = statement.SpanStart;
+                while (replaceFrom > 0 && (sourceText[replaceFrom - 1] == ' ' || sourceText[replaceFrom - 1] == '\t'))
+                    replaceFrom--;
+                change = new TextChange(new TextSpan(replaceFrom, statement.SpanStart - replaceFrom), System.Environment.NewLine + System.Environment.NewLine + indentation);
+            }
+            else
+            {
+                // Statement is on its own line — insert a blank line before it
+                change = new TextChange(new TextSpan(line.Start, 0), System.Environment.NewLine);
+            }
+
+            var newSourceText = sourceText.WithChanges(change);
             return document.WithText(newSourceText);
         }
     }
