@@ -92,6 +92,9 @@ dotnet_diagnostic.GM0061.severity = warning  # Use '==' or '!=' instead of 'is' 
 dotnet_diagnostic.GM0062.severity = warning  # Use 'is or' syntax for multiple type checks on the same expression
 dotnet_diagnostic.GM0063.severity = warning  # Methods and lambda expressions with braces cannot be single line statements
 dotnet_diagnostic.GM0064.severity = warning  # Early return in function
+dotnet_diagnostic.GM0065.severity = warning  # Return statement must be preceded by a blank line
+dotnet_diagnostic.GM0066.severity = warning  # Block statement must be preceded by blank line
+dotnet_diagnostic.GM0067.severity = warning  # Block statement must be followed by a blank line
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line

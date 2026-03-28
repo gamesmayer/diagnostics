@@ -97,6 +97,9 @@ Diagnostics are organized by category.
 | [GM0062](docs/Diagnostics/Layout/GM0062/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                   | Yes     | Yes     |
 | [GM0063](docs/Diagnostics/Layout/GM0063/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements          | Yes     | Yes     |
 | [GM0064](docs/Diagnostics/Layout/GM0064/GM0064.md) | Early return in function                                                             | No      | Yes     |
+| [GM0065](docs/Diagnostics/Layout/GM0065/GM0065.md) | Return statement must be preceded by a blank line                                    | Yes     | Yes     |
+| [GM0066](docs/Diagnostics/Layout/GM0066/GM0066.md) | Block statement must be preceded by blank line                                       | Yes     | Yes     |
+| [GM0067](docs/Diagnostics/Layout/GM0067/GM0067.md) | Block statement must be followed by a blank line                                     | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 
