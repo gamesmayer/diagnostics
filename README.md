@@ -103,6 +103,11 @@ Diagnostics are organized by category.
 | [GM0068](docs/Diagnostics/Layout/GM0068/GM0068.md) | Multiple statements on one line                                                      | Yes     | Yes     |
 | [GM0069](docs/Diagnostics/Layout/GM0069/GM0069.md) | Properties not autoimplemented cannot be single line statements                      | Yes     | Yes     |
 | [GM0070](docs/Diagnostics/Layout/GM0070/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties              | Yes     | Yes     |
+| [GM0071](docs/Diagnostics/Layout/GM0071/GM0071.md) | Each accessor in non-autoimplemented properties must be separated by a blank line    | Yes     | Yes     |
+| [GM0072](docs/Diagnostics/Layout/GM0072/GM0072.md) | Blank line required before `#if` directive                                           | Yes     | Yes     |
+| [GM0073](docs/Diagnostics/Layout/GM0073/GM0073.md) | Blank line required after `#endif` directive                                         | Yes     | Yes     |
+| [GM0074](docs/Diagnostics/Layout/GM0074/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line               | Yes     | Yes     |
+| [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line            | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

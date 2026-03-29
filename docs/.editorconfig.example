@@ -98,6 +98,11 @@ dotnet_diagnostic.GM0067.severity = warning  # Block statement must be followed 
 dotnet_diagnostic.GM0068.severity = warning  # Multiple statements on one line
 dotnet_diagnostic.GM0069.severity = warning  # Properties not autoimplemented cannot be single line statements
 dotnet_diagnostic.GM0070.severity = warning  # Each accessor must be on its own line in non-autoimplemented properties
+dotnet_diagnostic.GM0071.severity = warning  # Each accessor in non-autoimplemented properties must be separated by a blank line
+dotnet_diagnostic.GM0072.severity = warning  # Blank line required before #if directive
+dotnet_diagnostic.GM0073.severity = warning  # Blank line required after #endif directive
+dotnet_diagnostic.GM0074.severity = warning  # #if / #else / #elif directive must not be followed by blank line
+dotnet_diagnostic.GM0075.severity = warning  # #endif / #else / #elif directive must not be preceded by blank line
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
