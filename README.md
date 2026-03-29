@@ -101,6 +101,8 @@ Diagnostics are organized by category.
 | [GM0066](docs/Diagnostics/Layout/GM0066/GM0066.md) | Block statement must be preceded by blank line                                       | Yes     | Yes     |
 | [GM0067](docs/Diagnostics/Layout/GM0067/GM0067.md) | Block statement must be followed by a blank line                                     | Yes     | Yes     |
 | [GM0068](docs/Diagnostics/Layout/GM0068/GM0068.md) | Multiple statements on one line                                                      | Yes     | Yes     |
+| [GM0069](docs/Diagnostics/Layout/GM0069/GM0069.md) | Properties not autoimplemented cannot be single line statements                      | Yes     | Yes     |
+| [GM0070](docs/Diagnostics/Layout/GM0070/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties              | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 
