@@ -93,23 +93,29 @@ Diagnostics are organized by category.
 | [GM0058](docs/Diagnostics/Layout/GM0058.md)        | Inheritance list must be on the same line as the type declaration                     | Yes     | Yes     |
 | [GM0059](docs/Diagnostics/Layout/GM0059.md)        | Colon in named argument must be adjacent to parameter name                            | Yes     | Yes     |
 | [GM0060](docs/Diagnostics/Layout/GM0060/GM0060.md) | Property/field access chain must be on a single line                                  | Yes     | Yes     |
-| [GM0061](docs/Diagnostics/Layout/GM0061/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                     | Yes     | Yes     |
-| [GM0062](docs/Diagnostics/Layout/GM0062/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                   | Yes     | Yes     |
-| [GM0063](docs/Diagnostics/Layout/GM0063/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements          | Yes     | Yes     |
-| [GM0064](docs/Diagnostics/Layout/GM0064/GM0064.md) | Early return in function                                                             | No      | Yes     |
-| [GM0065](docs/Diagnostics/Layout/GM0065/GM0065.md) | Return statement must be preceded by a blank line                                    | Yes     | Yes     |
-| [GM0066](docs/Diagnostics/Layout/GM0066/GM0066.md) | Block statement must be preceded by blank line                                       | Yes     | Yes     |
-| [GM0067](docs/Diagnostics/Layout/GM0067/GM0067.md) | Block statement must be followed by a blank line                                     | Yes     | Yes     |
-| [GM0068](docs/Diagnostics/Layout/GM0068/GM0068.md) | Multiple statements on one line                                                      | Yes     | Yes     |
-| [GM0069](docs/Diagnostics/Layout/GM0069/GM0069.md) | Properties not autoimplemented cannot be single line statements                      | Yes     | Yes     |
-| [GM0070](docs/Diagnostics/Layout/GM0070/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties              | Yes     | Yes     |
-| [GM0071](docs/Diagnostics/Layout/GM0071/GM0071.md) | Each accessor in non-autoimplemented properties must be separated by a blank line    | Yes     | Yes     |
-| [GM0072](docs/Diagnostics/Layout/GM0072/GM0072.md) | Blank line required before `#if` directive                                           | Yes     | Yes     |
-| [GM0073](docs/Diagnostics/Layout/GM0073/GM0073.md) | Blank line required after `#endif` directive                                         | Yes     | Yes     |
-| [GM0074](docs/Diagnostics/Layout/GM0074/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line               | Yes     | Yes     |
-| [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line            | Yes     | Yes     |
+| [GM0061](docs/Diagnostics/Layout/GM0061/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                      | Yes     | Yes     |
+| [GM0062](docs/Diagnostics/Layout/GM0062/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                    | Yes     | Yes     |
+| [GM0063](docs/Diagnostics/Layout/GM0063/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements           | Yes     | Yes     |
+| [GM0064](docs/Diagnostics/Layout/GM0064/GM0064.md) | Early return in function                                                              | No      | Yes     |
+| [GM0065](docs/Diagnostics/Layout/GM0065/GM0065.md) | Return statement must be preceded by a blank line                                     | Yes     | Yes     |
+| [GM0066](docs/Diagnostics/Layout/GM0066/GM0066.md) | Block statement must be preceded by blank line                                        | Yes     | Yes     |
+| [GM0067](docs/Diagnostics/Layout/GM0067/GM0067.md) | Block statement must be followed by a blank line                                      | Yes     | Yes     |
+| [GM0068](docs/Diagnostics/Layout/GM0068/GM0068.md) | Multiple statements on one line                                                       | Yes     | Yes     |
+| [GM0069](docs/Diagnostics/Layout/GM0069/GM0069.md) | Properties not autoimplemented cannot be single line statements                       | Yes     | Yes     |
+| [GM0070](docs/Diagnostics/Layout/GM0070/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties               | Yes     | Yes     |
+| [GM0071](docs/Diagnostics/Layout/GM0071/GM0071.md) | Each accessor in non-autoimplemented properties must be separated by a blank line     | Yes     | Yes     |
+| [GM0072](docs/Diagnostics/Layout/GM0072/GM0072.md) | Blank line required before `#if` directive                                            | Yes     | Yes     |
+| [GM0073](docs/Diagnostics/Layout/GM0073/GM0073.md) | Blank line required after `#endif` directive                                          | Yes     | Yes     |
+| [GM0074](docs/Diagnostics/Layout/GM0074/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line                | Yes     | Yes     |
+| [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line             | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
+
+### Architecture Diagnostics
+
+| ID                                                       | Description                                  | Fixable | Default |
+| -------------------------------------------------------- | -------------------------------------------- | ------- | ------- |
+| [GM0076](docs/Diagnostics/Architecture/GM0076/GM0076.md) | Avoid using Unity Debug.Log methods directly | No      | Yes     |
 
 ### Naming Diagnostics
 
@@ -175,7 +181,7 @@ dotnet_diagnostic.GM0002.severity = warning
 
 A ready-to-use example covering all diagnostics is available at [`docs/.editorconfig.example`](docs/.editorconfig.example). Copy the relevant sections into your project's `.editorconfig`.
 
-> **Note:** Ordering and Naming diagnostics (GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
+> **Note:** Architecture, Ordering, and Naming diagnostics (GM0076, GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
 
 ## Testing
 

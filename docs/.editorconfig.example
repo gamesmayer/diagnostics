@@ -107,6 +107,9 @@ dotnet_diagnostic.GM0075.severity = warning  # #endif / #else / #elif directive 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
 
+# GamesMayer.Diagnostics — Architecture (GM0076)
+dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
+
 # GamesMayer.Diagnostics — Ordering (GM1200-GM1216)
 dotnet_diagnostic.GM1200.severity = warning  # A C# using directive is placed inside a namespace element
 dotnet_diagnostic.GM1201.severity = warning  # Elements must appear in the correct order
