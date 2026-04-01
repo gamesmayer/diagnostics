@@ -1,134 +1,146 @@
 namespace GamesMayer.Diagnostics.Tests
 {
     using System.Threading.Tasks;
-    using Microsoft.CodeAnalysis.CSharp.Testing;
-    using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
     using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
-        GamesMayer.Diagnostics.GM0021Analyzer>;
+        GamesMayer.Diagnostics.GM0078Analyzer>;
 
-    public class GM0021AnalyzerTests
+    public class GM0078AnalyzerTests
     {
         [Fact]
-        public async Task EmptyMethodBraceOnSameLine_NoDiagnostic()
-        {
-            var testCode = @"class Foo
-{
-    void Method() { }
-}";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task EmptyMethodBraceOnNewLine_Diagnostic()
+        public async Task CorrectlyIndentedBraces_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
     void Method()
-    {|GM0021:{|} }
+    {
+        int x = 1;
+    }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task NonEmptyMethodBraceOnSameLine_NoDiagnostic()
+        public async Task EmptyBlock_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task OpenBrace_KAndRStyle_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
     void Method() {
-        int value = 1;
+        int x = 1;
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task EmptyTypeBraceOnSameLine_NoDiagnostic()
-        {
-            var testCode = @"class Foo { }";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task EmptyTypeBraceOnNewLine_Diagnostic()
+        public async Task OpenBrace_OverIndented_Diagnostic()
         {
             var testCode = @"class Foo
-{|GM0021:{|} }
-";
+{
+    void Method()
+        {|GM0078:{|}
+        int x = 1;
+    }
+}";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task EmptyControlBlockBraceOnSameLine_NoDiagnostic()
+        public async Task CloseBrace_OverIndented_Diagnostic()
         {
             var testCode = @"class Foo
 {
     void Method()
     {
-        if (true) { }
-    }
+        int x = 1;
+        {|GM0078:}|}
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task EmptyControlBlockBraceOnNewLine_Diagnostic()
+        public async Task CloseBrace_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+{|GM0078:}|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task BothBraces_WrongIndent_TwoDiagnostics()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+        {|GM0078:{|}
+        int x = 1;
+        {|GM0078:}|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NestedBlock_CorrectlyIndented_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
     void Method()
     {
         if (true)
-        {|GM0021:{|} }
+        {
+            int x = 1;
+        }
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task MethodBodyWithIfDirective_NoDiagnostic()
+        public async Task NestedBlock_InnerBraceWrongIndent_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        if (true)
+            {|GM0078:{|}
+            int x = 1;
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task BlockWithDirectives_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
     void Method()
     {
 #if SOME_DEFINE
-        int value = 1;
+        int x = 1;
 #endif
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
-
-        [Fact]
-        public async Task CategoriesConfiguration_MethodsSkipped_TypesAndControlBlocksAnalyzed()
-        {
-            var testCode = @"class Foo
-{|GM0021:{|} }
-
-class Bar
-{
-    void M()
-    { }
-
-    void N()
-    {
-        if (true)
-        {|GM0021:{|} }
-    }
-}";
-
-            var test = new CSharpAnalyzerTest<GM0021Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
-
-            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
-
-[*.cs]
-dotnet_diagnostic.GM0021 = control_blocks, types"));
-
-            await test.RunAsync();
         }
     }
 }

@@ -90,6 +90,21 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task MethodBodyWithIfDirective_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+#if SOME_DEFINE
+        int value = 1;
+#endif
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task CategoriesConfiguration_MethodsSkipped_TypesAndControlBlocksAnalyzed()
         {
             var testCode = @"class Foo {|GM0022:{|} }

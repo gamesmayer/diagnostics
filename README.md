@@ -108,6 +108,8 @@ Diagnostics are organized by category.
 | [GM0073](docs/Diagnostics/Layout/GM0073/GM0073.md) | Blank line required after `#endif` directive                                          | Yes     | Yes     |
 | [GM0074](docs/Diagnostics/Layout/GM0074/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line                | Yes     | Yes     |
 | [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line             | Yes     | Yes     |
+| [GM0077](docs/Diagnostics/Layout/GM0077/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
+| [GM0078](docs/Diagnostics/Layout/GM0078/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

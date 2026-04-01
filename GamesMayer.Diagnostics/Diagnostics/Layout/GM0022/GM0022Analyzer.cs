@@ -266,6 +266,11 @@ namespace GamesMayer.Diagnostics
                 return;
             }
 
+            if (openBrace.Parent?.ContainsDirectives == true)
+            {
+                return;
+            }
+
             var previousToken = openBrace.GetPreviousToken(includeZeroWidth: false);
             if (previousToken == default)
             {

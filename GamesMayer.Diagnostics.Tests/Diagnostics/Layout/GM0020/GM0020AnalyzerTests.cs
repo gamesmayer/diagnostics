@@ -135,5 +135,40 @@ dotnet_diagnostic.GM0020 = accessors, anonymous_methods, anonymous_types, contro
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task AutoImplementedProperty_BraceOnSameLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public int Value { get; set; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AutoImplementedProperty_GetOnly_BraceOnSameLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public int Value { get; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NonAutoImplementedProperty_BraceOnSameLine_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public int Value {|GM0020:{|}
+        get
+        {
+            return 0;
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -98,7 +99,12 @@ namespace GamesMayer.Diagnostics
                 case PropertyDeclarationSyntax propertyDeclaration:
                     if (propertyDeclaration.AccessorList != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Properties, propertyDeclaration.AccessorList.OpenBraceToken, propertyDeclaration.AccessorList.Accessors.Count == 0);
+                        var isAutoImplemented = propertyDeclaration.AccessorList.Accessors.All(
+                            a => a.Body == null && a.ExpressionBody == null);
+                        if (!isAutoImplemented)
+                        {
+                            AnalyzeBrace(context, configuredCategories, BraceCategory.Properties, propertyDeclaration.AccessorList.OpenBraceToken, propertyDeclaration.AccessorList.Accessors.Count == 0);
+                        }
                     }
 
                     break;
