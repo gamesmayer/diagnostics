@@ -110,6 +110,7 @@ Diagnostics are organized by category.
 | [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line             | Yes     | Yes     |
 | [GM0077](docs/Diagnostics/Layout/GM0077/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
 | [GM0078](docs/Diagnostics/Layout/GM0078/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
+| [GM0079](docs/Diagnostics/Layout/GM0079/GM0079.md) | No more than one space between tokens                                                 | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

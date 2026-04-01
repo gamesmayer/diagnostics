@@ -31,8 +31,8 @@ dotnet_diagnostic.GM0018.severity = warning  # Switch case clause declaration mu
 dotnet_diagnostic.GM0019.severity = warning  # Empty braces enclosure must be on a single line
 
 dotnet_diagnostic.GM0020.severity = warning  # GM0020: New line required before non-empty opening brace
-dotnet_diagnostic.GM0021.severity = none     # Opening brace required on declaration line for empty enclosure (disabled by default)
-dotnet_diagnostic.GM0022.severity = warning  # New line required before opening brace for empty enclosure
+dotnet_diagnostic.GM0021.severity = warning  # Opening brace required on declaration line for empty enclosure (disabled by default)
+dotnet_diagnostic.GM0022.severity = none     # New line required before opening brace for empty enclosure
 dotnet_diagnostic.GM0023.severity = warning  # Misaligned parameter or argument in multi-line list
 dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0025.severity = warning  # Each argument or parameter must be on its own line in a multi-line list
@@ -99,6 +99,7 @@ dotnet_diagnostic.GM0074.severity = warning  # #if / #else / #elif directive mus
 dotnet_diagnostic.GM0075.severity = warning  # #endif / #else / #elif directive must not be preceded by blank line
 dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented one step from the block braces
 dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at the declaration level
+dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
