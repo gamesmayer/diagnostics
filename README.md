@@ -112,6 +112,7 @@ Diagnostics are organized by category.
 | [GM0078](docs/Diagnostics/Layout/GM0078/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
 | [GM0079](docs/Diagnostics/Layout/GM0079/GM0079.md) | No more than one space between tokens                                                 | Yes     | Yes     |
 | [GM0080](docs/Diagnostics/Layout/GM0080/GM0080.md) | Break statement must be preceded by a blank line                                      | Yes     | Yes     |
+| [GM0081](docs/Diagnostics/Layout/GM0081/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 

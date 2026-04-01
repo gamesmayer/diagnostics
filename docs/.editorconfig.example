@@ -101,6 +101,7 @@ dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented o
 dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at the declaration level
 dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
 dotnet_diagnostic.GM0080.severity = warning  # Break statement must be preceded by a blank line
+dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
