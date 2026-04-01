@@ -157,6 +157,45 @@ dotnet_diagnostic.GM0020 = accessors, anonymous_methods, anonymous_types, contro
         }
 
         [Fact]
+        public async Task SwitchCaseBlockBraceOnSameLine_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method(int x)
+    {
+        switch (x)
+        {
+            case 1: {|GM0020:{|}
+                int value = 1;
+                break;
+            }
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchCaseBlockBraceOnNewLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method(int x)
+    {
+        switch (x)
+        {
+            case 1:
+            {
+                int value = 1;
+                break;
+            }
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task NonAutoImplementedProperty_BraceOnSameLine_Diagnostic()
         {
             var testCode = @"class Foo

@@ -68,6 +68,7 @@ namespace GamesMayer.Diagnostics
                 SyntaxKind.CheckedStatement,
                 SyntaxKind.UnsafeStatement,
                 SyntaxKind.SwitchStatement,
+                SyntaxKind.SwitchSection,
                 SyntaxKind.TryStatement,
                 SyntaxKind.CatchClause,
                 SyntaxKind.FinallyClause,
@@ -230,6 +231,16 @@ namespace GamesMayer.Diagnostics
                     break;
                 case SwitchStatementSyntax switchStatement:
                     AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, switchStatement.OpenBraceToken, switchStatement.Sections.Count == 0);
+                    break;
+                case SwitchSectionSyntax switchSection:
+                    foreach (var statement in switchSection.Statements)
+                    {
+                        if (statement is BlockSyntax block)
+                        {
+                            AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, block.OpenBraceToken, block.Statements.Count == 0);
+                        }
+                    }
+
                     break;
                 case TryStatementSyntax tryStatement:
                     AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, tryStatement.Block.OpenBraceToken, tryStatement.Block.Statements.Count == 0);
