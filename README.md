@@ -116,6 +116,15 @@ Diagnostics are organized by category.
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                      | Yes     | Yes     |
 
+### Spacing Diagnostics
+
+| ID                                                  | Description                                                 | Fixable | Default |
+| --------------------------------------------------- | ----------------------------------------------------------- | ------- | ------- |
+| [GM0082](docs/Diagnostics/Spacing/GM0082/GM0082.md) | Cast expression spacing                                     | Yes     | Yes     |
+| [GM0083](docs/Diagnostics/Spacing/GM0083/GM0083.md) | Space after control-flow keywords                           | Yes     | Yes     |
+| [GM0084](docs/Diagnostics/Spacing/GM0084/GM0084.md) | Spaces inside method declaration parameter list parentheses | Yes     | Yes     |
+| [GM0085](docs/Diagnostics/Spacing/GM0085/GM0085.md) | Spaces inside method call argument list parentheses         | Yes     | Yes     |
+
 ### Architecture Diagnostics
 
 | ID                                                       | Description                                  | Fixable | Default |

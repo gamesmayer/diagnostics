@@ -2,12 +2,14 @@
 #
 # dotnet format requires explicit severity entries to process analyzer diagnostics.
 # Add this configuration to the .editorconfig that applies to your C# source files.
-#
-# NOTE: dotnet_analyzer_diagnostic.severity = default must be set (or severities
-# must be configured individually) for analyzers to run under dotnet format.
 
 [*.cs]
+
+# Restore default severity for all rules to avoid unintended consequences of editorconfig inheritance
 dotnet_analyzer_diagnostic.severity = default
+
+# Disable formatting rules that conflict with GamesMayer.Diagnostics rules
+dotnet_diagnostic.IDE0055.severity = none
 
 # GamesMayer.Diagnostics — Layout (GM0001-GM1508)
 dotnet_diagnostic.GM0001.severity = warning  # Blank line between using directives
@@ -29,7 +31,6 @@ dotnet_diagnostic.GM0016.severity = warning  # Attribute must be on a single lin
 dotnet_diagnostic.GM0017.severity = warning  # Control structure clause declaration must be on a single line
 dotnet_diagnostic.GM0018.severity = warning  # Switch case clause declaration must be on a single line
 dotnet_diagnostic.GM0019.severity = warning  # Empty braces enclosure must be on a single line
-
 dotnet_diagnostic.GM0020.severity = warning  # GM0020: New line required before non-empty opening brace
 dotnet_diagnostic.GM0021.severity = warning  # Opening brace required on declaration line for empty enclosure (disabled by default)
 dotnet_diagnostic.GM0022.severity = none     # New line required before opening brace for empty enclosure
@@ -51,21 +52,12 @@ dotnet_diagnostic.GM0037.severity = warning  # Parameter declaration header must
 dotnet_diagnostic.GM0038.severity = warning  # Fluent-chain segment indentation
 dotnet_diagnostic.GM0039.severity = warning  # Fluent-chain dot must be on the same line as the next identifier
 dotnet_diagnostic.GM0040.severity = warning  # All fluent-chain segments must be on their own line if any segment is
-
-# GM0041: Each segment in a multi-invocation fluent chain must be on its own line
-# Configure the minimum number of invocations to trigger the rule (default: 2).
-dotnet_diagnostic.GM0041.severity = warning
+dotnet_diagnostic.GM0041.severity = warning # Each segment in a multi-invocation fluent chain must be on its own line
 dotnet_diagnostic.GM0041.threshold = 2
-
 dotnet_diagnostic.GM0042.severity = warning  # Blank line required after last using directive
-
-# GM0043: Each operand in a multi-operand logical expression must be on its own line
-# Configure the minimum number of operands to trigger the rule (default: 3).
-dotnet_diagnostic.GM0043.severity = warning
+dotnet_diagnostic.GM0043.severity = warning #Each operand in a multi-operand logical expression must be on its own line
 dotnet_diagnostic.GM0043.threshold = 3
-
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
-
 dotnet_diagnostic.GM0045.severity = warning  # Lambda expression body must be indented one step from the arrow line
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
 dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
@@ -105,6 +97,16 @@ dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one 
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
+
+# GamesMayer.Diagnostics — Spacing
+dotnet_diagnostic.GM0082.severity = warning  # Cast expression spacing
+dotnet_diagnostic.GM0082.enabled = false
+dotnet_diagnostic.GM0083.severity = warning  # Space after control-flow keywords
+dotnet_diagnostic.GM0083.enabled = true
+dotnet_diagnostic.GM0084.severity = warning  # Spaces inside method declaration parameter list parentheses
+dotnet_diagnostic.GM0084.enabled = false
+dotnet_diagnostic.GM0085.severity = warning  # Spaces inside method call argument list parentheses
+dotnet_diagnostic.GM0085.enabled = false
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
