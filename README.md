@@ -124,6 +124,9 @@ Diagnostics are organized by category.
 | [GM0083](docs/Diagnostics/Spacing/GM0083/GM0083.md) | Space after control-flow keywords                           | Yes     | Yes     |
 | [GM0084](docs/Diagnostics/Spacing/GM0084/GM0084.md) | Spaces inside method declaration parameter list parentheses | Yes     | Yes     |
 | [GM0085](docs/Diagnostics/Spacing/GM0085/GM0085.md) | Spaces inside method call argument list parentheses         | Yes     | Yes     |
+| [GM0086](docs/Diagnostics/Spacing/GM0086/GM0086.md) | Space before colon in inheritance clause                    | Yes     | Yes     |
+| [GM0087](docs/Diagnostics/Spacing/GM0087/GM0087.md) | Space after colon in inheritance clause                     | Yes     | Yes     |
+| [GM0088](docs/Diagnostics/Spacing/GM0088/GM0088.md) | Space around binary operators                               | Yes     | Yes     |
 
 ### Architecture Diagnostics
 

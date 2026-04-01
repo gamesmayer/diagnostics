@@ -107,6 +107,12 @@ dotnet_diagnostic.GM0084.severity = warning  # Spaces inside method declaration 
 dotnet_diagnostic.GM0084.enabled = false
 dotnet_diagnostic.GM0085.severity = warning  # Spaces inside method call argument list parentheses
 dotnet_diagnostic.GM0085.enabled = false
+dotnet_diagnostic.GM0086.severity = warning  # Space before colon in inheritance clause
+dotnet_diagnostic.GM0086.enabled = true
+dotnet_diagnostic.GM0087.severity = warning  # Space after colon in inheritance clause
+dotnet_diagnostic.GM0087.enabled = true
+dotnet_diagnostic.GM0088.severity = warning  # Space around binary operators
+dotnet_diagnostic.GM0088.enabled = true
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
