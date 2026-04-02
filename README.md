@@ -79,27 +79,28 @@ Diagnostics are organized by category.
 | [GM0052](docs/Diagnostics/Layout/GM0052.md)        | No blank lines between 'return' and returned expression                            | Yes     | Yes     |
 | [GM0053](docs/Diagnostics/Layout/GM0053.md)        | Each 'where' constraint clause must be on its own line                             | Yes     | Yes     |
 | [GM0055](docs/Diagnostics/Layout/GM0055.md)        | No blank lines between 'where' constraint clauses                                  | Yes     | Yes     |
-| [GM0056](docs/Diagnostics/Layout/GM0056/GM0056.md) | 'where' constraint clause must be written on a single line                         | Yes     | Yes     |
+| [GM0056](docs/Diagnostics/Layout/GM0056.md) | 'where' constraint clause must be written on a single line                         | Yes     | Yes     |
 | [GM0057](docs/Diagnostics/Layout/GM0057.md)        | No blank lines between declaration and first 'where' constraint clause             | Yes     | Yes     |
 | [GM0058](docs/Diagnostics/Layout/GM0058.md)        | Inheritance list must be on the same line as the type declaration                  | Yes     | Yes     |
 | [GM0059](docs/Diagnostics/Layout/GM0059.md)        | Colon in named argument must be adjacent to parameter name                         | Yes     | Yes     |
-| [GM0060](docs/Diagnostics/Layout/GM0060/GM0060.md) | Property/field access chain must be on a single line                               | Yes     | Yes     |
-| [GM0061](docs/Diagnostics/Layout/GM0061/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                   | Yes     | Yes     |
-| [GM0062](docs/Diagnostics/Layout/GM0062/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                 | Yes     | Yes     |
-| [GM0063](docs/Diagnostics/Layout/GM0063/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements        | Yes     | Yes     |
-| [GM0064](docs/Diagnostics/Layout/GM0064/GM0064.md) | Early return in function                                                           | No      | Yes     |
-| [GM0065](docs/Diagnostics/Layout/GM0065/GM0065.md) | Return statement must be preceded by a blank line                                  | Yes     | Yes     |
-| [GM0066](docs/Diagnostics/Layout/GM0066/GM0066.md) | Block statement must be preceded by blank line                                     | Yes     | Yes     |
-| [GM0067](docs/Diagnostics/Layout/GM0067/GM0067.md) | Block statement must be followed by a blank line                                   | Yes     | Yes     |
-| [GM0068](docs/Diagnostics/Layout/GM0068/GM0068.md) | Multiple statements on one line                                                    | Yes     | Yes     |
-| [GM0069](docs/Diagnostics/Layout/GM0069/GM0069.md) | Properties not autoimplemented cannot be single line statements                    | Yes     | Yes     |
-| [GM0070](docs/Diagnostics/Layout/GM0070/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties            | Yes     | Yes     |
-| [GM0071](docs/Diagnostics/Layout/GM0071/GM0071.md) | Each accessor in non-autoimplemented properties must be separated by a blank line  | Yes     | Yes     |
-| [GM0072](docs/Diagnostics/Layout/GM0072/GM0072.md) | Blank line required before `#if` directive                                         | Yes     | Yes     |
-| [GM0073](docs/Diagnostics/Layout/GM0073/GM0073.md) | Blank line required after `#endif` directive                                       | Yes     | Yes     |
-| [GM0074](docs/Diagnostics/Layout/GM0074/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line             | Yes     | Yes     |
-| [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line          | Yes     | Yes     |
-| [GM0080](docs/Diagnostics/Layout/GM0080/GM0080.md) | Break statement must be preceded by a blank line                                   | Yes     | Yes     |
+| [GM0060](docs/Diagnostics/Layout/GM0060.md) | Property/field access chain must be on a single line                               | Yes     | Yes     |
+| [GM0061](docs/Diagnostics/Layout/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                   | Yes     | Yes     |
+| [GM0062](docs/Diagnostics/Layout/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                 | Yes     | Yes     |
+| [GM0063](docs/Diagnostics/Layout/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements        | Yes     | Yes     |
+| [GM0064](docs/Diagnostics/Layout/GM0064.md) | Early return in function                                                           | No      | Yes     |
+| [GM0065](docs/Diagnostics/Layout/GM0065.md) | Return statement must be preceded by a blank line                                  | Yes     | Yes     |
+| [GM0066](docs/Diagnostics/Layout/GM0066.md) | Block statement must be preceded by blank line                                     | Yes     | Yes     |
+| [GM0067](docs/Diagnostics/Layout/GM0067.md) | Block statement must be followed by a blank line                                   | Yes     | Yes     |
+| [GM0068](docs/Diagnostics/Layout/GM0068.md) | Multiple statements on one line                                                    | Yes     | Yes     |
+| [GM0069](docs/Diagnostics/Layout/GM0069.md) | Properties not autoimplemented cannot be single line statements                    | Yes     | Yes     |
+| [GM0070](docs/Diagnostics/Layout/GM0070.md) | Each accessor must be on its own line in non-autoimplemented properties            | Yes     | Yes     |
+| [GM0071](docs/Diagnostics/Layout/GM0071.md) | Each accessor in non-autoimplemented properties must be separated by a blank line  | Yes     | Yes     |
+| [GM0072](docs/Diagnostics/Layout/GM0072.md) | Blank line required before `#if` directive                                         | Yes     | Yes     |
+| [GM0073](docs/Diagnostics/Layout/GM0073.md) | Blank line required after `#endif` directive                                       | Yes     | Yes     |
+| [GM0074](docs/Diagnostics/Layout/GM0074.md) | `#if` / `#else` / `#elif` directive must not be followed by blank line             | Yes     | Yes     |
+| [GM0075](docs/Diagnostics/Layout/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line          | Yes     | Yes     |
+| [GM0080](docs/Diagnostics/Layout/GM0080.md) | Break statement must be preceded by a blank line                                   | Yes     | Yes     |
+| [GM0112](docs/Diagnostics/Layout/GM0112.md)        | No blank lines between consecutive variables                                       | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                   | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md)        | Closing brace must not be preceded by blank line                                   | Yes     | Yes     |
 
@@ -116,51 +117,51 @@ Diagnostics are organized by category.
 | [GM0045](docs/Diagnostics/Indentation/GM0045.md)        | Lambda expression body must be indented one step from the arrow line                  | Yes     | Yes     |
 | [GM0049](docs/Diagnostics/Indentation/GM0049.md)        | Wrapped operator-expression item must be indented one step from expression start line | Yes     | Yes     |
 | [GM0054](docs/Diagnostics/Indentation/GM0054.md)        | 'where' constraint clause must be indented one step from the declaration              | Yes     | Yes     |
-| [GM0077](docs/Diagnostics/Indentation/GM0077/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
-| [GM0078](docs/Diagnostics/Indentation/GM0078/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
-| [GM0081](docs/Diagnostics/Indentation/GM0081/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
+| [GM0077](docs/Diagnostics/Indentation/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
+| [GM0078](docs/Diagnostics/Indentation/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
+| [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
 
 ### Spacing Diagnostics
 
 | ID                                                  | Description                                                 | Fixable | Default |
 | --------------------------------------------------- | ----------------------------------------------------------- | ------- | ------- |
-| [GM0079](docs/Diagnostics/Spacing/GM0079/GM0079.md) | No more than one space between tokens                       | Yes     | Yes     |
-| [GM0082](docs/Diagnostics/Spacing/GM0082/GM0082.md) | Cast expression spacing                                     | Yes     | Yes     |
-| [GM0083](docs/Diagnostics/Spacing/GM0083/GM0083.md) | Space after control-flow keywords                           | Yes     | Yes     |
-| [GM0084](docs/Diagnostics/Spacing/GM0084/GM0084.md) | Spaces inside method declaration parameter list parentheses | Yes     | Yes     |
-| [GM0085](docs/Diagnostics/Spacing/GM0085/GM0085.md) | Spaces inside method call argument list parentheses         | Yes     | Yes     |
-| [GM0086](docs/Diagnostics/Spacing/GM0086/GM0086.md) | Space before colon in inheritance clause                    | Yes     | Yes     |
-| [GM0087](docs/Diagnostics/Spacing/GM0087/GM0087.md) | Space after colon in inheritance clause                     | Yes     | Yes     |
-| [GM0088](docs/Diagnostics/Spacing/GM0088/GM0088.md) | Space around binary operators                               | Yes     | Yes     |
-| [GM0089](docs/Diagnostics/Spacing/GM0089/GM0089.md) | Space between parentheses                                   | Yes     | No      |
-| [GM0090](docs/Diagnostics/Spacing/GM0090/GM0090.md) | Space in empty method declaration parameter list            | Yes     | No      |
-| [GM0091](docs/Diagnostics/Spacing/GM0091/GM0091.md) | Space between method declaration name and open parenthesis  | Yes     | No      |
-| [GM0092](docs/Diagnostics/Spacing/GM0092/GM0092.md) | Space in empty method call argument list                    | Yes     | No      |
-| [GM0093](docs/Diagnostics/Spacing/GM0093/GM0093.md) | Space between method call name and opening parenthesis      | Yes     | No      |
-| [GM0094](docs/Diagnostics/Spacing/GM0094/GM0094.md) | Space after comma                                           | Yes     | Yes     |
-| [GM0095](docs/Diagnostics/Spacing/GM0095/GM0095.md) | Space before comma                                          | Yes     | No      |
-| [GM0096](docs/Diagnostics/Spacing/GM0096/GM0096.md) | Space after dot                                             | Yes     | No      |
-| [GM0097](docs/Diagnostics/Spacing/GM0097/GM0097.md) | Space before dot                                            | Yes     | No      |
-| [GM0099](docs/Diagnostics/Spacing/GM0099/GM0099.md) | Space after semicolon in for statement                      | Yes     | Yes     |
-| [GM0100](docs/Diagnostics/Spacing/GM0100/GM0100.md) | Space before semicolon in for statement                     | Yes     | No      |
-| [GM0098](docs/Diagnostics/Spacing/GM0098/GM0098.md) | Space before open square bracket                            | Yes     | No      |
-| [GM0101](docs/Diagnostics/Spacing/GM0101/GM0101.md) | Space between empty square brackets                         | Yes     | No      |
-| [GM0102](docs/Diagnostics/Spacing/GM0102/GM0102.md) | Space between square brackets                               | Yes     | No      |
-| [GM0103](docs/Diagnostics/Spacing/GM0103/GM0103.md) | Space before generic '<' symbol                             | Yes     | No      |
-| [GM0104](docs/Diagnostics/Spacing/GM0104/GM0104.md) | Space between generic operators '<' and '>'                 | Yes     | No      |
-| [GM0105](docs/Diagnostics/Spacing/GM0105/GM0105.md) | Space around ternary operators '?' and ':'                  | Yes     | Yes     |
-| [GM0106](docs/Diagnostics/Spacing/GM0106/GM0106.md) | Space before => symbol                                      | Yes     | No      |
-| [GM0107](docs/Diagnostics/Spacing/GM0107/GM0107.md) | Space after => symbol                                       | Yes     | No      |
-| [GM0108](docs/Diagnostics/Spacing/GM0108/GM0108.md) | Space after type in declarations                            | Yes     | Yes     |
-| [GM0109](docs/Diagnostics/Spacing/GM0109/GM0109.md) | Space before assignment operator '='                        | Yes     | Yes     |
-| [GM0110](docs/Diagnostics/Spacing/GM0110/GM0110.md) | Space after assignment operator '='                         | Yes     | Yes     |
-| [GM0111](docs/Diagnostics/Spacing/GM0111/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
+| [GM0079](docs/Diagnostics/Spacing/GM0079.md) | No more than one space between tokens                       | Yes     | Yes     |
+| [GM0082](docs/Diagnostics/Spacing/GM0082.md) | Cast expression spacing                                     | Yes     | Yes     |
+| [GM0083](docs/Diagnostics/Spacing/GM0083.md) | Space after control-flow keywords                           | Yes     | Yes     |
+| [GM0084](docs/Diagnostics/Spacing/GM0084.md) | Spaces inside method declaration parameter list parentheses | Yes     | Yes     |
+| [GM0085](docs/Diagnostics/Spacing/GM0085.md) | Spaces inside method call argument list parentheses         | Yes     | Yes     |
+| [GM0086](docs/Diagnostics/Spacing/GM0086.md) | Space before colon in inheritance clause                    | Yes     | Yes     |
+| [GM0087](docs/Diagnostics/Spacing/GM0087.md) | Space after colon in inheritance clause                     | Yes     | Yes     |
+| [GM0088](docs/Diagnostics/Spacing/GM0088.md) | Space around binary operators                               | Yes     | Yes     |
+| [GM0089](docs/Diagnostics/Spacing/GM0089.md) | Space between parentheses                                   | Yes     | No      |
+| [GM0090](docs/Diagnostics/Spacing/GM0090.md) | Space in empty method declaration parameter list            | Yes     | No      |
+| [GM0091](docs/Diagnostics/Spacing/GM0091.md) | Space between method declaration name and open parenthesis  | Yes     | No      |
+| [GM0092](docs/Diagnostics/Spacing/GM0092.md) | Space in empty method call argument list                    | Yes     | No      |
+| [GM0093](docs/Diagnostics/Spacing/GM0093.md) | Space between method call name and opening parenthesis      | Yes     | No      |
+| [GM0094](docs/Diagnostics/Spacing/GM0094.md) | Space after comma                                           | Yes     | Yes     |
+| [GM0095](docs/Diagnostics/Spacing/GM0095.md) | Space before comma                                          | Yes     | No      |
+| [GM0096](docs/Diagnostics/Spacing/GM0096.md) | Space after dot                                             | Yes     | No      |
+| [GM0097](docs/Diagnostics/Spacing/GM0097.md) | Space before dot                                            | Yes     | No      |
+| [GM0099](docs/Diagnostics/Spacing/GM0099.md) | Space after semicolon in for statement                      | Yes     | Yes     |
+| [GM0100](docs/Diagnostics/Spacing/GM0100.md) | Space before semicolon in for statement                     | Yes     | No      |
+| [GM0098](docs/Diagnostics/Spacing/GM0098.md) | Space before open square bracket                            | Yes     | No      |
+| [GM0101](docs/Diagnostics/Spacing/GM0101.md) | Space between empty square brackets                         | Yes     | No      |
+| [GM0102](docs/Diagnostics/Spacing/GM0102.md) | Space between square brackets                               | Yes     | No      |
+| [GM0103](docs/Diagnostics/Spacing/GM0103.md) | Space before generic '<' symbol                             | Yes     | No      |
+| [GM0104](docs/Diagnostics/Spacing/GM0104.md) | Space between generic operators '<' and '>'                 | Yes     | No      |
+| [GM0105](docs/Diagnostics/Spacing/GM0105.md) | Space around ternary operators '?' and ':'                  | Yes     | Yes     |
+| [GM0106](docs/Diagnostics/Spacing/GM0106.md) | Space before => symbol                                      | Yes     | No      |
+| [GM0107](docs/Diagnostics/Spacing/GM0107.md) | Space after => symbol                                       | Yes     | No      |
+| [GM0108](docs/Diagnostics/Spacing/GM0108.md) | Space after type in declarations                            | Yes     | Yes     |
+| [GM0109](docs/Diagnostics/Spacing/GM0109.md) | Space before assignment operator '='                        | Yes     | Yes     |
+| [GM0110](docs/Diagnostics/Spacing/GM0110.md) | Space after assignment operator '='                         | Yes     | Yes     |
+| [GM0111](docs/Diagnostics/Spacing/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
 | ID                                                       | Description                                  | Fixable | Default |
 | -------------------------------------------------------- | -------------------------------------------- | ------- | ------- |
-| [GM0076](docs/Diagnostics/Architecture/GM0076/GM0076.md) | Avoid using Unity Debug.Log methods directly | No      | Yes     |
+| [GM0076](docs/Diagnostics/Architecture/GM0076.md) | Avoid using Unity Debug.Log methods directly | No      | Yes     |
 
 ### Naming Diagnostics
 
@@ -194,19 +195,6 @@ Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnal
 | [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | No      | Yes     |
 | [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      | Yes     |
 
-## Local Development
-
-```sh
-# Pack to local feed (builds implicitly)
-dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
-
-# Clear NuGet cache (required when replacing a package at the same version)
-dotnet nuget locals all --clear
-
-# Force-restore consumer solution
-dotnet restore /path/to/consumer.sln --force
-```
-
 ## Usage
 
 ### Using with `dotnet format`
@@ -227,6 +215,19 @@ dotnet_diagnostic.GM0002.severity = warning
 A ready-to-use example covering all diagnostics is available at [`docs/.editorconfig.example`](docs/.editorconfig.example). Copy the relevant sections into your project's `.editorconfig`.
 
 > **Note:** Architecture, Ordering, and Naming diagnostics (GM0076, GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
+
+## Local Development
+
+```sh
+# Pack to local feed (builds implicitly)
+dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
+
+# Clear NuGet cache (required when replacing a package at the same version)
+dotnet nuget locals all --clear
+
+# Force-restore consumer solution
+dotnet restore /path/to/consumer.sln --force
+```
 
 ## Testing
 
