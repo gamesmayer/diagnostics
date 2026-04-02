@@ -78,7 +78,7 @@ namespace GamesMayer.Diagnostics
             }
 
             var firstItemLine = tree.GetLineSpan(firstItem.Span).StartLinePosition.Line;
-            
+
             if (openParenLine != declarationLine || firstItemLine == openParenLine)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, openParenToken.GetLocation()));

@@ -179,7 +179,7 @@ namespace GamesMayer.Diagnostics
         {
             var firstToken = modifiers.Count > 0 ? modifiers[0] : keyword;
             var lastToken = typeParamsGreaterThan ?? identifier;
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)
@@ -202,7 +202,7 @@ namespace GamesMayer.Diagnostics
 
             var variable = fieldDecl.Declaration.Variables.FirstOrDefault();
             var lastToken = variable?.Initializer?.EqualsToken ?? variable?.Identifier ?? fieldDecl.GetFirstToken();
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)
@@ -224,7 +224,7 @@ namespace GamesMayer.Diagnostics
                 : propertyDecl.GetFirstToken();
 
             var lastToken = propertyDecl.Initializer?.EqualsToken ?? propertyDecl.Identifier;
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)
@@ -246,7 +246,7 @@ namespace GamesMayer.Diagnostics
                 : methodDecl.GetFirstToken();
 
             var lastToken = methodDecl.TypeParameterList?.GreaterThanToken ?? methodDecl.Identifier;
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)
@@ -268,7 +268,7 @@ namespace GamesMayer.Diagnostics
                 : eventDecl.GetFirstToken();
 
             var lastToken = eventDecl.Identifier;
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)
@@ -290,7 +290,7 @@ namespace GamesMayer.Diagnostics
                 : constructorDecl.GetFirstToken();
 
             var lastToken = constructorDecl.Identifier;
-            
+
             var tokens = new List<SyntaxToken>();
             var current = firstToken;
             while (current.Span.Start <= lastToken.Span.Start)

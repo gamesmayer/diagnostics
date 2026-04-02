@@ -31,15 +31,19 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression, SyntaxKind.ObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var invocation = (InvocationExpressionSyntax)context.Node;
-            var argumentList = invocation.ArgumentList;
+            var argumentList = context.Node switch
+            {
+                InvocationExpressionSyntax invocation => invocation.ArgumentList,
+                ObjectCreationExpressionSyntax objectCreation => objectCreation.ArgumentList,
+                _ => null
+            };
 
-            if (argumentList.Arguments.Count == 0)
+            if (argumentList == null || argumentList.Arguments.Count == 0)
                 return;
 
             var firstArgumentToken = argumentList.Arguments[0].GetFirstToken();

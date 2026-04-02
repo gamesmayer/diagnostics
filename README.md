@@ -127,6 +127,20 @@ Diagnostics are organized by category.
 | [GM0086](docs/Diagnostics/Spacing/GM0086/GM0086.md) | Space before colon in inheritance clause                    | Yes     | Yes     |
 | [GM0087](docs/Diagnostics/Spacing/GM0087/GM0087.md) | Space after colon in inheritance clause                     | Yes     | Yes     |
 | [GM0088](docs/Diagnostics/Spacing/GM0088/GM0088.md) | Space around binary operators                               | Yes     | Yes     |
+| [GM0089](docs/Diagnostics/Spacing/GM0089/GM0089.md) | Space between parentheses                                   | Yes     | No      |
+| [GM0090](docs/Diagnostics/Spacing/GM0090/GM0090.md) | Space in empty method declaration parameter list            | Yes     | No      |
+| [GM0091](docs/Diagnostics/Spacing/GM0091/GM0091.md) | Space between method declaration name and open parenthesis  | Yes     | No      |
+| [GM0092](docs/Diagnostics/Spacing/GM0092/GM0092.md) | Space in empty method call argument list                    | Yes     | No      |
+| [GM0093](docs/Diagnostics/Spacing/GM0093/GM0093.md) | Space between method call name and opening parenthesis      | Yes     | No      |
+| [GM0094](docs/Diagnostics/Spacing/GM0094/GM0094.md) | Space after comma                                           | Yes     | Yes     |
+| [GM0095](docs/Diagnostics/Spacing/GM0095/GM0095.md) | Space before comma                                          | Yes     | No      |
+| [GM0096](docs/Diagnostics/Spacing/GM0096/GM0096.md) | Space after dot                                             | Yes     | No      |
+| [GM0097](docs/Diagnostics/Spacing/GM0097/GM0097.md) | Space before dot                                            | Yes     | No      |
+| [GM0099](docs/Diagnostics/Spacing/GM0099/GM0099.md) | Space after semicolon in for statement                      | Yes     | Yes     |
+| [GM0100](docs/Diagnostics/Spacing/GM0100/GM0100.md) | Space before semicolon in for statement                     | Yes     | No      |
+| [GM0098](docs/Diagnostics/Spacing/GM0098/GM0098.md) | Space before open square bracket                            | Yes     | No      |
+| [GM0101](docs/Diagnostics/Spacing/GM0101/GM0101.md) | Space between empty square brackets                         | Yes     | No      |
+| [GM0102](docs/Diagnostics/Spacing/GM0102/GM0102.md) | Space between square brackets                               | Yes     | No      |
 
 ### Architecture Diagnostics
 

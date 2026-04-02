@@ -142,12 +142,12 @@ namespace GamesMayer.Diagnostics
                         break;
                     case FixAllScope.Solution:
                         foreach (var project in fixAllContext.Solution.Projects)
-                        foreach (var doc in project.Documents)
-                        {
-                            var diags = await fixAllContext.GetDocumentDiagnosticsAsync(doc).ConfigureAwait(false);
-                            if (diags.Length > 0)
-                                entries.Add((doc, diags));
-                        }
+                            foreach (var doc in project.Documents)
+                            {
+                                var diags = await fixAllContext.GetDocumentDiagnosticsAsync(doc).ConfigureAwait(false);
+                                if (diags.Length > 0)
+                                    entries.Add((doc, diags));
+                            }
                         break;
                 }
 

@@ -1,5 +1,7 @@
 # Create New Diagnostic
 
+Create a new diagnostic following the [instructions](#instructions).
+
 ## Requirements
 
 If one of the non-optional requirements is not provided, it will not be possible to execute the process.
@@ -19,13 +21,19 @@ If one of the non-optional requirements is not provided, it will not be possible
 |      examples       |          Code samples with issues to clarify how rule works           |   true   |                        []                        | ["using System;\n{\|GM0001:\|}\nusing System.Collections;\nclass Foo { }"] |
 |        notes        |       Additional details about the behaviour or implementation        |   true   |                        -                         | "Create a test case for consecutive blank lines between using directives"  |
 
-The requirements will be provided in JSON format. For example:
+The requirements will be provided in JSON or bullet list format:
+
+JSON:
 
 ```json
 {
   "rule": "Do not allow blank lines between using directives"
 }
 ```
+
+Bullet list:
+
+- rule: Do not allow blank lines between using directives
 
 ## Instructions
 

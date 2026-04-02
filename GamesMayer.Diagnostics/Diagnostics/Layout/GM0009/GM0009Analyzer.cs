@@ -27,7 +27,7 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            
+
             context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeRecordDeclaration, SyntaxKind.RecordDeclaration);
@@ -69,7 +69,7 @@ namespace GamesMayer.Diagnostics
             var firstToken = GetFirstNonAttributeToken(fieldDecl.AttributeLists, fieldDecl.GetFirstToken());
             var variable = fieldDecl.Declaration.Variables.FirstOrDefault();
             var lastToken = variable?.Initializer?.EqualsToken ?? variable?.Identifier ?? fieldDecl.GetLastToken();
-            
+
             if (HasLineBreaksBetween(firstToken, lastToken))
             {
                 var fieldName = fieldDecl.Declaration.Variables.FirstOrDefault()?.Identifier.Text ?? "field";
@@ -83,7 +83,7 @@ namespace GamesMayer.Diagnostics
             var propertyDecl = (PropertyDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(propertyDecl.AttributeLists, propertyDecl.GetFirstToken());
             var lastToken = propertyDecl.Initializer?.EqualsToken ?? propertyDecl.Identifier;
-            
+
             if (HasLineBreaksBetween(firstToken, lastToken))
             {
                 var location = Location.Create(propertyDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, lastToken.Span.End));
@@ -108,7 +108,7 @@ namespace GamesMayer.Diagnostics
         {
             var eventDecl = (EventDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(eventDecl.AttributeLists, eventDecl.GetFirstToken());
-            
+
             if (HasLineBreaksBetween(firstToken, eventDecl.Identifier))
             {
                 var location = Location.Create(eventDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, eventDecl.Identifier.Span.End));
@@ -120,7 +120,7 @@ namespace GamesMayer.Diagnostics
         {
             var constructorDecl = (ConstructorDeclarationSyntax)context.Node;
             var firstToken = GetFirstNonAttributeToken(constructorDecl.AttributeLists, constructorDecl.GetFirstToken());
-            
+
             if (HasLineBreaksBetween(firstToken, constructorDecl.Identifier))
             {
                 var location = Location.Create(constructorDecl.SyntaxTree, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(firstToken.SpanStart, constructorDecl.Identifier.Span.End));

@@ -74,7 +74,7 @@ namespace GamesMayer.Diagnostics
                     {
                         newList = newList.WithTrailingTrivia(attributeList.GetTrailingTrivia());
                     }
-                    
+
                     return newList;
                 })
                 .ToList();

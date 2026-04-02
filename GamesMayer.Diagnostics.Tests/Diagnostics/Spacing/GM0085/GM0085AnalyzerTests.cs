@@ -124,5 +124,109 @@ dotnet_diagnostic.GM0085.enabled = true"));
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task WithoutSpaces_Constructor_DefaultSetting_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int _value;
+    Foo(int value) { _value = value; }
+
+    Foo N(int value)
+    {
+        return new Foo(value);
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task WithSpaces_Constructor_DefaultSetting_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int _value;
+    Foo(int value) { _value = value; }
+
+    Foo N(int value)
+    {
+        return new Foo{|GM0085:(|} value );
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task WithoutSpaces_Constructor_EnabledTrue_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int _value;
+    Foo(int value) { _value = value; }
+
+    Foo N(int value)
+    {
+        return new Foo{|GM0085:(|}value);
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0085Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0085.enabled = true"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task WithSpaces_Constructor_EnabledTrue_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int _value;
+    Foo(int value) { _value = value; }
+
+    Foo N(int value)
+    {
+        return new Foo( value );
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0085Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0085.enabled = true"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task EmptyArgumentList_Constructor_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo() { }
+
+    Foo N()
+    {
+        return new Foo();
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

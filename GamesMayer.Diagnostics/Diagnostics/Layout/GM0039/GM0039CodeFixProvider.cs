@@ -40,7 +40,7 @@ namespace GamesMayer.Diagnostics
         {
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            
+
             // The diagnostic should be at the dot position
             if (diagnosticSpan.Start >= sourceText.Length)
                 return document;
@@ -51,13 +51,13 @@ namespace GamesMayer.Diagnostics
 
             // Find everything from the dot to the first non-whitespace on the next line
             // and rearrange it as: newline + indent + dot
-            
+
             int pos = diagnosticSpan.Start + 1;  // after the dot
-            
+
             // Scan for the newline
             while (pos < sourceText.Length && sourceText[pos] != '\n' && sourceText[pos] != '\r')
                 pos++;
-            
+
             if (pos >= sourceText.Length)
                 return document;  // No newline found
 
