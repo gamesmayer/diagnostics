@@ -11,7 +11,7 @@ dotnet_analyzer_diagnostic.severity = default
 # Disable formatting rules that conflict with GamesMayer.Diagnostics rules
 dotnet_diagnostic.IDE0055.severity = none
 
-# GamesMayer.Diagnostics — Layout (GM0001-GM1508)
+# GamesMayer.Diagnostics — Layout (non-indentation)
 dotnet_diagnostic.GM0001.severity = warning  # Blank line between using directives
 dotnet_diagnostic.GM0002.severity = warning  # Auto-implemented property must be on a single line
 dotnet_diagnostic.GM0003.severity = warning  # Attribute must be on the line immediately before the member
@@ -35,21 +35,15 @@ dotnet_diagnostic.GM0020.severity = warning  # GM0020: New line required before 
 dotnet_diagnostic.GM0021.severity = warning  # Opening brace required on declaration line for empty enclosure (disabled by default)
 dotnet_diagnostic.GM0022.severity = none     # New line required before opening brace for empty enclosure
 dotnet_diagnostic.GM0023.severity = warning  # Misaligned parameter or argument in multi-line list
-dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0025.severity = warning  # Each argument or parameter must be on its own line in a multi-line list
 dotnet_diagnostic.GM0026.severity = warning  # Closing parenthesis in multi-line list must be on a dedicated line
-dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
-dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
-dotnet_diagnostic.GM0029.severity = warning  # Parenthesis Allman indentation style in multi-line list
 dotnet_diagnostic.GM0030.severity = warning  # No blank line between declaration and opening parenthesis
 dotnet_diagnostic.GM0031.severity = warning  # Empty parentheses must be on the same line as the declaration
 dotnet_diagnostic.GM0032.severity = warning  # Single-line parameter or argument list must be on the declaration line
-dotnet_diagnostic.GM0033.severity = warning  # Opening parenthesis indentation in multi-line argument/parameter list
 dotnet_diagnostic.GM0034.severity = warning  # First item in multi-line list must start below opening parenthesis
 dotnet_diagnostic.GM0035.severity = warning  # No blank lines between fluent-chain segments
 dotnet_diagnostic.GM0036.severity = warning  # Variable declaration header must be on a single line
 dotnet_diagnostic.GM0037.severity = warning  # Parameter declaration header must be on a single line
-dotnet_diagnostic.GM0038.severity = warning  # Fluent-chain segment indentation
 dotnet_diagnostic.GM0039.severity = warning  # Fluent-chain dot must be on the same line as the next identifier
 dotnet_diagnostic.GM0040.severity = warning  # All fluent-chain segments must be on their own line if any segment is
 dotnet_diagnostic.GM0041.severity = warning # Each segment in a multi-invocation fluent chain must be on its own line
@@ -58,16 +52,13 @@ dotnet_diagnostic.GM0042.severity = warning  # Blank line required after last us
 dotnet_diagnostic.GM0043.severity = warning #Each operand in a multi-operand logical expression must be on its own line
 dotnet_diagnostic.GM0043.threshold = 3
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
-dotnet_diagnostic.GM0045.severity = warning  # Lambda expression body must be indented one step from the arrow line
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
 dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
 dotnet_diagnostic.GM0048.severity = warning  # Expression body must start on the same line as '=>'
-dotnet_diagnostic.GM0049.severity = warning  # Wrapped operator-expression item must be indented one step from expression start line
 dotnet_diagnostic.GM0050.severity = warning  # No blank lines between multi-line operator-expression items
 dotnet_diagnostic.GM0051.severity = warning  # Return expression must start on the same line as 'return'
 dotnet_diagnostic.GM0052.severity = warning  # No blank lines between 'return' and returned expression
 dotnet_diagnostic.GM0053.severity = warning  # Each 'where' constraint clause must be on its own line
-dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be indented one step from the declaration
 dotnet_diagnostic.GM0055.severity = warning  # No blank lines between 'where' constraint clauses
 dotnet_diagnostic.GM0056.severity = warning  # 'where' constraint clause must be written on a single line
 dotnet_diagnostic.GM0057.severity = warning  # No blank lines between declaration and first 'where' constraint clause
@@ -89,9 +80,20 @@ dotnet_diagnostic.GM0072.severity = warning  # Blank line required before #if di
 dotnet_diagnostic.GM0073.severity = warning  # Blank line required after #endif directive
 dotnet_diagnostic.GM0074.severity = warning  # #if / #else / #elif directive must not be followed by blank line
 dotnet_diagnostic.GM0075.severity = warning  # #endif / #else / #elif directive must not be preceded by blank line
+dotnet_diagnostic.GM0080.severity = warning  # Break statement must be preceded by a blank line
+
+# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081)
+dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
+dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
+dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
+dotnet_diagnostic.GM0029.severity = warning  # Parenthesis Allman indentation style in multi-line list
+dotnet_diagnostic.GM0033.severity = warning  # Opening parenthesis indentation in multi-line argument/parameter list
+dotnet_diagnostic.GM0038.severity = warning  # Fluent-chain segment indentation
+dotnet_diagnostic.GM0045.severity = warning  # Lambda expression body must be indented one step from the arrow line
+dotnet_diagnostic.GM0049.severity = warning  # Wrapped operator-expression item must be indented one step from expression start line
+dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be indented one step from the declaration
 dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented one step from the block braces
 dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at the declaration level
-dotnet_diagnostic.GM0080.severity = warning  # Break statement must be preceded by a blank line
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
@@ -145,6 +147,12 @@ dotnet_diagnostic.GM0103.severity = warning  # Space before generic '<' symbol
 dotnet_diagnostic.GM0103.enabled = false
 dotnet_diagnostic.GM0104.severity = warning  # Space between generic operators '<' and '>'
 dotnet_diagnostic.GM0104.enabled = false
+dotnet_diagnostic.GM0105.severity = warning  # Space around ternary operators '?' and ':'
+dotnet_diagnostic.GM0105.enabled = true
+dotnet_diagnostic.GM0106.severity = warning  # Space before => symbol
+dotnet_diagnostic.GM0106.enabled = true
+dotnet_diagnostic.GM0107.severity = warning  # Space after => symbol
+dotnet_diagnostic.GM0107.enabled = true
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

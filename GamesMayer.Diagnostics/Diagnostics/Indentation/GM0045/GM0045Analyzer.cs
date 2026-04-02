@@ -1,0 +1,94 @@
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+
+namespace GamesMayer.Diagnostics
+{
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public sealed class GM0045Analyzer : DiagnosticAnalyzer
+    {
+        public const string DiagnosticId = "GM0045";
+
+        private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+            id: DiagnosticId,
+            title: "Expression body must be indented one step from the '=>' line",
+            messageFormat: "Indent the expression body one step from the '=>' line",
+            category: "Indentation",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "When an expression body is on a different line from the '=>' token, it must be indented exactly one step (4 spaces) more than the leading whitespace of the '=>' line.");
+
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+            ImmutableArray.Create(Descriptor);
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+            context.EnableConcurrentExecution();
+            context.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.SimpleLambdaExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.ParenthesizedLambdaExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeArrowExpressionClause, SyntaxKind.ArrowExpressionClause);
+        }
+
+        private static void AnalyzeLambda(SyntaxNodeAnalysisContext context)
+        {
+            var lambda = (LambdaExpressionSyntax)context.Node;
+
+            if (lambda.Body is BlockSyntax)
+                return;
+
+            var bodyFirstToken = lambda.Body.GetFirstToken();
+            if (bodyFirstToken == default)
+                return;
+
+            AnalyzeArrow(context, lambda.ArrowToken, bodyFirstToken, lambda.Body.Span);
+        }
+
+        private static void AnalyzeArrowExpressionClause(SyntaxNodeAnalysisContext context)
+        {
+            var arrowClause = (ArrowExpressionClauseSyntax)context.Node;
+
+            var bodyFirstToken = arrowClause.Expression.GetFirstToken();
+            if (bodyFirstToken == default)
+                return;
+
+            AnalyzeArrow(context, arrowClause.ArrowToken, bodyFirstToken, arrowClause.Expression.Span);
+        }
+
+        private static void AnalyzeArrow(
+            SyntaxNodeAnalysisContext context,
+            SyntaxToken arrowToken,
+            SyntaxToken bodyFirstToken,
+            Microsoft.CodeAnalysis.Text.TextSpan bodySpan)
+        {
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var arrowLine = tree.GetLineSpan(arrowToken.Span).EndLinePosition.Line;
+            var bodyLine = tree.GetLineSpan(bodyFirstToken.Span).StartLinePosition.Line;
+
+            if (bodyLine == arrowLine)
+                return;
+
+            var arrowLineText = sourceText.Lines[arrowLine].ToString();
+            int arrowIndent = CountLeadingWhitespace(arrowLineText);
+            int expectedIndent = arrowIndent + 4;
+
+            var bodyLineText = sourceText.Lines[bodyLine].ToString();
+            int actualIndent = CountLeadingWhitespace(bodyLineText);
+
+            if (actualIndent != expectedIndent)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, bodySpan)));
+        }
+
+        internal static int CountLeadingWhitespace(string text)
+        {
+            int count = 0;
+            while (count < text.Length && (text[count] == ' ' || text[count] == '\t'))
+                count++;
+            return count;
+        }
+    }
+}
