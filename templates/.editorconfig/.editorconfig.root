@@ -1,0 +1,9 @@
+# Rename this file to .editorconfig and put it
+# in the root of your project.
+
+root = true
+
+# Disable all analyzers
+
+[*]
+dotnet_analyzer_diagnostic.severity = none

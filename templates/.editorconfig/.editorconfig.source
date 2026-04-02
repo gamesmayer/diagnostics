@@ -1,3 +1,6 @@
+# Rename this file to .editorconfig and put it
+# in your source code root folder. For example: Assets/Source
+
 [*.cs]
 
 # Restore default severity for all rules to avoid unintended consequences of editorconfig inheritance
@@ -256,6 +259,8 @@ dotnet_diagnostic.GM0110.enabled = true
 dotnet_diagnostic.GM0111.severity = warning  # Statement closing semicolon must be adjacent to previous token
 dotnet_diagnostic.GM0113.severity = warning  # Space between single-line block braces
 dotnet_diagnostic.GM0113.enabled = true
+dotnet_diagnostic.GM0114.severity = warning  # Space between accessors in single-line property
+dotnet_diagnostic.GM0114.enabled = true
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

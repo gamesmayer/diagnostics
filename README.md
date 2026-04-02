@@ -1,6 +1,10 @@
 # GAMESMAYER Diagnostics
 
-GAMESMAYER C# code diagnostics.
+<div align="center">
+  <img src="./assets/gamesmayer-icon.png" style="max-width: 100%; width: 256px" />
+</div>
+<p align="center">GAMESMAYER C# code diagnostics.
+</p>
 
 ## Installation
 
@@ -157,6 +161,7 @@ Diagnostics are organized by category.
 | [GM0110](docs/Diagnostics/Spacing/GM0110.md) | Space after assignment operator '='                         | Yes     | Yes     |
 | [GM0111](docs/Diagnostics/Spacing/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
 | [GM0113](docs/Diagnostics/Spacing/GM0113.md) | Space between single-line block braces                      | Yes     | Yes     |
+| [GM0114](docs/Diagnostics/Spacing/GM0114.md) | Space between accessors in single-line property             | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
@@ -213,7 +218,7 @@ dotnet_diagnostic.GM0002.severity = warning
 # ... and so on for each rule
 ```
 
-A ready-to-use example covering all diagnostics is available at [`docs/.editorconfig.example`](docs/.editorconfig.example). Copy the relevant sections into your project's `.editorconfig`.
+A ready-to-use example covering all diagnostics is available at [`templates/.editorconfig/.editorconfig.source`](templates/.editorconfig/.editorconfig.source). Rename it to `.editorconfig` and place it in the root of your source code.
 
 > **Note:** Architecture, Ordering, and Naming diagnostics (GM0076, GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
 
