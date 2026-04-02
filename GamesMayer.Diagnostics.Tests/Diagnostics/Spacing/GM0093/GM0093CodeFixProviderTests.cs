@@ -173,5 +173,69 @@ dotnet_diagnostic.GM0093.enabled = true"));
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task HasSpace_ImplicitObjectCreation_DefaultSetting_RemovesSpace()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new {|GM0093:(|});
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new();
+    }
+}";
+
+            var test = new CSharpCodeFixTest<GM0093Analyzer, GM0093CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task NoSpace_ImplicitObjectCreation_EnabledTrue_AddsSpace()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new{|GM0093:(|});
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new ();
+    }
+}";
+
+            var test = new CSharpCodeFixTest<GM0093Analyzer, GM0093CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0093.enabled = true"));
+
+            test.FixedState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0093.enabled = true"));
+
+            await test.RunAsync();
+        }
     }
 }

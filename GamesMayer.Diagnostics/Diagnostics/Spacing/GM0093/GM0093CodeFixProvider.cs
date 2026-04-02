@@ -79,6 +79,9 @@ namespace GamesMayer.Diagnostics
                         case ObjectCreationExpressionSyntax objectCreation:
                             nameToken = objectCreation.Type.GetLastToken();
                             return true;
+                        case ImplicitObjectCreationExpressionSyntax implicitObjectCreation:
+                            nameToken = implicitObjectCreation.NewKeyword;
+                            return true;
                     }
                     break;
             }

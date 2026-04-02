@@ -210,5 +210,81 @@ dotnet_diagnostic.GM0093.enabled = true"));
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task NoSpace_ImplicitObjectCreation_DefaultSetting_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new();
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task HasSpace_ImplicitObjectCreation_DefaultSetting_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new {|GM0093:(|});
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NoSpace_ImplicitObjectCreation_EnabledTrue_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new{|GM0093:(|});
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0093Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0093.enabled = true"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task HasSpace_ImplicitObjectCreation_EnabledTrue_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        Foo value = new ();
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0093Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0093.enabled = true"));
+
+            await test.RunAsync();
+        }
     }
 }

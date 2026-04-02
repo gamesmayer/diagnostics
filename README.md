@@ -151,6 +151,10 @@ Diagnostics are organized by category.
 | [GM0105](docs/Diagnostics/Spacing/GM0105/GM0105.md) | Space around ternary operators '?' and ':'                  | Yes     | Yes     |
 | [GM0106](docs/Diagnostics/Spacing/GM0106/GM0106.md) | Space before => symbol                                      | Yes     | No      |
 | [GM0107](docs/Diagnostics/Spacing/GM0107/GM0107.md) | Space after => symbol                                       | Yes     | No      |
+| [GM0108](docs/Diagnostics/Spacing/GM0108/GM0108.md) | Space after type in declarations                            | Yes     | Yes     |
+| [GM0109](docs/Diagnostics/Spacing/GM0109/GM0109.md) | Space before assignment operator '='                        | Yes     | Yes     |
+| [GM0110](docs/Diagnostics/Spacing/GM0110/GM0110.md) | Space after assignment operator '='                         | Yes     | Yes     |
+| [GM0111](docs/Diagnostics/Spacing/GM0111/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
 
 ### Architecture Diagnostics
 

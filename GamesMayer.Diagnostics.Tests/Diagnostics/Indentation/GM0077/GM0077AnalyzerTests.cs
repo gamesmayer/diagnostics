@@ -119,5 +119,37 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ClassMemberCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    private int _value;
+
+    void Method() { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMemberNotIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+{|GM0077:private|} int _value;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMemberOverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+        {|GM0077:private|} int _value;
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

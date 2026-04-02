@@ -13,12 +13,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Block contents must be indented one step from the block braces",
-            messageFormat: "Indent the block content one step from the opening brace",
+            title: "Contents inside braces must be indented one step",
+            messageFormat: "Indent content one step from the opening brace",
             category: "Indentation",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Statements inside a block must be indented by exactly one step relative to the indentation of the line containing the opening brace.");
+            description: "Contents inside braces must be indented by exactly one step relative to the indentation of the line containing the opening brace.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -28,6 +28,12 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
+            context.RegisterSyntaxNodeAction(
+                AnalyzeTypeDeclaration,
+                SyntaxKind.ClassDeclaration,
+                SyntaxKind.StructDeclaration,
+                SyntaxKind.RecordDeclaration,
+                SyntaxKind.InterfaceDeclaration);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -68,6 +74,44 @@ namespace GamesMayer.Diagnostics
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
                 }
+            }
+        }
+
+        private static void AnalyzeTypeDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var declaration = (TypeDeclarationSyntax)context.Node;
+            if (declaration.Members.Count == 0)
+                return;
+
+            if (declaration.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+            var indentSize = GetIndentSize(context);
+
+            var declarationLine = tree.GetLineSpan(declaration.Identifier.Span).StartLinePosition.Line;
+            var declarationLineText = sourceText.Lines[declarationLine].ToString();
+            var declarationIndent = CountLeadingWhitespace(declarationLineText);
+            var expectedIndent = declarationIndent + indentSize;
+
+            var openBraceLine = tree.GetLineSpan(declaration.OpenBraceToken.Span).StartLinePosition.Line;
+
+            foreach (var member in declaration.Members)
+            {
+                var firstToken = member.GetFirstToken();
+                if (firstToken == default)
+                    continue;
+
+                var memberLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
+                if (memberLine == openBraceLine)
+                    continue;
+
+                var memberLineText = sourceText.Lines[memberLine].ToString();
+                var actualIndent = CountLeadingWhitespace(memberLineText);
+
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }
         }
 

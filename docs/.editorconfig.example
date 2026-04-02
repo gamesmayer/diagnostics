@@ -153,6 +153,13 @@ dotnet_diagnostic.GM0106.severity = warning  # Space before => symbol
 dotnet_diagnostic.GM0106.enabled = true
 dotnet_diagnostic.GM0107.severity = warning  # Space after => symbol
 dotnet_diagnostic.GM0107.enabled = true
+dotnet_diagnostic.GM0108.severity = warning  # Space after type in declarations
+dotnet_diagnostic.GM0108.enabled = true
+dotnet_diagnostic.GM0109.severity = warning  # Space before assignment operator '='
+dotnet_diagnostic.GM0109.enabled = true
+dotnet_diagnostic.GM0110.severity = warning  # Space after assignment operator '='
+dotnet_diagnostic.GM0110.enabled = true
+dotnet_diagnostic.GM0111.severity = warning  # Statement closing semicolon must be adjacent to previous token
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

@@ -46,15 +46,28 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
-            if (block == null)
-                return document;
-
             var tree = root.SyntaxTree;
-            var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            int declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
-            int expectedIndent = declarationIndent + 4;
+
+            int expectedIndent;
+            var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
+            if (block != null)
+            {
+                var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
+                var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                expectedIndent = declarationIndent + 4;
+            }
+            else
+            {
+                var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
+                var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
+                if (member == null || typeDeclaration == null)
+                    return document;
+
+                var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
+                var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                expectedIndent = declarationIndent + 4;
+            }
 
             var statementTextLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);
             int actualIndent = GM0077Analyzer.CountLeadingWhitespace(statementTextLine.ToString());

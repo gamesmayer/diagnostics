@@ -33,7 +33,8 @@ namespace GamesMayer.Diagnostics
             context.RegisterSyntaxNodeAction(
                 AnalyzeNode,
                 SyntaxKind.InvocationExpression,
-                SyntaxKind.ObjectCreationExpression);
+                SyntaxKind.ObjectCreationExpression,
+                SyntaxKind.ImplicitObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
@@ -69,6 +70,10 @@ namespace GamesMayer.Diagnostics
                 case ObjectCreationExpressionSyntax objectCreation when objectCreation.ArgumentList != null:
                     nameToken = objectCreation.Type.GetLastToken();
                     openParen = objectCreation.ArgumentList.OpenParenToken;
+                    return true;
+                case ImplicitObjectCreationExpressionSyntax implicitObjectCreation:
+                    nameToken = implicitObjectCreation.NewKeyword;
+                    openParen = implicitObjectCreation.ArgumentList.OpenParenToken;
                     return true;
                 default:
                     nameToken = default;
