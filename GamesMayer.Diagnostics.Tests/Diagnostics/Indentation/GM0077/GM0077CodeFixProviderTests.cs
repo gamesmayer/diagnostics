@@ -124,5 +124,32 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task PropertyAccessor_Unindented_Fix()
+        {
+            var testCode = @"class Foo
+{
+    int Value
+    {
+{|GM0077:get|};
+        set;
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    int Value
+    {
+        get;
+        set;
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

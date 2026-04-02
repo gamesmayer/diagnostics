@@ -59,14 +59,25 @@ namespace GamesMayer.Diagnostics
             }
             else
             {
-                var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
-                var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
-                if (member == null || typeDeclaration == null)
-                    return document;
+                var accessor = token.Parent?.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
+                if (accessor?.Parent is AccessorListSyntax accessorList)
+                {
+                    var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+                    var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                    var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                    expectedIndent = declarationIndent + 4;
+                }
+                else
+                {
+                    var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
+                    var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
+                    if (member == null || typeDeclaration == null)
+                        return document;
 
-                var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
-                var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
-                expectedIndent = declarationIndent + 4;
+                    var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
+                    var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                    expectedIndent = declarationIndent + 4;
+                }
             }
 
             var statementTextLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);

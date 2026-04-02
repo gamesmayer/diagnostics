@@ -28,6 +28,7 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
+            context.RegisterSyntaxNodeAction(AnalyzeAccessorList, SyntaxKind.AccessorList);
             context.RegisterSyntaxNodeAction(
                 AnalyzeTypeDeclaration,
                 SyntaxKind.ClassDeclaration,
@@ -109,6 +110,45 @@ namespace GamesMayer.Diagnostics
 
                 var memberLineText = sourceText.Lines[memberLine].ToString();
                 var actualIndent = CountLeadingWhitespace(memberLineText);
+
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
+            }
+        }
+
+        private static void AnalyzeAccessorList(SyntaxNodeAnalysisContext context)
+        {
+            var accessorList = (AccessorListSyntax)context.Node;
+            if (accessorList.Accessors.Count == 0)
+                return;
+
+            if (accessorList.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+            var indentSize = GetIndentSize(context);
+
+            var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationLineText = sourceText.Lines[declarationLine].ToString();
+            var declarationIndent = CountLeadingWhitespace(declarationLineText);
+            var expectedIndent = declarationIndent + indentSize;
+
+            var openBraceLine = tree.GetLineSpan(accessorList.OpenBraceToken.Span).StartLinePosition.Line;
+
+            foreach (var accessor in accessorList.Accessors)
+            {
+                var firstToken = accessor.GetFirstToken();
+                if (firstToken == default)
+                    continue;
+
+                var accessorLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
+                if (accessorLine == openBraceLine)
+                    continue;
+
+                var accessorLineText = sourceText.Lines[accessorLine].ToString();
+                var actualIndent = CountLeadingWhitespace(accessorLineText);
 
                 if (actualIndent != expectedIndent)
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));

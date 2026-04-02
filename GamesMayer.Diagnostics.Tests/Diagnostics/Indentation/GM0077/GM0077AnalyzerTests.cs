@@ -151,5 +151,33 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task PropertyAccessorCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int Value
+    {
+        get;
+        set;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task PropertyAccessorNotIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int Value
+    {
+{|GM0077:get|};
+        set;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
