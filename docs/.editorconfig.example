@@ -91,7 +91,6 @@ dotnet_diagnostic.GM0074.severity = warning  # #if / #else / #elif directive mus
 dotnet_diagnostic.GM0075.severity = warning  # #endif / #else / #elif directive must not be preceded by blank line
 dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented one step from the block braces
 dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at the declaration level
-dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
 dotnet_diagnostic.GM0080.severity = warning  # Break statement must be preceded by a blank line
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
 
@@ -99,6 +98,7 @@ dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followe
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
 
 # GamesMayer.Diagnostics — Spacing
+dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
 dotnet_diagnostic.GM0082.severity = warning  # Cast expression spacing
 dotnet_diagnostic.GM0082.enabled = false
 dotnet_diagnostic.GM0083.severity = warning  # Space after control-flow keywords
@@ -141,6 +141,10 @@ dotnet_diagnostic.GM0101.severity = warning  # Space between empty square bracke
 dotnet_diagnostic.GM0101.enabled = false
 dotnet_diagnostic.GM0102.severity = warning  # Space between square brackets
 dotnet_diagnostic.GM0102.enabled = false
+dotnet_diagnostic.GM0103.severity = warning  # Space before generic '<' symbol
+dotnet_diagnostic.GM0103.enabled = false
+dotnet_diagnostic.GM0104.severity = warning  # Space between generic operators '<' and '>'
+dotnet_diagnostic.GM0104.enabled = false
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

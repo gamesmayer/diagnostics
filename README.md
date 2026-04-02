@@ -110,7 +110,6 @@ Diagnostics are organized by category.
 | [GM0075](docs/Diagnostics/Layout/GM0075/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line             | Yes     | Yes     |
 | [GM0077](docs/Diagnostics/Layout/GM0077/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
 | [GM0078](docs/Diagnostics/Layout/GM0078/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
-| [GM0079](docs/Diagnostics/Layout/GM0079/GM0079.md) | No more than one space between tokens                                                 | Yes     | Yes     |
 | [GM0080](docs/Diagnostics/Layout/GM0080/GM0080.md) | Break statement must be preceded by a blank line                                      | Yes     | Yes     |
 | [GM0081](docs/Diagnostics/Layout/GM0081/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md)        | Opening brace must not be followed by blank line                                      | Yes     | Yes     |
@@ -120,6 +119,7 @@ Diagnostics are organized by category.
 
 | ID                                                  | Description                                                 | Fixable | Default |
 | --------------------------------------------------- | ----------------------------------------------------------- | ------- | ------- |
+| [GM0079](docs/Diagnostics/Spacing/GM0079/GM0079.md) | No more than one space between tokens                       | Yes     | Yes     |
 | [GM0082](docs/Diagnostics/Spacing/GM0082/GM0082.md) | Cast expression spacing                                     | Yes     | Yes     |
 | [GM0083](docs/Diagnostics/Spacing/GM0083/GM0083.md) | Space after control-flow keywords                           | Yes     | Yes     |
 | [GM0084](docs/Diagnostics/Spacing/GM0084/GM0084.md) | Spaces inside method declaration parameter list parentheses | Yes     | Yes     |
@@ -141,6 +141,8 @@ Diagnostics are organized by category.
 | [GM0098](docs/Diagnostics/Spacing/GM0098/GM0098.md) | Space before open square bracket                            | Yes     | No      |
 | [GM0101](docs/Diagnostics/Spacing/GM0101/GM0101.md) | Space between empty square brackets                         | Yes     | No      |
 | [GM0102](docs/Diagnostics/Spacing/GM0102/GM0102.md) | Space between square brackets                               | Yes     | No      |
+| [GM0103](docs/Diagnostics/Spacing/GM0103/GM0103.md) | Space before generic '<' symbol                             | Yes     | No      |
+| [GM0104](docs/Diagnostics/Spacing/GM0104/GM0104.md) | Space between generic operators '<' and '>'                 | Yes     | No      |
 
 ### Architecture Diagnostics
 

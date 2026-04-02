@@ -14,7 +14,7 @@ namespace GamesMayer.Diagnostics
             id: DiagnosticId,
             title: "No more than one space between tokens",
             messageFormat: "Reduce multiple spaces between tokens to a single space",
-            category: "Layout",
+            category: "Spacing",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Adjacent tokens on the same line must be separated by at most one space.");
