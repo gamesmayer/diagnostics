@@ -107,6 +107,8 @@ Diagnostics are organized by category.
 | [GM0112](docs/Diagnostics/Layout/GM0112.md) | No blank lines between consecutive variables                                       | Yes     | Yes     |
 | [GM0117](docs/Diagnostics/Layout/GM0117.md) | Each item in array initializer must be on its own line                             | Yes     | Yes     |
 | [GM0119](docs/Diagnostics/Layout/GM0119.md) | No blank lines between array initializer items                                     | Yes     | Yes     |
+| [GM0120](docs/Diagnostics/Layout/GM0120.md) | No blank lines between object initializer members                                  | Yes     | Yes     |
+| [GM0123](docs/Diagnostics/Layout/GM0123.md) | Each member in object initializer must be on its own line                          | Yes     | Yes     |
 | [GM0118](docs/Diagnostics/Layout/GM0118.md) | Comma must be on the same line as the previous token                               | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                                   | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                                   | Yes     | Yes     |
@@ -129,6 +131,8 @@ Diagnostics are organized by category.
 | [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
 | [GM0115](docs/Diagnostics/Indentation/GM0115.md) | Array initializer braces must be indented at the declaration level                    | Yes     | Yes     |
 | [GM0116](docs/Diagnostics/Indentation/GM0116.md) | Array initializer items must be indented one step from the declaration                | Yes     | Yes     |
+| [GM0121](docs/Diagnostics/Indentation/GM0121.md) | Object initializer braces must be indented at the declaration level                   | Yes     | Yes     |
+| [GM0122](docs/Diagnostics/Indentation/GM0122.md) | Object initializer members must be indented one step from the declaration             | Yes     | Yes     |
 
 ### Spacing Diagnostics
 
@@ -167,6 +171,12 @@ Diagnostics are organized by category.
 | [GM0111](docs/Diagnostics/Spacing/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
 | [GM0113](docs/Diagnostics/Spacing/GM0113.md) | Space between single-line block braces                      | Yes     | Yes     |
 | [GM0114](docs/Diagnostics/Spacing/GM0114.md) | Space between accessors in single-line property             | Yes     | Yes     |
+
+### Style Diagnostics
+
+| ID                                         | Description                     | Fixable | Default |
+| ------------------------------------------ | ------------------------------- | ------- | ------- |
+| [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed | Yes     | Yes     |
 
 ### Architecture Diagnostics
 

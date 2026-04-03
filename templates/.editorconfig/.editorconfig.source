@@ -184,8 +184,10 @@ dotnet_diagnostic.GM0112.severity = warning  # No blank lines between consecutiv
 dotnet_diagnostic.GM0117.severity = warning  # Each item in array initializer must be on its own line
 dotnet_diagnostic.GM0119.severity = warning  # No blank lines between array initializer items
 dotnet_diagnostic.GM0118.severity = warning  # Comma must be on the same line as the previous token
+dotnet_diagnostic.GM0120.severity = warning  # No blank lines between object initializer members
+dotnet_diagnostic.GM0123.severity = warning  # Each member in object initializer must be on its own line
 
-# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081, GM0115-GM0116)
+# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081, GM0115-GM0116, GM0121-GM0122)
 dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
 dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
@@ -200,6 +202,8 @@ dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at t
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
 dotnet_diagnostic.GM0115.severity = warning  # Array initializer braces must be indented at the declaration level
 dotnet_diagnostic.GM0116.severity = warning  # Array initializer items must be indented one step from the declaration
+dotnet_diagnostic.GM0121.severity = warning  # Object initializer braces must be indented at the declaration level
+dotnet_diagnostic.GM0122.severity = warning  # Object initializer members must be indented one step from the declaration
 
 # GamesMayer.Diagnostics — Spacing
 dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
@@ -266,6 +270,9 @@ dotnet_diagnostic.GM0113.severity = warning  # Space between single-line block b
 dotnet_diagnostic.GM0113.enabled = true
 dotnet_diagnostic.GM0114.severity = warning  # Space between accessors in single-line property
 dotnet_diagnostic.GM0114.enabled = true
+
+# GamesMayer.Diagnostics — Style
+dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

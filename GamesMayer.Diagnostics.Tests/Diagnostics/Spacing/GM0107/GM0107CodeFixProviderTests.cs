@@ -8,15 +8,15 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0107CodeFixProviderTests
     {
         [Fact]
-        public async Task SpaceAfterArrow_DefaultSetting_RemovesSpace()
+        public async Task NoSpaceAfterArrow_DefaultSetting_AddsSpace()
         {
             var testCode = @"class Foo
 {
-    int M() {|GM0107:=>|} 1;
+    int M() {|GM0107:=>|}1;
 }";
             var fixedCode = @"class Foo
 {
-    int M() =>1;
+    int M() => 1;
 }";
 
             var test = new CSharpCodeFixTest<GM0107Analyzer, GM0107CodeFixProvider, XUnitVerifier>

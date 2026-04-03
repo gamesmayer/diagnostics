@@ -10,22 +10,22 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0107AnalyzerTests
     {
         [Fact]
-        public async Task NoSpaceAfterArrow_DefaultSetting_NoDiagnostic()
+        public async Task NoSpaceAfterArrow_DefaultSetting_Diagnostic()
         {
             var testCode = @"class Foo
 {
-    int M() =>1;
+    int M() {|GM0107:=>|}1;
 }";
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task SpaceAfterArrow_DefaultSetting_Diagnostic()
+        public async Task SpaceAfterArrow_DefaultSetting_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
-    int M() {|GM0107:=>|} 1;
+    int M() => 1;
 }";
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);
