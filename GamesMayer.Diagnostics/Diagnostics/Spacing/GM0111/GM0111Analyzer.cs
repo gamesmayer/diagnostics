@@ -14,12 +14,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Statement closing semicolon must be adjacent to previous token",
+            title: "Statement or member closing semicolon must be adjacent to previous token",
             messageFormat: "Move ';' next to the previous token",
             category: "Spacing",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Statement-closing semicolons must be written immediately after the previous token, without spaces or line breaks.");
+            description: "Statement and type-member semicolons must be written immediately after the previous token, without spaces or line breaks.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -37,7 +37,7 @@ namespace GamesMayer.Diagnostics
 
             foreach (var semicolonToken in root.DescendantTokens())
             {
-                if (!semicolonToken.IsKind(SyntaxKind.SemicolonToken) || !IsStatementClosingSemicolon(semicolonToken))
+                if (!semicolonToken.IsKind(SyntaxKind.SemicolonToken) || !IsRelevantClosingSemicolon(semicolonToken))
                     continue;
 
                 var previousToken = semicolonToken.GetPreviousToken();
@@ -52,7 +52,7 @@ namespace GamesMayer.Diagnostics
             }
         }
 
-        private static bool IsStatementClosingSemicolon(SyntaxToken semicolonToken)
+        private static bool IsRelevantClosingSemicolon(SyntaxToken semicolonToken)
         {
             if (semicolonToken.IsMissing || !semicolonToken.IsKind(SyntaxKind.SemicolonToken))
                 return false;
@@ -60,7 +60,24 @@ namespace GamesMayer.Diagnostics
             if (semicolonToken.Parent is ForStatementSyntax)
                 return false;
 
-            return semicolonToken.Parent is StatementSyntax;
+            if (semicolonToken.Parent is StatementSyntax)
+                return true;
+
+            if (semicolonToken.Parent is MemberDeclarationSyntax memberDeclaration)
+                return IsInsideTypeDeclaration(memberDeclaration);
+
+            if (semicolonToken.Parent is AccessorDeclarationSyntax accessor
+                && accessor.Parent?.Parent is MemberDeclarationSyntax accessorMemberDeclaration)
+            {
+                return IsInsideTypeDeclaration(accessorMemberDeclaration);
+            }
+
+            return false;
+        }
+
+        private static bool IsInsideTypeDeclaration(MemberDeclarationSyntax memberDeclaration)
+        {
+            return memberDeclaration.Parent is TypeDeclarationSyntax;
         }
     }
 }

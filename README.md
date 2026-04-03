@@ -105,6 +105,9 @@ Diagnostics are organized by category.
 | [GM0075](docs/Diagnostics/Layout/GM0075.md) | `#endif` / `#else` / `#elif` directive must not be preceded by blank line          | Yes     | Yes     |
 | [GM0080](docs/Diagnostics/Layout/GM0080.md) | Break statement must be preceded by a blank line                                   | Yes     | Yes     |
 | [GM0112](docs/Diagnostics/Layout/GM0112.md) | No blank lines between consecutive variables                                       | Yes     | Yes     |
+| [GM0117](docs/Diagnostics/Layout/GM0117.md) | Each item in array initializer must be on its own line                             | Yes     | Yes     |
+| [GM0119](docs/Diagnostics/Layout/GM0119.md) | No blank lines between array initializer items                                     | Yes     | Yes     |
+| [GM0118](docs/Diagnostics/Layout/GM0118.md) | Comma must be on the same line as the previous token                               | Yes     | Yes     |
 | [GM1505](docs/Diagnostics/Layout/GM1505.md) | Opening brace must not be followed by blank line                                   | Yes     | Yes     |
 | [GM1508](docs/Diagnostics/Layout/GM1508.md) | Closing brace must not be preceded by blank line                                   | Yes     | Yes     |
 
@@ -124,6 +127,8 @@ Diagnostics are organized by category.
 | [GM0077](docs/Diagnostics/Indentation/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
 | [GM0078](docs/Diagnostics/Indentation/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
 | [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
+| [GM0115](docs/Diagnostics/Indentation/GM0115.md) | Array initializer braces must be indented at the declaration level                    | Yes     | Yes     |
+| [GM0116](docs/Diagnostics/Indentation/GM0116.md) | Array initializer items must be indented one step from the declaration                | Yes     | Yes     |
 
 ### Spacing Diagnostics
 

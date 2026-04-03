@@ -61,5 +61,26 @@ namespace GamesMayer.Diagnostics.Tests
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task SpaceBeforeFieldSemicolon_RemovesGap()
+        {
+            var testCode = @"class Foo
+{
+    private int _value {|GM0111:;|}
+}";
+            var fixedCode = @"class Foo
+{
+    private int _value;
+}";
+
+            var test = new CSharpCodeFixTest<GM0111Analyzer, GM0111CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
     }
 }

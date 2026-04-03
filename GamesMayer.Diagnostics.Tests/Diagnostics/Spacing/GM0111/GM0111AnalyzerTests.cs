@@ -66,11 +66,22 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task FieldSemicolon_IsIgnored()
+        public async Task FieldSemicolonAdjacent_NoDiagnostic()
         {
             var testCode = @"class Foo
 {
-    private int _value ;
+    private int _value;
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SpaceBeforeFieldSemicolon_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    private int _value {|GM0111:;|}
 }";
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);

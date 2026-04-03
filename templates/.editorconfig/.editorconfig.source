@@ -181,8 +181,11 @@ dotnet_diagnostic.GM0080.severity = warning  # Break statement must be preceded 
 dotnet_diagnostic.GM1505.severity = warning  # Opening brace must not be followed by blank line
 dotnet_diagnostic.GM1508.severity = warning  # Closing brace must not be preceded by blank line
 dotnet_diagnostic.GM0112.severity = warning  # No blank lines between consecutive variables
+dotnet_diagnostic.GM0117.severity = warning  # Each item in array initializer must be on its own line
+dotnet_diagnostic.GM0119.severity = warning  # No blank lines between array initializer items
+dotnet_diagnostic.GM0118.severity = warning  # Comma must be on the same line as the previous token
 
-# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081)
+# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081, GM0115-GM0116)
 dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
 dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
@@ -195,6 +198,8 @@ dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be
 dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented one step from the block braces
 dotnet_diagnostic.GM0078.severity = warning  # Block brace must be indented at the declaration level
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
+dotnet_diagnostic.GM0115.severity = warning  # Array initializer braces must be indented at the declaration level
+dotnet_diagnostic.GM0116.severity = warning  # Array initializer items must be indented one step from the declaration
 
 # GamesMayer.Diagnostics — Spacing
 dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens
