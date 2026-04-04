@@ -194,7 +194,6 @@ dotnet_diagnostic.GM0120.severity = warning  # No blank lines between object ini
 dotnet_diagnostic.GM0123.severity = warning  # Each member in object initializer must be on its own line
 
 # GamesMayer.Diagnostics — Indentation
-dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
 dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
 dotnet_diagnostic.GM0029.severity = warning  # Parenthesis Allman indentation style in multi-line list

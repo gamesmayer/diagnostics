@@ -120,7 +120,6 @@ Diagnostics are organized by category.
 
 | ID                                               | Description                                                                           | Fixable | Default |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------- | ------- | ------- |
-| [GM0024](docs/Diagnostics/Indentation/GM0024.md) | Anonymous function incorrectly indented                                               | Yes     | Yes     |
 | [GM0027](docs/Diagnostics/Indentation/GM0027.md) | Opening parenthesis placement in multi-line argument/parameter list                   | Yes     | Yes     |
 | [GM0028](docs/Diagnostics/Indentation/GM0028.md) | Closing parenthesis indentation in multi-line argument/parameter list                 | Yes     | Yes     |
 | [GM0029](docs/Diagnostics/Indentation/GM0029.md) | Opening parenthesis must be on a new line in multi-line list                          | Yes     | Yes     |

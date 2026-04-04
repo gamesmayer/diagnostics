@@ -599,5 +599,145 @@ class Foo { public int A { get; set; } }";
 class Foo { public int A { get; set; } }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Lambda / anonymous method brace tests (formerly GM0024) ──────────
+
+        [Fact]
+        public async Task Lambda_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Lambda_InlineBrace_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () => { return; };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AnonymousMethod_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate
+        {
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AnonymousMethod_InlineBrace_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate { return; };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SimpleLambda_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action<int> action = x =>
+        {
+            _ = x;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Lambda_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+            {|GM0078:{|}
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Lambda_CloseBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+            {|GM0078:}|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AnonymousMethod_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate
+            {|GM0078:{|}
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SimpleLambda_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action<int> action = x =>
+            {|GM0078:{|}
+            _ = x;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -151,5 +151,38 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        // ── Lambda / anonymous method statement fix tests (formerly GM0024) ───
+
+        [Fact]
+        public async Task LambdaStatement_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+        {|GM0077:return|};
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

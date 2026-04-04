@@ -179,5 +179,83 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Lambda / anonymous method statement tests (formerly GM0024) ───────
+
+        [Fact]
+        public async Task LambdaStatement_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task LambdaStatement_InlineBrace_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () => { return; };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task LambdaStatement_EmptyBody_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task LambdaStatement_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+        {|GM0077:return|};
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AnonymousMethodStatement_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate
+        {
+            return;
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

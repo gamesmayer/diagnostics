@@ -198,6 +198,12 @@ namespace GamesMayer.Diagnostics
             return count;
         }
 
+        internal static string GetLeadingWhitespace(string text)
+        {
+            int count = CountLeadingWhitespace(text);
+            return text.Substring(0, count);
+        }
+
         internal static SyntaxToken FindDeclarationFirstToken(SyntaxNode node)
         {
             var current = node.Parent;

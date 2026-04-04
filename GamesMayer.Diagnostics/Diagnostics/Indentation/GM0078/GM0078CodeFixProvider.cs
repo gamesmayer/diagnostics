@@ -52,13 +52,13 @@ namespace GamesMayer.Diagnostics
 
             var tree = root.SyntaxTree;
             var declarationLine = tree.GetLineSpan(declarationFirstToken.Value.Span).StartLinePosition.Line;
-            var declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var declarationIndentStr = GM0078Analyzer.GetLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             var braceLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);
             int actualIndent = GM0078Analyzer.CountLeadingWhitespace(braceLine.ToString());
 
             var indentSpan = new TextSpan(braceLine.Start, actualIndent);
-            var updatedText = sourceText.WithChanges(new TextChange(indentSpan, new string(' ', declarationIndent)));
+            var updatedText = sourceText.WithChanges(new TextChange(indentSpan, declarationIndentStr));
             return document.WithText(updatedText);
         }
 

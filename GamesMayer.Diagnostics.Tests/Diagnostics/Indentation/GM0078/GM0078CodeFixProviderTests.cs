@@ -473,5 +473,100 @@ class Foo { public int A { get; set; } }";
             };
             await test.RunAsync();
         }
+
+        // ── Lambda / anonymous method brace fix tests (formerly GM0024) ──────
+
+        [Fact]
+        public async Task Lambda_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+            {|GM0078:{|}
+            return;
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task Lambda_CloseBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+            {|GM0078:}|};
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        System.Action action = () =>
+        {
+            return;
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task AnonymousMethod_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate
+            {|GM0078:{|}
+            return;
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        System.Action action = delegate
+        {
+            return;
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }
