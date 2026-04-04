@@ -2,13 +2,19 @@ namespace GamesMayer.Diagnostics.Tests
 {
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.CSharp.Testing;
+    using Microsoft.CodeAnalysis.Testing;
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
-    using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
-        GamesMayer.Diagnostics.GM0126Analyzer>;
 
     public class GM0126AnalyzerTests
     {
+        private static CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier> CreateTest(string testCode)
+            => new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+                MarkupOptions = MarkupOptions.UseFirstDescriptor,
+            };
+
         [Fact]
         public async Task ThreeParams_AllOnOneLine_NoDiagnostic()
         {
@@ -17,7 +23,7 @@ class Test {
     public void Method(int a, int b, int c) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -32,7 +38,7 @@ class Test {
         int d) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -43,7 +49,7 @@ class Test {
     public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -54,7 +60,7 @@ class Test {
     public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}, {|GM0126:int e|}) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -68,7 +74,7 @@ class Test {
         int d) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -81,7 +87,32 @@ class Test {
         int b, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoParams_MultiLine_OpenParenOnOwnLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    public void Method{|GM0126:(
+        int a,
+        int b)|}{ }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task OneParam_MultiLine_OpenParenOnOwnLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    public void Method{|GM0126:(
+        int a)|}{ }
+}
+";
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -92,11 +123,7 @@ class Test {
     public void Method({|GM0126:int a|}, {|GM0126:int b|}) { }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
-
+            var test = CreateTest(testCode);
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
 [*.cs]
@@ -113,11 +140,7 @@ class Test {
     public void Method(int a, int b, int c, int d) { }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
-
+            var test = CreateTest(testCode);
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
 [*.cs]
@@ -134,15 +157,31 @@ class Test {
     public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
-
+            var test = CreateTest(testCode);
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
 [*.cs]
 dotnet_diagnostic.GM0126.threshold = 4"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ConfiguredThresholdFive_ThreeParams_MultiLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    public void Method{|GM0126:(
+        int a,
+        int b,
+        int c)|}{ }
+}
+";
+            var test = CreateTest(testCode);
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0126.threshold = 5"));
 
             await test.RunAsync();
         }

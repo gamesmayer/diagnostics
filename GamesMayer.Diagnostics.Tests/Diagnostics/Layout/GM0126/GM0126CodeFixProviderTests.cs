@@ -2,11 +2,24 @@ namespace GamesMayer.Diagnostics.Tests
 {
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.CSharp.Testing;
+    using Microsoft.CodeAnalysis.Testing;
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
 
     public class GM0126CodeFixProviderTests
     {
+        private static CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier> CreateTest(
+            string testCode,
+            string fixedCode,
+            int numberOfFixAllIterations = 1)
+            => new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                MarkupOptions = MarkupOptions.UseFirstDescriptor,
+                NumberOfFixAllIterations = numberOfFixAllIterations,
+            };
+
         [Fact]
         public async Task FourParams_AllOnOneLine_Fix()
         {
@@ -26,13 +39,7 @@ class Test {
     ) { }
 }
 ";
-            var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
-            {
-                TestCode = testCode,
-                FixedCode = fixedCode,
-                NumberOfFixAllIterations = 1,
-            };
-            await test.RunAsync();
+            await CreateTest(testCode, fixedCode).RunAsync();
         }
 
         [Fact]
@@ -55,13 +62,7 @@ class Test {
     ) { }
 }
 ";
-            var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
-            {
-                TestCode = testCode,
-                FixedCode = fixedCode,
-                NumberOfFixAllIterations = 1,
-            };
-            await test.RunAsync();
+            await CreateTest(testCode, fixedCode).RunAsync();
         }
 
         [Fact]
@@ -86,13 +87,7 @@ class Test {
     ) { }
 }
 ";
-            var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
-            {
-                TestCode = testCode,
-                FixedCode = fixedCode,
-                NumberOfFixAllIterations = 1,
-            };
-            await test.RunAsync();
+            await CreateTest(testCode, fixedCode).RunAsync();
         }
 
         [Fact]
@@ -103,12 +98,42 @@ class Test {
     public void Method(int a, int b, int c) { }
 }
 ";
-            var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
-            {
-                TestCode = testCode,
-                FixedCode = testCode,
-            };
-            await test.RunAsync();
+            await CreateTest(testCode, testCode, numberOfFixAllIterations: 0).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoParams_MultiLine_OpenParenOnOwnLine_Fix()
+        {
+            var testCode = @"
+class Test {
+    public void Method{|GM0126:(
+        int a,
+        int b)|}{ }
+}
+";
+            var fixedCode = @"
+class Test {
+    public void Method(int a, int b){ }
+}
+";
+            await CreateTest(testCode, fixedCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task OneParam_MultiLine_OpenParenOnOwnLine_Fix()
+        {
+            var testCode = @"
+class Test {
+    public void Method{|GM0126:(
+        int a)|}{ }
+}
+";
+            var fixedCode = @"
+class Test {
+    public void Method(int a){ }
+}
+";
+            await CreateTest(testCode, fixedCode).RunAsync();
         }
     }
 }

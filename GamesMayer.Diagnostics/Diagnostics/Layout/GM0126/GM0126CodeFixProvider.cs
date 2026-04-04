@@ -26,14 +26,63 @@ namespace GamesMayer.Diagnostics
         {
             var diagnostic = context.Diagnostics[0];
 
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    title: "Move all parameters to their own lines",
-                    createChangedDocument: ct => SplitParametersToOwnLinesAsync(context.Document, diagnostic, ct),
-                    equivalenceKey: nameof(GM0126CodeFixProvider)),
-                diagnostic);
+            if (diagnostic.Properties.TryGetValue(GM0126Analyzer.FixTypeKey, out var fixType)
+                && fixType == GM0126Analyzer.CollapseFixType)
+            {
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        title: "Collapse parameters to a single line",
+                        createChangedDocument: ct => CollapseToSingleLineAsync(context.Document, diagnostic, ct),
+                        equivalenceKey: nameof(GM0126CodeFixProvider) + "_Collapse"),
+                    diagnostic);
+            }
+            else
+            {
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        title: "Move all parameters to their own lines",
+                        createChangedDocument: ct => SplitParametersToOwnLinesAsync(context.Document, diagnostic, ct),
+                        equivalenceKey: nameof(GM0126CodeFixProvider)),
+                    diagnostic);
+            }
 
             return Task.CompletedTask;
+        }
+
+        private static async Task<Document> CollapseToSingleLineAsync(
+            Document document,
+            Diagnostic diagnostic,
+            CancellationToken cancellationToken)
+        {
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+            if (root == null)
+                return document;
+
+            var node = root.FindNode(diagnostic.Location.SourceSpan);
+            var paramList = node as ParameterListSyntax
+                ?? node?.AncestorsAndSelf().OfType<ParameterListSyntax>().FirstOrDefault();
+            if (paramList == null)
+                return document;
+
+            var paramsText = string.Join(", ", paramList.Parameters.Select(p => sourceText.ToString(p.Span)));
+            var singleLine = $"({paramsText})";
+
+            var openParen = paramList.OpenParenToken;
+            var prevToken = openParen.GetPreviousToken();
+
+            int startPos = paramList.SpanStart;
+            if (prevToken != default)
+            {
+                var prevTokenLine = sourceText.Lines.GetLineFromPosition(prevToken.Span.End).LineNumber;
+                var openParenLine = sourceText.Lines.GetLineFromPosition(openParen.SpanStart).LineNumber;
+                if (prevTokenLine != openParenLine)
+                    startPos = prevToken.Span.End;
+            }
+
+            int endPos = paramList.Span.End;
+            var updatedText = sourceText.Replace(new TextSpan(startPos, endPos - startPos), singleLine);
+            return document.WithText(updatedText);
         }
 
         private static async Task<Document> SplitParametersToOwnLinesAsync(

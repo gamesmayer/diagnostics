@@ -152,6 +152,41 @@ class Test {
         }
 
         [Fact]
+        public async Task OneArg_Lambda_Fix()
+        {
+            var testCode = @"
+using System;
+
+class Test {
+    void Call(Action<int> action) { }
+    public void Method() {
+        Call({|GM0127:x => Console.WriteLine(x)|});
+    }
+}
+";
+            var fixedCode = @"
+using System;
+
+class Test {
+    void Call(Action<int> action) { }
+    public void Method() {
+        Call
+        (
+            x => Console.WriteLine(x)
+        );
+    }
+}
+";
+            var test = new CSharpCodeFixTest<GM0127Analyzer, GM0127CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                NumberOfFixAllIterations = 1,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task ThreeArgs_NoFix()
         {
             var testCode = @"

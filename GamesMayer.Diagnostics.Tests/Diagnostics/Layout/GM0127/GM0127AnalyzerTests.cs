@@ -2,6 +2,7 @@ namespace GamesMayer.Diagnostics.Tests
 {
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.CSharp.Testing;
+    using Microsoft.CodeAnalysis.Testing;
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
     using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
@@ -187,6 +188,51 @@ class Test {
 [*.cs]
 dotnet_diagnostic.GM0127.threshold = 4"));
 
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task OneArg_ComplexExpression_Lambda_AllOnOneLine_Diagnostic()
+        {
+            var testCode = @"
+using System;
+
+class Test {
+    void Call(Action<int> action) { }
+    public void Method() {
+        Call({|GM0127:x => Console.WriteLine(x)|});
+    }
+}
+";
+            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+                MarkupOptions = MarkupOptions.UseFirstDescriptor,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task OneArg_ComplexExpression_ObjectInitializer_AllOnOneLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Add(Item item) { }
+    public void Method() {
+        Add({|GM0127:new Item { Name = ""test"", Value = 42 }|});
+    }
+}
+
+class Item {
+    public string Name { get; set; }
+    public int Value { get; set; }
+}
+";
+            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+                MarkupOptions = MarkupOptions.UseFirstDescriptor,
+            };
             await test.RunAsync();
         }
     }

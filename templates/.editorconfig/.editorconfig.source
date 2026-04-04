@@ -66,6 +66,7 @@ csharp_style_throw_expression = true:warning
 dotnet_diagnostic.IDE0090.severity = none     # Use 'new(...)' expression (disabled by default)
 dotnet_diagnostic.IDE0041.severity = none     # Use 'is null' check instead of reference equality
 dotnet_diagnostic.IDE0031.severity = warning  # Use null propagation (?.) instead of ternary null check
+dotnet_diagnostic.IDE0037.severity = none     # Use inferred member name (disabled by default)
 dotnet_diagnostic.IDE0029.severity = warning  # Use coalescing expression (??) where applicable
 dotnet_diagnostic.IDE0270.severity = warning  # Null check can be simplified
 
@@ -191,7 +192,7 @@ dotnet_diagnostic.GM0118.severity = warning  # Comma must be on the same line as
 dotnet_diagnostic.GM0120.severity = warning  # No blank lines between object initializer members
 dotnet_diagnostic.GM0123.severity = warning  # Each member in object initializer must be on its own line
 
-# GamesMayer.Diagnostics — Indentation (GM0024, GM0027-GM0029, GM0033, GM0038, GM0045, GM0049, GM0054, GM0077-GM0078, GM0081, GM0115-GM0116, GM0121-GM0122)
+# GamesMayer.Diagnostics — Indentation
 dotnet_diagnostic.GM0024.severity = warning  # Anonymous function incorrectly indented
 dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
 dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
@@ -281,11 +282,14 @@ dotnet_diagnostic.GM0125.enabled = true
 dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed
 dotnet_diagnostic.GM0129.severity = warning  # Explicit object creation
 dotnet_diagnostic.GM0129.enabled = true
+dotnet_diagnostic.GM0131.severity = warning  # Anonymous object field must have explicit name
 
-# GamesMayer.Diagnostics — Architecture (GM0076)
+# GamesMayer.Diagnostics — Architecture
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
+dotnet_diagnostic.GM0130.severity = error    # Namespace dependency violates clean architecture rules
+dotnet_diagnostic.GM0130.rules = *.Domain -> *.Presentation, *.Application, *.Infrastructure | *.Application -> *.Presentation, *.Infrastructure | *.Infrastructure -> *.Presentation | *.Presentation -> *.Infrastructure
 
-# GamesMayer.Diagnostics — Ordering (GM1200-GM1216)
+# GamesMayer.Diagnostics — Ordering
 dotnet_diagnostic.GM1200.severity = warning  # A C# using directive is placed inside a namespace element
 dotnet_diagnostic.GM1201.severity = warning  # Elements must appear in the correct order
 dotnet_diagnostic.GM1202.severity = warning  # Elements must be ordered by access
@@ -304,5 +308,5 @@ dotnet_diagnostic.GM1214.severity = warning  # Readonly elements must appear bef
 dotnet_diagnostic.GM1215.severity = warning  # Using static directives must be ordered alphabetically
 dotnet_diagnostic.GM1216.severity = warning  # Using static directives must be placed at the correct location
 
-# GamesMayer.Diagnostics — Naming (GM1300)
+# GamesMayer.Diagnostics — Naming
 dotnet_diagnostic.GM1300.severity = warning  # Element must begin with an upper-case letter

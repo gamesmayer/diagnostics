@@ -180,14 +180,16 @@ Diagnostics are organized by category.
 
 | ID                                         | Description                     | Fixable | Default |
 | ------------------------------------------ | ------------------------------- | ------- | ------- |
-| [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed | Yes     | Yes     |
-| [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation        | Yes     | Yes     |
+| [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed                | Yes     | Yes     |
+| [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation                       | Yes     | Yes     |
+| [GM0131](docs/Diagnostics/Style/GM0131.md) | Anonymous object field must have explicit name | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
 | ID                                                | Description                                  | Fixable | Default |
 | ------------------------------------------------- | -------------------------------------------- | ------- | ------- |
-| [GM0076](docs/Diagnostics/Architecture/GM0076.md) | Avoid using Unity Debug.Log methods directly | No      | Yes     |
+| [GM0076](docs/Diagnostics/Architecture/GM0076.md) | Avoid using Unity Debug.Log methods directly                  | No      | Yes     |
+| [GM0130](docs/Diagnostics/Architecture/GM0130.md) | Namespace dependency violates clean architecture rules         | No      | Yes     |
 
 ### Naming Diagnostics
 

@@ -48,7 +48,7 @@ namespace GamesMayer.Diagnostics
 
             var diagnosticToken = root.FindToken(diagnostic.Location.SourceSpan.Start);
             var argList = diagnosticToken.Parent?.AncestorsAndSelf().OfType<ArgumentListSyntax>().FirstOrDefault();
-            if (argList == null || argList.Arguments.Count < 2)
+            if (argList == null || argList.Arguments.Count < 1)
                 return document;
 
             string newline = DetectNewline(sourceText);
