@@ -129,5 +129,90 @@ dotnet_diagnostic.GM0084.enabled = true"));
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task Constructor_WithoutSpaces_DefaultSetting_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo(int value)
+    {
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Constructor_WithSpaces_DefaultSetting_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo{|GM0084:(|} int value )
+    {
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Constructor_WithoutSpaces_EnabledTrue_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo{|GM0084:(|}int value)
+    {
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0084Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0084.enabled = true"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task Constructor_WithSpaces_EnabledTrue_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo( int value )
+    {
+    }
+}";
+
+            var test = new CSharpAnalyzerTest<GM0084Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0084.enabled = true"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task Constructor_EmptyParameterList_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    Foo()
+    {
+    }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

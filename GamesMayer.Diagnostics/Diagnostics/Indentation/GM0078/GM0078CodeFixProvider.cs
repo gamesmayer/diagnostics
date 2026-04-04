@@ -46,14 +46,13 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
-            if (block == null)
+            var declarationFirstToken = GetDeclarationFirstToken(token);
+            if (declarationFirstToken == null)
                 return document;
 
             var tree = root.SyntaxTree;
-            var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            int declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Value.Span).StartLinePosition.Line;
+            var declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             var braceLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);
             int actualIndent = GM0078Analyzer.CountLeadingWhitespace(braceLine.ToString());
@@ -61,6 +60,17 @@ namespace GamesMayer.Diagnostics
             var indentSpan = new TextSpan(braceLine.Start, actualIndent);
             var updatedText = sourceText.WithChanges(new TextChange(indentSpan, new string(' ', declarationIndent)));
             return document.WithText(updatedText);
+        }
+
+        private static SyntaxToken? GetDeclarationFirstToken(SyntaxToken braceToken)
+        {
+            return braceToken.Parent switch
+            {
+                BlockSyntax block => block.Parent?.GetFirstToken() ?? block.OpenBraceToken,
+                NamespaceDeclarationSyntax ns => ns.GetFirstToken(),
+                ClassDeclarationSyntax cls => cls.GetFirstToken(),
+                _ => null
+            };
         }
     }
 }

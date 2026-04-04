@@ -17,12 +17,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Spaces inside method declaration parameter list parentheses",
-            messageFormat: "{0} spaces inside method declaration parameter list parentheses",
+            title: "Spaces inside method/constructor declaration parameter list parentheses",
+            messageFormat: "{0} spaces inside method/constructor declaration parameter list parentheses",
             category: "Spacing",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Controls whether spaces are required between method declaration parameter list parentheses and parameters.");
+            description: "Controls whether spaces are required between method/constructor declaration parameter list parentheses and parameters.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -31,13 +31,20 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration, SyntaxKind.ConstructorDeclaration);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-            var parameterList = methodDeclaration.ParameterList;
+            var parameterList = context.Node switch
+            {
+                MethodDeclarationSyntax method => method.ParameterList,
+                ConstructorDeclarationSyntax constructor => constructor.ParameterList,
+                _ => null
+            };
+
+            if (parameterList == null)
+                return;
 
             if (parameterList.Parameters.Count == 0)
                 return;

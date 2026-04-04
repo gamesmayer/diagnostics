@@ -142,5 +142,76 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ClassBraces_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassOpenBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+    {|GM0078:{|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassCloseBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0078:}|}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassBraces_KAndRStyle_NoDiagnostic()
+        {
+            var testCode = @"class Foo {
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceBraces_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"namespace MyNamespace
+{
+    class Foo
+    {
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceOpenBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"namespace MyNamespace
+    {|GM0078:{|}
+    class Foo
+    {
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceCloseBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"namespace MyNamespace
+{
+    class Foo
+    {
+    }
+    {|GM0078:}|}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

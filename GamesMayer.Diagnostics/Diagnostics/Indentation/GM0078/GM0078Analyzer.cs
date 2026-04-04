@@ -29,6 +29,9 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
+            context.RegisterSyntaxNodeAction(AnalyzeDeclarationBraces,
+                SyntaxKind.NamespaceDeclaration,
+                SyntaxKind.ClassDeclaration);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -47,6 +50,38 @@ namespace GamesMayer.Diagnostics
 
             CheckBrace(context, sourceText, tree, block.OpenBraceToken, declarationLine, declarationIndent);
             CheckBrace(context, sourceText, tree, block.CloseBraceToken, declarationLine, declarationIndent);
+        }
+
+        private static void AnalyzeDeclarationBraces(SyntaxNodeAnalysisContext context)
+        {
+            SyntaxToken openBrace, closeBrace;
+
+            switch (context.Node)
+            {
+                case NamespaceDeclarationSyntax ns:
+                    openBrace = ns.OpenBraceToken;
+                    closeBrace = ns.CloseBraceToken;
+                    break;
+                case ClassDeclarationSyntax cls:
+                    openBrace = cls.OpenBraceToken;
+                    closeBrace = cls.CloseBraceToken;
+                    break;
+                default:
+                    return;
+            }
+
+            if (context.Node.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var declarationFirstToken = context.Node.GetFirstToken();
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+
+            CheckBrace(context, sourceText, tree, openBrace, declarationLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, closeBrace, declarationLine, declarationIndent);
         }
 
         private static void CheckBrace(

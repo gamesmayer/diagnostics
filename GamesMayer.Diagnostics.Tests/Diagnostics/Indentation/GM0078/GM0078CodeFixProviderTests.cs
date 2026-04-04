@@ -130,5 +130,85 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task ClassOpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class Foo
+    {|GM0078:{|}
+}";
+            var fixedCode = @"class Foo
+{
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ClassCloseBrace_OverIndented_Fix()
+        {
+            var testCode = @"class Foo
+{
+    {|GM0078:}|}";
+            var fixedCode = @"class Foo
+{
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task NamespaceOpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"namespace MyNamespace
+    {|GM0078:{|}
+    class Foo
+    {
+    }
+}";
+            var fixedCode = @"namespace MyNamespace
+{
+    class Foo
+    {
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task NamespaceCloseBrace_OverIndented_Fix()
+        {
+            var testCode = @"namespace MyNamespace
+{
+    class Foo
+    {
+    }
+    {|GM0078:}|}";
+            var fixedCode = @"namespace MyNamespace
+{
+    class Foo
+    {
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

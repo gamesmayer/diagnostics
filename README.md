@@ -74,6 +74,8 @@ Diagnostics are organized by category.
 | [GM0041](docs/Diagnostics/Layout/GM0041.md) | Each segment in a multi-invocation fluent chain must be on its own line            | Yes     | Yes     |
 | [GM0042](docs/Diagnostics/Layout/GM0042.md) | Blank line required after last using directive                                     | Yes     | Yes     |
 | [GM0043](docs/Diagnostics/Layout/GM0043.md) | Each operand in a multi-operand logical expression must be on its own line         | Yes     | Yes     |
+| [GM0126](docs/Diagnostics/Layout/GM0126.md) | Each parameter in a large parameter list must be on its own line                   | Yes     | Yes     |
+| [GM0127](docs/Diagnostics/Layout/GM0127.md) | Each argument in a large argument list must be on its own line                     | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                        | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |
 | [GM0047](docs/Diagnostics/Layout/GM0047.md) | Multi-line assignment value must start on the same line as the assignment operator | Yes     | Yes     |
@@ -171,6 +173,7 @@ Diagnostics are organized by category.
 | [GM0111](docs/Diagnostics/Spacing/GM0111.md) | Statement closing semicolon must be adjacent to last token  | Yes     | Yes     |
 | [GM0113](docs/Diagnostics/Spacing/GM0113.md) | Space between single-line block braces                      | Yes     | Yes     |
 | [GM0114](docs/Diagnostics/Spacing/GM0114.md) | Space between accessors in single-line property             | Yes     | Yes     |
+| [GM0125](docs/Diagnostics/Spacing/GM0125.md) | Space before open brace                                     | Yes     | Yes     |
 
 ### Style Diagnostics
 

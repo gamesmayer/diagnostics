@@ -148,6 +148,10 @@ dotnet_diagnostic.GM0041.threshold = 2
 dotnet_diagnostic.GM0042.severity = warning  # Blank line required after last using directive
 dotnet_diagnostic.GM0043.severity = warning #Each operand in a multi-operand logical expression must be on its own line
 dotnet_diagnostic.GM0043.threshold = 3
+dotnet_diagnostic.GM0126.severity = warning  # Each parameter in a large parameter list must be on its own line
+dotnet_diagnostic.GM0126.threshold = 4
+dotnet_diagnostic.GM0127.severity = warning  # Each argument in a large argument list must be on its own line
+dotnet_diagnostic.GM0127.threshold = 4
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
 dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
@@ -270,6 +274,8 @@ dotnet_diagnostic.GM0113.severity = warning  # Space between single-line block b
 dotnet_diagnostic.GM0113.enabled = true
 dotnet_diagnostic.GM0114.severity = warning  # Space between accessors in single-line property
 dotnet_diagnostic.GM0114.enabled = true
+dotnet_diagnostic.GM0125.severity = warning  # Space before open brace
+dotnet_diagnostic.GM0125.enabled = true
 
 # GamesMayer.Diagnostics — Style
 dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed

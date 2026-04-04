@@ -29,8 +29,8 @@ namespace GamesMayer.Diagnostics
                 && parsed;
 
             var title = enabled
-                ? "Add spaces inside method declaration parameter parentheses"
-                : "Remove spaces inside method declaration parameter parentheses";
+                ? "Add spaces inside method/constructor declaration parameter parentheses"
+                : "Remove spaces inside method/constructor declaration parameter parentheses";
 
             context.RegisterCodeFix(
                 CodeAction.Create(
