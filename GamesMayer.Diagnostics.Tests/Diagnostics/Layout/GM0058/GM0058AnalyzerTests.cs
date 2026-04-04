@@ -8,81 +8,137 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0058AnalyzerTests
     {
         [Fact]
-        public async Task ClassWithNoBaseList_NoDiagnostic()
+        public async Task ColonOnSameLine_InheritanceClause_NoDiagnostic()
         {
-            var testCode = @"class Foo { }";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
+            var testCode = @"interface I { }
 
-        [Fact]
-        public async Task ClassWithBaseTypeOnSameLine_NoDiagnostic()
-        {
-            var testCode = @"class Foo : System.IDisposable
+class C : I
 {
-    public void Dispose() { }
 }";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task ClassWithMultipleBaseTypesOnSameLine_NoDiagnostic()
+        public async Task ColonOnNextLine_InheritanceClause_Diagnostic()
         {
-            var testCode = @"interface IBar { }
-class Foo : System.IDisposable, IBar
+            var testCode = @"interface I { }
+
+class C
+    {|GM0058::|} I
 {
-    public void Dispose() { }
 }";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task ClassWithColonOnNextLine_Diagnostic()
+        public async Task ColonOnSameLine_ConstructorInitializer_NoDiagnostic()
         {
-            var testCode = @"class Foo
-    {|GM0058:: System.IDisposable|}
+            var testCode = @"class Base
 {
-    public void Dispose() { }
-}";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
-        }
+    public Base(int x) { }
+}
 
-        [Fact]
-        public async Task ClassWithColonAndBaseTypeOnSeparateLines_Diagnostic()
-        {
-            var testCode = @"class Foo
-    {|GM0058::
-    System.IDisposable|}
+class C : Base
 {
-    public void Dispose() { }
+    public C(int x) : base(x) { }
 }";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task ClassWithBaseTypesOnDifferentLines_Diagnostic()
+        public async Task ColonOnNextLine_ConstructorInitializer_Diagnostic()
         {
-            var testCode = @"interface IBar { }
-class Foo
-    {|GM0058:: System.IDisposable,
-    IBar|}
+            var testCode = @"class Base
 {
-    public void Dispose() { }
+    public Base(int x) { }
+}
+
+class C : Base
+{
+    public C(int x)
+        {|GM0058::|} base(x) { }
 }";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task InterfaceWithBaseTypeOnSameLine_NoDiagnostic()
+        public async Task ColonOnSameLine_WhereConstraintClause_NoDiagnostic()
         {
-            var testCode = @"interface IFoo : System.IDisposable { }";
+            var testCode = @"class C
+{
+    public void Foo<T>()
+        where T : System.IDisposable { }
+}";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task InterfaceWithColonOnNextLine_Diagnostic()
+        public async Task ColonOnNextLine_WhereConstraintClause_Diagnostic()
         {
-            var testCode = @"interface IFoo
-    {|GM0058:: System.IDisposable|} { }";
+            var testCode = @"class C
+{
+    public void Foo<T>()
+        where T
+            {|GM0058::|} System.IDisposable { }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ColonOnSameLine_MultipleBaseTypes_NoDiagnostic()
+        {
+            var testCode = @"interface I1 { }
+interface I2 { }
+
+class C : I1, I2
+{
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ColonOnNextLine_MultipleBaseTypes_Diagnostic()
+        {
+            var testCode = @"interface I1 { }
+interface I2 { }
+
+class C
+    {|GM0058::|} I1, I2
+{
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ColonOnSameLine_Interface_NoDiagnostic()
+        {
+            var testCode = @"interface I1 { }
+
+interface I2 : I1
+{
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ColonOnNextLine_Interface_Diagnostic()
+        {
+            var testCode = @"interface I1 { }
+
+interface I2
+    {|GM0058::|} I1
+{
+}";
+
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
     }

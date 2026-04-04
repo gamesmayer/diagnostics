@@ -31,20 +31,37 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.BaseList);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.BaseList, SyntaxKind.BaseConstructorInitializer, SyntaxKind.ThisConstructorInitializer, SyntaxKind.TypeParameterConstraintClause);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var baseList = (BaseListSyntax)context.Node;
-            if (baseList.Types.Count == 0)
-                return;
+            SyntaxToken colonToken;
 
-            var previousToken = baseList.ColonToken.GetPreviousToken();
+            if (context.Node is BaseListSyntax baseList)
+            {
+                if (baseList.Types.Count == 0)
+                    return;
+                colonToken = baseList.ColonToken;
+            }
+            else if (context.Node is ConstructorInitializerSyntax ctorInit)
+            {
+                colonToken = ctorInit.ColonToken;
+            }
+            else if (context.Node is TypeParameterConstraintClauseSyntax constraintClause)
+            {
+                colonToken = constraintClause.ColonToken;
+            }
+            else
+            {
+                return;
+            }
+
+            var previousToken = colonToken.GetPreviousToken();
             if (!TryHasSpaceBetweenTokens(
                     context.Node.SyntaxTree,
                     previousToken,
-                    baseList.ColonToken,
+                    colonToken,
                     out var hasSpaceBeforeColon))
             {
                 return;
@@ -60,7 +77,7 @@ namespace GamesMayer.Diagnostics
 
             context.ReportDiagnostic(Diagnostic.Create(
                 Descriptor,
-                baseList.ColonToken.GetLocation(),
+                colonToken.GetLocation(),
                 properties,
                 action));
         }

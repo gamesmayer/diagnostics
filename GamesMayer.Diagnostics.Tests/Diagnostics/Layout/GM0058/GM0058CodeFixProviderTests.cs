@@ -8,66 +8,82 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0058CodeFixProviderTests
     {
         [Fact]
-        public async Task ClassWithColonOnNextLine_Fix()
+        public async Task ColonOnNextLine_InheritanceClause_MovesToSameLine()
         {
-            var testCode = @"class Foo
-    {|GM0058:: System.IDisposable|}
+            var testCode = @"interface I { }
+
+class C
+    {|GM0058::|} I
 {
-    public void Dispose() { }
 }";
-            var fixedCode = @"class Foo : System.IDisposable
+            var fixedCode = @"interface I { }
+
+class C : I
 {
-    public void Dispose() { }
 }";
+
             var test = new CSharpCodeFixTest<GM0058Analyzer, GM0058CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
             };
+
             await test.RunAsync();
         }
 
         [Fact]
-        public async Task ClassWithColonAndBaseTypeOnSeparateLines_Fix()
+        public async Task ColonOnNextLine_ConstructorInitializer_MovesToSameLine()
         {
-            var testCode = @"class Foo
-    {|GM0058::
-    System.IDisposable|}
+            var testCode = @"class Base
 {
-    public void Dispose() { }
-}";
-            var fixedCode = @"class Foo : System.IDisposable
+    public Base(int x) { }
+}
+
+class C : Base
 {
-    public void Dispose() { }
+    public C(int x)
+        {|GM0058::|} base(x) { }
 }";
+            var fixedCode = @"class Base
+{
+    public Base(int x) { }
+}
+
+class C : Base
+{
+    public C(int x) : base(x) { }
+}";
+
             var test = new CSharpCodeFixTest<GM0058Analyzer, GM0058CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
             };
+
             await test.RunAsync();
         }
 
         [Fact]
-        public async Task ClassWithBaseTypesOnDifferentLines_Fix()
+        public async Task ColonOnNextLine_WhereConstraintClause_MovesToSameLine()
         {
-            var testCode = @"interface IBar { }
-class Foo
-    {|GM0058:: System.IDisposable,
-    IBar|}
+            var testCode = @"class C
 {
-    public void Dispose() { }
+    public void Foo<T>()
+        where T
+            {|GM0058::|} System.IDisposable { }
 }";
-            var fixedCode = @"interface IBar { }
-class Foo : System.IDisposable, IBar
+            var fixedCode = @"class C
 {
-    public void Dispose() { }
+    public void Foo<T>()
+        where T : System.IDisposable { }
 }";
+
             var test = new CSharpCodeFixTest<GM0058Analyzer, GM0058CodeFixProvider, XUnitVerifier>
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
             };
+
             await test.RunAsync();
         }
     }

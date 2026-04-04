@@ -165,7 +165,7 @@ dotnet_diagnostic.GM0053.severity = warning  # Each 'where' constraint clause mu
 dotnet_diagnostic.GM0055.severity = warning  # No blank lines between 'where' constraint clauses
 dotnet_diagnostic.GM0056.severity = warning  # 'where' constraint clause must be written on a single line
 dotnet_diagnostic.GM0057.severity = warning  # No blank lines between declaration and first 'where' constraint clause
-dotnet_diagnostic.GM0058.severity = warning  # Inheritance list must be on the same line as the type declaration
+dotnet_diagnostic.GM0058.severity = warning  # Colon must be on the same line as the declaration
 dotnet_diagnostic.GM0059.severity = warning  # Colon in named argument must be adjacent to parameter name
 dotnet_diagnostic.GM0060.severity = warning  # Property/field access chain must be on a single line
 dotnet_diagnostic.GM0061.severity = warning  # Use '==' or '!=' instead of 'is' pattern for equality comparison

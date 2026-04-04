@@ -88,7 +88,7 @@ Diagnostics are organized by category.
 | [GM0055](docs/Diagnostics/Layout/GM0055.md) | No blank lines between 'where' constraint clauses                                  | Yes     | Yes     |
 | [GM0056](docs/Diagnostics/Layout/GM0056.md) | 'where' constraint clause must be written on a single line                         | Yes     | Yes     |
 | [GM0057](docs/Diagnostics/Layout/GM0057.md) | No blank lines between declaration and first 'where' constraint clause             | Yes     | Yes     |
-| [GM0058](docs/Diagnostics/Layout/GM0058.md) | Inheritance list must be on the same line as the type declaration                  | Yes     | Yes     |
+| [GM0058](docs/Diagnostics/Layout/GM0058.md) | Colon must be on the same line as the declaration                                  | Yes     | Yes     |
 | [GM0059](docs/Diagnostics/Layout/GM0059.md) | Colon in named argument must be adjacent to parameter name                         | Yes     | Yes     |
 | [GM0060](docs/Diagnostics/Layout/GM0060.md) | Property/field access chain must be on a single line                               | Yes     | Yes     |
 | [GM0061](docs/Diagnostics/Layout/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                   | Yes     | Yes     |
@@ -175,18 +175,18 @@ Diagnostics are organized by category.
 
 ### Style Diagnostics
 
-| ID                                         | Description                     | Fixable | Default |
-| ------------------------------------------ | ------------------------------- | ------- | ------- |
+| ID                                         | Description                                    | Fixable | Default |
+| ------------------------------------------ | ---------------------------------------------- | ------- | ------- |
 | [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed                | Yes     | Yes     |
 | [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation                       | Yes     | Yes     |
 | [GM0131](docs/Diagnostics/Style/GM0131.md) | Anonymous object field must have explicit name | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
-| ID                                                | Description                                  | Fixable | Default |
-| ------------------------------------------------- | -------------------------------------------- | ------- | ------- |
-| [GM0076](docs/Diagnostics/Architecture/GM0076.md) | Avoid using Unity Debug.Log methods directly                  | No      | Yes     |
-| [GM0130](docs/Diagnostics/Architecture/GM0130.md) | Namespace dependency violates clean architecture rules         | No      | Yes     |
+| ID                                                | Description                                            | Fixable | Default |
+| ------------------------------------------------- | ------------------------------------------------------ | ------- | ------- |
+| [GM0076](docs/Diagnostics/Architecture/GM0076.md) | Avoid using Unity Debug.Log methods directly           | No      | Yes     |
+| [GM0130](docs/Diagnostics/Architecture/GM0130.md) | Namespace dependency violates clean architecture rules | No      | Yes     |
 
 ### Naming Diagnostics
 

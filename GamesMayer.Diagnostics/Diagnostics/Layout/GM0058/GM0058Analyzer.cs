@@ -13,12 +13,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Inheritance list must be on the same line as the type declaration",
-            messageFormat: "Write the inheritance list on the same line as the type declaration",
+            title: "Colon must be on the same line as the declaration",
+            messageFormat: "Move ':' to the same line as the declaration",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "The inheritance list (the ':' symbol and all base types) must be on the same line as the type declaration identifier.");
+            description: "The ':' in inheritance clauses, 'where' constraint clauses, and constructor initializers must be on the same line as the declaration.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -27,40 +27,49 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeBaseList, SyntaxKind.BaseList);
+            context.RegisterSyntaxNodeAction(
+                AnalyzeNode,
+                SyntaxKind.BaseList,
+                SyntaxKind.BaseConstructorInitializer,
+                SyntaxKind.ThisConstructorInitializer,
+                SyntaxKind.TypeParameterConstraintClause);
         }
 
-        private static void AnalyzeBaseList(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var baseList = (BaseListSyntax)context.Node;
-            if (baseList.Types.Count == 0)
-                return;
+            SyntaxToken colonToken;
 
-            var identifier = GetTypeIdentifier(baseList.Parent);
-            if (identifier == null)
-                return;
-
-            var tree = baseList.SyntaxTree;
-            var identifierLine = tree.GetLineSpan(identifier.Value.Span).StartLinePosition.Line;
-            var lastTypeLine = tree.GetLineSpan(baseList.Types.Last().GetLastToken().Span).EndLinePosition.Line;
-
-            if (identifierLine != lastTypeLine)
+            if (context.Node is BaseListSyntax baseList)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, baseList.GetLocation()));
+                if (baseList.Types.Count == 0)
+                    return;
+                colonToken = baseList.ColonToken;
             }
-        }
-
-        private static SyntaxToken? GetTypeIdentifier(SyntaxNode? parent)
-        {
-            return parent switch
+            else if (context.Node is ConstructorInitializerSyntax ctorInit)
             {
-                ClassDeclarationSyntax classDecl => classDecl.Identifier,
-                StructDeclarationSyntax structDecl => structDecl.Identifier,
-                InterfaceDeclarationSyntax interfaceDecl => interfaceDecl.Identifier,
-                RecordDeclarationSyntax recordDecl => recordDecl.Identifier,
-                EnumDeclarationSyntax enumDecl => enumDecl.Identifier,
-                _ => null
-            };
+                colonToken = ctorInit.ColonToken;
+            }
+            else if (context.Node is TypeParameterConstraintClauseSyntax constraintClause)
+            {
+                colonToken = constraintClause.ColonToken;
+            }
+            else
+            {
+                return;
+            }
+
+            var previousToken = colonToken.GetPreviousToken();
+            if (previousToken == default)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var previousLine = tree.GetLineSpan(previousToken.Span).EndLinePosition.Line;
+            var colonLine = tree.GetLineSpan(colonToken.Span).StartLinePosition.Line;
+
+            if (previousLine == colonLine)
+                return;
+
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, colonToken.GetLocation()));
         }
     }
 }

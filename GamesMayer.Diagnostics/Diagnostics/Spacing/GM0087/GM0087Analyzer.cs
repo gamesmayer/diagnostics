@@ -31,20 +31,42 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.BaseList);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.BaseList, SyntaxKind.BaseConstructorInitializer, SyntaxKind.ThisConstructorInitializer, SyntaxKind.TypeParameterConstraintClause);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var baseList = (BaseListSyntax)context.Node;
-            if (baseList.Types.Count == 0)
-                return;
+            SyntaxToken colonToken;
+            SyntaxToken nextToken;
 
-            var firstTypeToken = baseList.Types[0].GetFirstToken();
+            if (context.Node is BaseListSyntax baseList)
+            {
+                if (baseList.Types.Count == 0)
+                    return;
+                colonToken = baseList.ColonToken;
+                nextToken = baseList.Types[0].GetFirstToken();
+            }
+            else if (context.Node is ConstructorInitializerSyntax ctorInit)
+            {
+                colonToken = ctorInit.ColonToken;
+                nextToken = ctorInit.ThisOrBaseKeyword;
+            }
+            else if (context.Node is TypeParameterConstraintClauseSyntax constraintClause)
+            {
+                if (constraintClause.Constraints.Count == 0)
+                    return;
+                colonToken = constraintClause.ColonToken;
+                nextToken = constraintClause.Constraints[0].GetFirstToken();
+            }
+            else
+            {
+                return;
+            }
+
             if (!TryHasSpaceBetweenTokens(
                     context.Node.SyntaxTree,
-                    baseList.ColonToken,
-                    firstTypeToken,
+                    colonToken,
+                    nextToken,
                     out var hasSpaceAfterColon))
             {
                 return;
@@ -60,7 +82,7 @@ namespace GamesMayer.Diagnostics
 
             context.ReportDiagnostic(Diagnostic.Create(
                 Descriptor,
-                baseList.ColonToken.GetLocation(),
+                colonToken.GetLocation(),
                 properties,
                 action));
         }

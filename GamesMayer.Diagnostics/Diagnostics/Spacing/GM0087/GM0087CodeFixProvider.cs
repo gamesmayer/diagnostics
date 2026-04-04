@@ -52,14 +52,34 @@ namespace GamesMayer.Diagnostics
                 return document;
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            if (token.Parent?.FirstAncestorOrSelf<BaseListSyntax>() is not BaseListSyntax baseList)
-                return document;
 
-            if (baseList.Types.Count == 0)
+            SyntaxToken colonToken;
+            SyntaxToken nextToken;
+            if (token.Parent?.FirstAncestorOrSelf<BaseListSyntax>() is BaseListSyntax baseList)
+            {
+                if (baseList.Types.Count == 0)
+                    return document;
+                colonToken = baseList.ColonToken;
+                nextToken = baseList.Types[0].GetFirstToken();
+            }
+            else if (token.Parent?.FirstAncestorOrSelf<ConstructorInitializerSyntax>() is ConstructorInitializerSyntax ctorInit)
+            {
+                colonToken = ctorInit.ColonToken;
+                nextToken = ctorInit.ThisOrBaseKeyword;
+            }
+            else if (token.Parent?.FirstAncestorOrSelf<TypeParameterConstraintClauseSyntax>() is TypeParameterConstraintClauseSyntax constraintClause)
+            {
+                if (constraintClause.Constraints.Count == 0)
+                    return document;
+                colonToken = constraintClause.ColonToken;
+                nextToken = constraintClause.Constraints[0].GetFirstToken();
+            }
+            else
+            {
                 return document;
+            }
 
-            var firstTypeToken = baseList.Types[0].GetFirstToken();
-            var betweenSpan = TextSpan.FromBounds(baseList.ColonToken.Span.End, firstTypeToken.SpanStart);
+            var betweenSpan = TextSpan.FromBounds(colonToken.Span.End, nextToken.SpanStart);
             var replacement = enabled ? " " : string.Empty;
 
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);

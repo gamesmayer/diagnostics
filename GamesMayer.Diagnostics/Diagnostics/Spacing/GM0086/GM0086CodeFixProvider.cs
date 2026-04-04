@@ -52,11 +52,19 @@ namespace GamesMayer.Diagnostics
                 return document;
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            if (token.Parent?.FirstAncestorOrSelf<BaseListSyntax>() is not BaseListSyntax baseList)
+
+            SyntaxToken colonToken;
+            if (token.Parent?.FirstAncestorOrSelf<BaseListSyntax>() is BaseListSyntax baseList)
+                colonToken = baseList.ColonToken;
+            else if (token.Parent?.FirstAncestorOrSelf<ConstructorInitializerSyntax>() is ConstructorInitializerSyntax ctorInit)
+                colonToken = ctorInit.ColonToken;
+            else if (token.Parent?.FirstAncestorOrSelf<TypeParameterConstraintClauseSyntax>() is TypeParameterConstraintClauseSyntax constraintClause)
+                colonToken = constraintClause.ColonToken;
+            else
                 return document;
 
-            var previousToken = baseList.ColonToken.GetPreviousToken();
-            var betweenSpan = TextSpan.FromBounds(previousToken.Span.End, baseList.ColonToken.SpanStart);
+            var previousToken = colonToken.GetPreviousToken();
+            var betweenSpan = TextSpan.FromBounds(previousToken.Span.End, colonToken.SpanStart);
             var replacement = enabled ? " " : string.Empty;
 
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);

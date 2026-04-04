@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -6,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 namespace GamesMayer.Diagnostics
@@ -23,19 +21,17 @@ namespace GamesMayer.Diagnostics
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnostic = context.Diagnostics[0];
-
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Write inheritance list on the same line as the type declaration",
-                    createChangedDocument: ct => FixSingleLineAsync(context.Document, diagnostic, ct),
+                    title: "Move ':' to the same line as the declaration",
+                    createChangedDocument: ct => FixAsync(context.Document, context.Diagnostics[0], ct),
                     equivalenceKey: nameof(GM0058CodeFixProvider)),
-                diagnostic);
+                context.Diagnostics[0]);
 
             return Task.CompletedTask;
         }
 
-        private static async Task<Document> FixSingleLineAsync(
+        private static async Task<Document> FixAsync(
             Document document,
             Diagnostic diagnostic,
             CancellationToken cancellationToken)
@@ -44,26 +40,15 @@ namespace GamesMayer.Diagnostics
             if (root == null)
                 return document;
 
-            var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-
-            var node = root.FindNode(diagnostic.Location.SourceSpan);
-            if (node is not BaseListSyntax baseList)
+            var colonToken = root.FindToken(diagnostic.Location.SourceSpan.Start);
+            var previousToken = colonToken.GetPreviousToken();
+            if (previousToken == default)
                 return document;
 
-            // Replace from the end of the token preceding ':' (identifier or '>') through the
-            // last base type, so that any whitespace/newlines before ':' are also collapsed.
-            var previousToken = baseList.ColonToken.GetPreviousToken();
-            var lastToken = baseList.GetLastToken();
+            var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+            var betweenSpan = TextSpan.FromBounds(previousToken.Span.End, colonToken.SpanStart);
 
-            var spanStart = previousToken.Span.End;
-            var spanEnd = lastToken.Span.End;
-            var nodeText = sourceText.GetSubText(TextSpan.FromBounds(spanStart, spanEnd)).ToString();
-
-            var parts = nodeText.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var normalized = " " + string.Join(" ", parts);
-
-            var updatedText = sourceText.WithChanges(new TextChange(TextSpan.FromBounds(spanStart, spanEnd), normalized));
-            return document.WithText(updatedText);
+            return document.WithText(text.WithChanges(new TextChange(betweenSpan, " ")));
         }
     }
 }
