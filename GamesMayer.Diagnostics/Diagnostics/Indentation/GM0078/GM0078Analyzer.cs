@@ -134,7 +134,9 @@ namespace GamesMayer.Diagnostics
             if (context.Node is ObjectCreationExpressionSyntax objectCreation)
             {
                 var initializer = objectCreation.Initializer;
-                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                if (initializer == null ||
+                    (!initializer.IsKind(SyntaxKind.ObjectInitializerExpression) &&
+                     !initializer.IsKind(SyntaxKind.CollectionInitializerExpression)))
                     return;
                 openBrace = initializer.OpenBraceToken;
                 closeBrace = initializer.CloseBraceToken;
@@ -143,7 +145,9 @@ namespace GamesMayer.Diagnostics
             else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
             {
                 var initializer = implicitCreation.Initializer;
-                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                if (initializer == null ||
+                    (!initializer.IsKind(SyntaxKind.ObjectInitializerExpression) &&
+                     !initializer.IsKind(SyntaxKind.CollectionInitializerExpression)))
                     return;
                 openBrace = initializer.OpenBraceToken;
                 closeBrace = initializer.CloseBraceToken;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -35,6 +36,10 @@ namespace GamesMayer.Diagnostics
                 SyntaxKind.StructDeclaration,
                 SyntaxKind.RecordDeclaration,
                 SyntaxKind.InterfaceDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeObjectCreation,
+                SyntaxKind.ObjectCreationExpression,
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -150,6 +155,75 @@ namespace GamesMayer.Diagnostics
                 var accessorLineText = sourceText.Lines[accessorLine].ToString();
                 var actualIndent = CountLeadingWhitespace(accessorLineText);
 
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
+            }
+        }
+
+        private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
+        {
+            SyntaxToken newKeyword;
+            SyntaxToken openBrace;
+            IEnumerable<SyntaxNode> expressions;
+
+            if (context.Node is ObjectCreationExpressionSyntax objectCreation)
+            {
+                var initializer = objectCreation.Initializer;
+                if (initializer == null ||
+                    (!initializer.IsKind(SyntaxKind.ObjectInitializerExpression) &&
+                     !initializer.IsKind(SyntaxKind.CollectionInitializerExpression)))
+                    return;
+                if (initializer.Expressions.Count == 0)
+                    return;
+                newKeyword = objectCreation.NewKeyword;
+                openBrace = initializer.OpenBraceToken;
+                expressions = initializer.Expressions;
+            }
+            else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
+            {
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null ||
+                    (!initializer.IsKind(SyntaxKind.ObjectInitializerExpression) &&
+                     !initializer.IsKind(SyntaxKind.CollectionInitializerExpression)))
+                    return;
+                if (initializer.Expressions.Count == 0)
+                    return;
+                newKeyword = implicitCreation.NewKeyword;
+                openBrace = initializer.OpenBraceToken;
+                expressions = initializer.Expressions;
+            }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                if (anonymousCreation.Initializers.Count == 0)
+                    return;
+                newKeyword = anonymousCreation.NewKeyword;
+                openBrace = anonymousCreation.OpenBraceToken;
+                expressions = anonymousCreation.Initializers;
+            }
+            else
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+            var indentSize = GetIndentSize(context);
+
+            var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
+            var expectedIndent = declarationIndent + indentSize;
+
+            var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
+
+            foreach (var expression in expressions)
+            {
+                var firstToken = expression.GetFirstToken();
+                if (firstToken == default)
+                    continue;
+
+                var expressionLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
+                if (expressionLine == openBraceLine)
+                    continue;
+
+                var actualIndent = CountLeadingWhitespace(sourceText.Lines[expressionLine].ToString());
                 if (actualIndent != expectedIndent)
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }

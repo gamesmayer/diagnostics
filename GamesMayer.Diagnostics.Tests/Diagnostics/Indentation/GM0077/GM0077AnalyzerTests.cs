@@ -257,5 +257,145 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Collection / object initializer tests ─────────────────────────────
+
+        [Fact]
+        public async Task CollectionInitializer_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int> { 1, 2 };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_ItemOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+                {|GM0077:1|},
+            2
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_ItemUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+{|GM0077:1|},
+            2
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_AsArgument_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        });
+    }
+
+    void Use(System.Collections.Generic.List<int> list) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_AsArgument_ItemOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new System.Collections.Generic.List<int>
+        {
+                {|GM0077:1|},
+            2
+        });
+    }
+
+    void Use(System.Collections.Generic.List<int> list) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_ItemOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+                {|GM0077:A|} = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

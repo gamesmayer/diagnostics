@@ -739,5 +739,109 @@ class Foo { public int A { get; set; } }";
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Collection initializer tests ─────────────────────────────────────
+
+        [Fact]
+        public async Task CollectionInitializer_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int> { 1, 2 };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+            {|GM0078:{|}
+            1,
+            2
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_CloseBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+{|GM0078:}|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_AsArgument_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        });
+    }
+
+    void Use(System.Collections.Generic.List<int> list) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_AsArgument_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new System.Collections.Generic.List<int>
+            {|GM0078:{|}
+            1,
+            2
+        });
+    }
+
+    void Use(System.Collections.Generic.List<int> list) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
