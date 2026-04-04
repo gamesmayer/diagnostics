@@ -83,7 +83,7 @@ namespace GamesMayer.Diagnostics
             if (type == null)
                 return document;
 
-            var typeText = type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+            var typeText = type.ToMinimalDisplayString(semanticModel, implicitCreation.SpanStart);
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var insertionPoint = implicitCreation.NewKeyword.Span.End;

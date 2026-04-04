@@ -144,6 +144,84 @@ class C
         }
 
         [Fact]
+        public async Task ImplicitObjectCreation_NestedClass_DefaultSetting_FixToExplicitWithContainingType()
+        {
+            var testCode = @"class Outer
+{
+    public class Inner { public Inner(int x) { } }
+}
+
+class C
+{
+    Outer.Inner field = {|GM0129:new|}(42);
+}";
+
+            var fixedCode = @"class Outer
+{
+    public class Inner { public Inner(int x) { } }
+}
+
+class C
+{
+    Outer.Inner field = new Outer.Inner(42);
+}";
+
+            var test = new CSharpCodeFixTest<GM0129Analyzer, GM0129CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ImplicitObjectCreation_AmbiguousNamespace_DefaultSetting_FixToExplicitWithNamespace()
+        {
+            var testCode = @"namespace A
+{
+    public class Foo { }
+}
+
+namespace B
+{
+    using A;
+
+    public class Foo { }
+
+    class C
+    {
+        A.Foo field = {|GM0129:new|}();
+    }
+}";
+
+            var fixedCode = @"namespace A
+{
+    public class Foo { }
+}
+
+namespace B
+{
+    using A;
+
+    public class Foo { }
+
+    class C
+    {
+        A.Foo field = new A.Foo();
+    }
+}";
+
+            var test = new CSharpCodeFixTest<GM0129Analyzer, GM0129CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task ExplicitObjectCreation_InNestedInvocationArgument_EnabledFalse_FixToImplicit()
         {
             var testCode = @"struct Vector2 { public float x; }
