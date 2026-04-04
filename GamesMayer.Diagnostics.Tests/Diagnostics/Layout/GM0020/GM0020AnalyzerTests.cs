@@ -45,6 +45,21 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task NonEmptyMethodClosingBraceOnSameLine_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int value = 1; }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(
+                testCode,
+                VerifyCS.Diagnostic().WithSpan(5, 24, 5, 25).WithArguments("closing", "on a new line"));
+        }
+
+        [Fact]
         public async Task NonEmptyTypeBraceOnSameLine_Diagnostic()
         {
             var testCode = @"class Foo {|GM0020:{|}
@@ -208,6 +223,127 @@ dotnet_diagnostic.GM0020 = accessors, anonymous_methods, anonymous_types, contro
     }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ExplicitAllmanStyle_NonEmptyMethodBraceOnSameLine_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method() {|GM0020:{|}
+        int value = 1;
+    }
+}";
+
+            var test = CreateAnalyzerTest(testCode, @"dotnet_diagnostic.GM0020.style = Allman");
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task KAndRStyle_NonEmptyMethodBraceOnSameLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo {
+    void Method() {
+        int value = 1;
+    }
+}";
+
+            var test = CreateAnalyzerTest(testCode, @"dotnet_diagnostic.GM0020.style = K&R");
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task KAndRStyle_NonEmptyMethodClosingBraceOnSameLine_Diagnostic()
+        {
+            var testCode = @"class Foo {
+    void Method() {
+        int value = 1; }
+}";
+
+            var test = CreateAnalyzerTest(testCode, @"dotnet_diagnostic.GM0020.style = K&R");
+            test.ExpectedDiagnostics.Add(VerifyCS.Diagnostic().WithSpan(3, 24, 3, 25).WithArguments("closing", "on a new line"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task KAndRStyle_NonEmptyMethodBraceOnNewLine_Diagnostic()
+        {
+            var testCode = @"class Foo {
+    void Method()
+    {|GM0020:{|}
+        int value = 1;
+    }
+}";
+
+            var test = CreateAnalyzerTest(testCode, @"dotnet_diagnostic.GM0020.style = K&R");
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task InvalidStyle_FallsBackToAllman()
+        {
+            var testCode = @"class Foo
+{
+    void Method() {|GM0020:{|}
+        int value = 1;
+    }
+}";
+
+            var test = CreateAnalyzerTest(testCode, @"dotnet_diagnostic.GM0020.style = Stroustrup");
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task CategoriesAndKAndRStyle_ComposeCorrectly()
+        {
+            var testCode = @"class Foo
+{
+    int Value
+    {
+        get
+        {
+            return 1;
+        }
+    }
+
+    void Method()
+    {|GM0020:{|}
+        int value = 1;
+    }
+}";
+
+            var test = CreateAnalyzerTest(
+                testCode,
+                @"dotnet_diagnostic.GM0020 = methods
+dotnet_diagnostic.GM0020.style = K&R");
+
+            await test.RunAsync();
+        }
+
+        private static CSharpAnalyzerTest<GM0020Analyzer, XUnitVerifier> CreateAnalyzerTest(
+            string testCode,
+            string editorConfigBody)
+        {
+            var test = new CSharpAnalyzerTest<GM0020Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", CreateEditorConfig(editorConfigBody)));
+            return test;
+        }
+
+        private static string CreateEditorConfig(string body)
+        {
+            return $@"root = true
+
+[*.cs]
+{body}";
         }
     }
 }

@@ -213,5 +213,391 @@ namespace GamesMayer.Diagnostics.Tests
     {|GM0078:}|}";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task StructBraces_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"struct Point
+{
+    int X { get; set; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task StructOpenBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"struct Point
+    {|GM0078:{|}
+    int X { get; set; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task StructCloseBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"struct Point
+{
+    int X { get; set; }
+    {|GM0078:}|}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task StructBraces_KAndRStyle_NoDiagnostic()
+        {
+            var testCode = @"struct Point {
+    int X { get; set; }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        // ── Array initializer tests (formerly GM0115) ─────────────────────────
+
+        [Fact]
+        public async Task ArrayInitializer_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+    {
+        0,
+        1
+    };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ImplicitArrayInitializer_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new[]
+    {
+        0,
+        1
+    };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[] { 0, 1 };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+        {|GM0078:{|}
+        0,
+        1
+    };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_CloseBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+    {
+        0,
+        1
+{|GM0078:}|};
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_BothBracesWrongIndent_TwoDiagnostics()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+        {|GM0078:{|}
+        0,
+        1
+        {|GM0078:}|};
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task LocalVariable_ArrayInitializer_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int[] arr = new int[]
+        {
+            0,
+            1
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task LocalVariable_ArrayInitializer_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int[] arr = new int[]
+            {|GM0078:{|}
+            0,
+            1
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NotAnInitialValue_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0,
+            1
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        // ── Object initializer tests (formerly GM0121) ────────────────────────
+
+        [Fact]
+        public async Task ObjectInitializer_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo { A = 1 };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_OpenBraceOnSameLineAsNew_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+            {|GM0078:{|}
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_CloseBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+{|GM0078:}|};
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_BothBracesWrongIndent_TwoDiagnostics()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+            {|GM0078:{|}
+            A = 1
+            {|GM0078:}|};
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ImplicitObjectCreation_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Foo x = new()
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ImplicitObjectCreation_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Foo x = new()
+            {|GM0078:{|}
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectAsArgument_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new Foo
+        {
+            A = 1
+        });
+    }
+
+    void Use(Foo f) { }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ObjectAsArgument_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new Foo
+            {|GM0078:{|}
+            A = 1
+        });
+    }
+
+    void Use(Foo f) { }
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FieldDeclaration_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    Foo f = new Foo
+    {
+        A = 1
+    };
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FieldDeclaration_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    Foo f = new Foo
+        {|GM0078:{|}
+        A = 1
+    };
+}
+
+class Foo { public int A { get; set; } }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

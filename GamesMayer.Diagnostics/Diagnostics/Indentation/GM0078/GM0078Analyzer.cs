@@ -14,12 +14,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Block brace must be indented at the declaration level",
+            title: "Brace must be indented at the declaration level",
             messageFormat: "Indent this brace to match the declaration indentation",
             category: "Indentation",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Opening and closing braces of a block must be indented at the same level as the containing declaration.");
+            description: "Opening and closing braces must be indented at the same level as the containing declaration. Applies to blocks, class/struct/namespace declarations, array initializers, and object initializers.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -31,7 +31,15 @@ namespace GamesMayer.Diagnostics
             context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
             context.RegisterSyntaxNodeAction(AnalyzeDeclarationBraces,
                 SyntaxKind.NamespaceDeclaration,
-                SyntaxKind.ClassDeclaration);
+                SyntaxKind.ClassDeclaration,
+                SyntaxKind.StructDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeArrayCreation,
+                SyntaxKind.ArrayCreationExpression,
+                SyntaxKind.ImplicitArrayCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeObjectCreation,
+                SyntaxKind.ObjectCreationExpression,
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -66,6 +74,10 @@ namespace GamesMayer.Diagnostics
                     openBrace = cls.OpenBraceToken;
                     closeBrace = cls.CloseBraceToken;
                     break;
+                case StructDeclarationSyntax str:
+                    openBrace = str.OpenBraceToken;
+                    closeBrace = str.CloseBraceToken;
+                    break;
                 default:
                     return;
             }
@@ -82,6 +94,78 @@ namespace GamesMayer.Diagnostics
 
             CheckBrace(context, sourceText, tree, openBrace, declarationLine, declarationIndent);
             CheckBrace(context, sourceText, tree, closeBrace, declarationLine, declarationIndent);
+        }
+
+        private static void AnalyzeArrayCreation(SyntaxNodeAnalysisContext context)
+        {
+            InitializerExpressionSyntax? initializer;
+
+            if (context.Node is ArrayCreationExpressionSyntax arrayCreation)
+                initializer = arrayCreation.Initializer;
+            else if (context.Node is ImplicitArrayCreationExpressionSyntax implicitArrayCreation)
+                initializer = implicitArrayCreation.Initializer;
+            else
+                return;
+
+            if (initializer == null)
+                return;
+
+            if (context.Node.Parent is not EqualsValueClauseSyntax)
+                return;
+
+            var declarationFirstToken = FindDeclarationFirstToken(context.Node);
+            if (declarationFirstToken == default)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+
+            CheckBrace(context, sourceText, tree, initializer.OpenBraceToken, declarationLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, initializer.CloseBraceToken, declarationLine, declarationIndent);
+        }
+
+        private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
+        {
+            SyntaxToken openBrace, closeBrace, newKeyword;
+
+            if (context.Node is ObjectCreationExpressionSyntax objectCreation)
+            {
+                var initializer = objectCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
+                newKeyword = objectCreation.NewKeyword;
+            }
+            else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
+            {
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
+                newKeyword = implicitCreation.NewKeyword;
+            }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                openBrace = anonymousCreation.OpenBraceToken;
+                closeBrace = anonymousCreation.CloseBraceToken;
+                newKeyword = anonymousCreation.NewKeyword;
+            }
+            else
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
+
+            CheckBrace(context, sourceText, tree, openBrace, newKeywordLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, closeBrace, newKeywordLine, declarationIndent);
         }
 
         private static void CheckBrace(
@@ -112,6 +196,36 @@ namespace GamesMayer.Diagnostics
             while (count < text.Length && (text[count] == ' ' || text[count] == '\t'))
                 count++;
             return count;
+        }
+
+        internal static SyntaxToken FindDeclarationFirstToken(SyntaxNode node)
+        {
+            var current = node.Parent;
+            while (current != null)
+            {
+                if (current is FieldDeclarationSyntax or
+                    LocalDeclarationStatementSyntax or
+                    PropertyDeclarationSyntax)
+                    return current.GetFirstToken();
+                current = current.Parent;
+            }
+            return default;
+        }
+
+        internal static SyntaxToken FindNewKeyword(SyntaxNode node)
+        {
+            var current = node;
+            while (current != null)
+            {
+                if (current is ObjectCreationExpressionSyntax objectCreation)
+                    return objectCreation.NewKeyword;
+                if (current is ImplicitObjectCreationExpressionSyntax implicitCreation)
+                    return implicitCreation.NewKeyword;
+                if (current is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+                    return anonymousCreation.NewKeyword;
+                current = current.Parent;
+            }
+            return default;
         }
     }
 }

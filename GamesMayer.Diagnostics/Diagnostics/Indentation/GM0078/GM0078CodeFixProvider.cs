@@ -64,13 +64,28 @@ namespace GamesMayer.Diagnostics
 
         private static SyntaxToken? GetDeclarationFirstToken(SyntaxToken braceToken)
         {
-            return braceToken.Parent switch
+            switch (braceToken.Parent)
             {
-                BlockSyntax block => block.Parent?.GetFirstToken() ?? block.OpenBraceToken,
-                NamespaceDeclarationSyntax ns => ns.GetFirstToken(),
-                ClassDeclarationSyntax cls => cls.GetFirstToken(),
-                _ => null
-            };
+                case BlockSyntax block:
+                    return block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
+                case NamespaceDeclarationSyntax ns:
+                    return ns.GetFirstToken();
+                case ClassDeclarationSyntax cls:
+                    return cls.GetFirstToken();
+                case StructDeclarationSyntax str:
+                    return str.GetFirstToken();
+                case InitializerExpressionSyntax init
+                    when init.Parent is ArrayCreationExpressionSyntax or ImplicitArrayCreationExpressionSyntax:
+                    var arrayToken = GM0078Analyzer.FindDeclarationFirstToken(init.Parent!);
+                    return arrayToken == default ? null : arrayToken;
+                case InitializerExpressionSyntax init:
+                    var newKeyword = GM0078Analyzer.FindNewKeyword(init.Parent!);
+                    return newKeyword == default ? null : newKeyword;
+                case AnonymousObjectCreationExpressionSyntax anon:
+                    return anon.NewKeyword;
+                default:
+                    return null;
+            }
         }
     }
 }

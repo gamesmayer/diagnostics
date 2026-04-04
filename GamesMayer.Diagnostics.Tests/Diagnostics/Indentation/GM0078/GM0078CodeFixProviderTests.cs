@@ -210,5 +210,268 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task StructOpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"struct Point
+    {|GM0078:{|}
+    int X { get; set; }
+}";
+            var fixedCode = @"struct Point
+{
+    int X { get; set; }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task StructCloseBrace_OverIndented_Fix()
+        {
+            var testCode = @"struct Point
+{
+    int X { get; set; }
+    {|GM0078:}|}";
+            var fixedCode = @"struct Point
+{
+    int X { get; set; }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        // ── Array initializer fix tests (formerly GM0115) ─────────────────────
+
+        [Fact]
+        public async Task ArrayInitializer_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+        {|GM0078:{|}
+        0,
+        1
+    };
+}";
+            var fixedCode = @"class C
+{
+    int[] arr = new int[]
+    {
+        0,
+        1
+    };
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_CloseBrace_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    int[] arr = new int[]
+    {
+        0,
+        1
+{|GM0078:}|};
+}";
+            var fixedCode = @"class C
+{
+    int[] arr = new int[]
+    {
+        0,
+        1
+    };
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task LocalVariable_ArrayInitializer_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        int[] arr = new int[]
+            {|GM0078:{|}
+            0,
+            1
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        int[] arr = new int[]
+        {
+            0,
+            1
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        // ── Object initializer fix tests (formerly GM0121) ────────────────────
+
+        [Fact]
+        public async Task ObjectInitializer_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+            {|GM0078:{|}
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ObjectInitializer_CloseBrace_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+{|GM0078:}|};
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new Foo
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ImplicitObjectCreation_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Foo x = new()
+            {|GM0078:{|}
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        Foo x = new()
+        {
+            A = 1
+        };
+    }
+}
+
+class Foo { public int A { get; set; } }";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task FieldDeclaration_ObjectInitializer_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    Foo f = new Foo
+        {|GM0078:{|}
+        A = 1
+    };
+}
+
+class Foo { public int A { get; set; } }";
+            var fixedCode = @"class C
+{
+    Foo f = new Foo
+    {
+        A = 1
+    };
+}
+
+class Foo { public int A { get; set; } }";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace GamesMayer.Diagnostics
             if (context.Node.Parent is not EqualsValueClauseSyntax)
                 return;
 
-            var declarationFirstToken = GM0115Analyzer.FindDeclarationFirstToken(context.Node);
+            var declarationFirstToken = GM0078Analyzer.FindDeclarationFirstToken(context.Node);
             if (declarationFirstToken == default)
                 return;
 
@@ -59,7 +59,7 @@ namespace GamesMayer.Diagnostics
             var indentStep = GetIndentStep(context);
 
             var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            var declarationIndent = GM0115Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
             var expectedIndent = declarationIndent + indentStep;
 
             var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
@@ -74,7 +74,7 @@ namespace GamesMayer.Diagnostics
                 if (itemLine == openBraceLine)
                     continue;
 
-                var actualIndent = GM0115Analyzer.CountLeadingWhitespace(sourceText.Lines[itemLine].ToString());
+                var actualIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[itemLine].ToString());
                 if (actualIndent != expectedIndent)
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }

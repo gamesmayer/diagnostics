@@ -50,13 +50,13 @@ namespace GamesMayer.Diagnostics
             if (expression?.Parent is not InitializerExpressionSyntax initializer)
                 return document;
 
-            var declarationFirstToken = GM0115Analyzer.FindDeclarationFirstToken(initializer);
+            var declarationFirstToken = GM0078Analyzer.FindDeclarationFirstToken(initializer);
             if (declarationFirstToken == default)
                 return document;
 
             var tree = root.SyntaxTree;
             var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            int declarationIndent = GM0115Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            int declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             var analyzerOptions = document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree);
             int indentStep = 4;

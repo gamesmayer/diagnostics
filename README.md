@@ -130,11 +130,9 @@ Diagnostics are organized by category.
 | [GM0049](docs/Diagnostics/Indentation/GM0049.md) | Wrapped operator-expression item must be indented one step from expression start line | Yes     | Yes     |
 | [GM0054](docs/Diagnostics/Indentation/GM0054.md) | 'where' constraint clause must be indented one step from the declaration              | Yes     | Yes     |
 | [GM0077](docs/Diagnostics/Indentation/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
-| [GM0078](docs/Diagnostics/Indentation/GM0078.md) | Block brace must be indented at the declaration level                                 | Yes     | Yes     |
+| [GM0078](docs/Diagnostics/Indentation/GM0078.md) | Brace must be indented at the declaration level                                       | Yes     | Yes     |
 | [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
-| [GM0115](docs/Diagnostics/Indentation/GM0115.md) | Array initializer braces must be indented at the declaration level                    | Yes     | Yes     |
 | [GM0116](docs/Diagnostics/Indentation/GM0116.md) | Array initializer items must be indented one step from the declaration                | Yes     | Yes     |
-| [GM0121](docs/Diagnostics/Indentation/GM0121.md) | Object initializer braces must be indented at the declaration level                   | Yes     | Yes     |
 | [GM0122](docs/Diagnostics/Indentation/GM0122.md) | Object initializer members must be indented one step from the declaration             | Yes     | Yes     |
 
 ### Spacing Diagnostics

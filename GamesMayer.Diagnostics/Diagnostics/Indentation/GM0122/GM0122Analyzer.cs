@@ -76,7 +76,7 @@ namespace GamesMayer.Diagnostics
             var indentStep = GetIndentStep(context);
 
             var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
-            var declarationIndent = GM0121Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
+            var declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
             var expectedIndent = declarationIndent + indentStep;
 
             var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
@@ -91,7 +91,7 @@ namespace GamesMayer.Diagnostics
                 if (itemLine == openBraceLine)
                     continue;
 
-                var actualIndent = GM0121Analyzer.CountLeadingWhitespace(sourceText.Lines[itemLine].ToString());
+                var actualIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[itemLine].ToString());
                 if (actualIndent != expectedIndent)
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }

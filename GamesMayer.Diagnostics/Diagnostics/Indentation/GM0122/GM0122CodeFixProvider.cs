@@ -45,13 +45,13 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            var newKeyword = GM0121Analyzer.FindNewKeyword(token.Parent!);
+            var newKeyword = GM0078Analyzer.FindNewKeyword(token.Parent!);
             if (newKeyword == default)
                 return document;
 
             var tree = root.SyntaxTree;
             var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
-            int declarationIndent = GM0121Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
+            int declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
 
             var analyzerOptions = document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree);
             int indentStep = 4;
@@ -65,7 +65,7 @@ namespace GamesMayer.Diagnostics
             int expectedIndent = declarationIndent + indentStep;
 
             var itemLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);
-            int actualIndent = GM0121Analyzer.CountLeadingWhitespace(itemLine.ToString());
+            int actualIndent = GM0078Analyzer.CountLeadingWhitespace(itemLine.ToString());
 
             var indentSpan = new TextSpan(itemLine.Start, actualIndent);
             var updatedText = sourceText.WithChanges(new TextChange(indentSpan, new string(' ', expectedIndent)));

@@ -62,7 +62,7 @@ namespace GamesMayer.Diagnostics
             {
                 member = expression;
                 openBrace = initializer.OpenBraceToken;
-                newKeyword = GM0121Analyzer.FindNewKeyword(initializer);
+                newKeyword = GM0078Analyzer.FindNewKeyword(initializer);
                 var expressions = initializer.Expressions;
                 itemIndex = expressions.IndexOf(expression);
                 if (itemIndex < 0)
@@ -82,7 +82,7 @@ namespace GamesMayer.Diagnostics
 
                 member = memberDeclarator;
                 openBrace = anonymousCreation.OpenBraceToken;
-                newKeyword = GM0121Analyzer.FindNewKeyword(memberDeclarator);
+                newKeyword = GM0078Analyzer.FindNewKeyword(memberDeclarator);
                 var initializers = anonymousCreation.Initializers;
                 itemIndex = initializers.IndexOf(memberDeclarator);
                 if (itemIndex < 0)
@@ -97,7 +97,7 @@ namespace GamesMayer.Diagnostics
 
             var tree = root.SyntaxTree;
             var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
-            int declarationIndent = GM0121Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
+            int declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
 
             var analyzerOptions = document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree);
             int indentStep = 4;

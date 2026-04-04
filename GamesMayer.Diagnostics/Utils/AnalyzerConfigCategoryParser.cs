@@ -23,6 +23,12 @@ namespace GamesMayer.Diagnostics.Utils
         All = Types | Methods | Properties | Indexers | Events | Accessors | AnonymousMethods | ControlBlocks | AnonymousTypes | ObjectCollectionArrayInitializers | Lambdas | LocalFunctions,
     }
 
+    internal enum BraceStyle
+    {
+        Allman,
+        KAndR,
+    }
+
     internal static class AnalyzerConfigCategoryParser
     {
         private static readonly IReadOnlyDictionary<string, BraceCategory> CategoryFlags = new Dictionary<string, BraceCategory>
@@ -41,6 +47,12 @@ namespace GamesMayer.Diagnostics.Utils
             ["local_functions"] = BraceCategory.LocalFunctions,
         };
 
+        private static readonly IReadOnlyDictionary<string, BraceStyle> BraceStyles = new Dictionary<string, BraceStyle>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["allman"] = BraceStyle.Allman,
+            ["k&r"] = BraceStyle.KAndR,
+        };
+
         public static BraceCategory GetConfiguredBraceCategories(
             SyntaxNodeAnalysisContext context,
             string optionKey)
@@ -52,6 +64,47 @@ namespace GamesMayer.Diagnostics.Utils
             }
 
             return ParseBraceCategories(value);
+        }
+
+        public static BraceStyle GetConfiguredBraceStyle(
+            SyntaxNodeAnalysisContext context,
+            string optionKey)
+        {
+            var fileOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
+            return GetConfiguredBraceStyle(fileOptions, optionKey);
+        }
+
+        public static BraceStyle GetConfiguredBraceStyle(
+            AnalyzerConfigOptions fileOptions,
+            string optionKey)
+        {
+            if (!fileOptions.TryGetValue(optionKey, out var value))
+            {
+                return BraceStyle.Allman;
+            }
+
+            return ParseBraceStyle(value);
+        }
+
+        public static BraceStyle ParseBraceStyle(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return BraceStyle.Allman;
+            }
+
+            var token = value!.Trim();
+            if (BraceStyles.TryGetValue(token, out var style))
+            {
+                return style;
+            }
+
+            return BraceStyle.Allman;
+        }
+
+        public static string GetBraceStyleDisplayName(BraceStyle style)
+        {
+            return style == BraceStyle.KAndR ? "K&R" : "Allman";
         }
 
         private static BraceCategory ParseBraceCategories(string value)

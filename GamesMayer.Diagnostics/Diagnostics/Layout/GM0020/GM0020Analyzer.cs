@@ -13,15 +13,18 @@ namespace GamesMayer.Diagnostics
     {
         public const string DiagnosticId = "GM0020";
         private const string OptionKey = "dotnet_diagnostic.GM0020";
+        private const string StyleOptionKey = "dotnet_diagnostic.GM0020.style";
+        internal const string StylePropertyKey = "style";
+        internal const string BraceKindPropertyKey = "brace_kind";
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "New line required before non-empty opening brace",
-            messageFormat: "Place the opening brace on a new line",
+            title: "Brace placement must match the configured style for non-empty enclosures",
+            messageFormat: "Place the {0} brace {1}",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Opening braces for non-empty enclosures must be placed on a new line.");
+            description: "Opening and closing braces for non-empty enclosures must match the configured brace style.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -86,16 +89,18 @@ namespace GamesMayer.Diagnostics
                 return;
             }
 
+            var configuredStyle = GetConfiguredStyle(context);
+
             switch (context.Node)
             {
                 case NamespaceDeclarationSyntax namespaceDeclaration:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.Types, namespaceDeclaration.OpenBraceToken, namespaceDeclaration.Members.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Types, namespaceDeclaration.OpenBraceToken, namespaceDeclaration.CloseBraceToken, namespaceDeclaration.Members.Count == 0);
                     break;
                 case TypeDeclarationSyntax typeDeclaration:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.Types, typeDeclaration.OpenBraceToken, typeDeclaration.Members.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Types, typeDeclaration.OpenBraceToken, typeDeclaration.CloseBraceToken, typeDeclaration.Members.Count == 0);
                     break;
                 case EnumDeclarationSyntax enumDeclaration:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.Types, enumDeclaration.OpenBraceToken, enumDeclaration.Members.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Types, enumDeclaration.OpenBraceToken, enumDeclaration.CloseBraceToken, enumDeclaration.Members.Count == 0);
                     break;
                 case PropertyDeclarationSyntax propertyDeclaration:
                     if (propertyDeclaration.AccessorList != null)
@@ -104,7 +109,7 @@ namespace GamesMayer.Diagnostics
                             a => a.Body == null && a.ExpressionBody == null);
                         if (!isAutoImplemented)
                         {
-                            AnalyzeBrace(context, configuredCategories, BraceCategory.Properties, propertyDeclaration.AccessorList.OpenBraceToken, propertyDeclaration.AccessorList.Accessors.Count == 0);
+                            AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Properties, propertyDeclaration.AccessorList.OpenBraceToken, propertyDeclaration.AccessorList.CloseBraceToken, propertyDeclaration.AccessorList.Accessors.Count == 0);
                         }
                     }
 
@@ -112,150 +117,150 @@ namespace GamesMayer.Diagnostics
                 case IndexerDeclarationSyntax indexerDeclaration:
                     if (indexerDeclaration.AccessorList != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Indexers, indexerDeclaration.AccessorList.OpenBraceToken, indexerDeclaration.AccessorList.Accessors.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Indexers, indexerDeclaration.AccessorList.OpenBraceToken, indexerDeclaration.AccessorList.CloseBraceToken, indexerDeclaration.AccessorList.Accessors.Count == 0);
                     }
 
                     break;
                 case EventDeclarationSyntax eventDeclaration:
                     if (eventDeclaration.AccessorList != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Events, eventDeclaration.AccessorList.OpenBraceToken, eventDeclaration.AccessorList.Accessors.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Events, eventDeclaration.AccessorList.OpenBraceToken, eventDeclaration.AccessorList.CloseBraceToken, eventDeclaration.AccessorList.Accessors.Count == 0);
                     }
 
                     break;
                 case AccessorDeclarationSyntax accessorDeclaration:
                     if (accessorDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Accessors, accessorDeclaration.Body.OpenBraceToken, accessorDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Accessors, accessorDeclaration.Body.OpenBraceToken, accessorDeclaration.Body.CloseBraceToken, accessorDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case MethodDeclarationSyntax methodDeclaration:
                     if (methodDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Methods, methodDeclaration.Body.OpenBraceToken, methodDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Methods, methodDeclaration.Body.OpenBraceToken, methodDeclaration.Body.CloseBraceToken, methodDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case ConstructorDeclarationSyntax constructorDeclaration:
                     if (constructorDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Methods, constructorDeclaration.Body.OpenBraceToken, constructorDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Methods, constructorDeclaration.Body.OpenBraceToken, constructorDeclaration.Body.CloseBraceToken, constructorDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case DestructorDeclarationSyntax destructorDeclaration:
                     if (destructorDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Methods, destructorDeclaration.Body.OpenBraceToken, destructorDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Methods, destructorDeclaration.Body.OpenBraceToken, destructorDeclaration.Body.CloseBraceToken, destructorDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case OperatorDeclarationSyntax operatorDeclaration:
                     if (operatorDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Methods, operatorDeclaration.Body.OpenBraceToken, operatorDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Methods, operatorDeclaration.Body.OpenBraceToken, operatorDeclaration.Body.CloseBraceToken, operatorDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case ConversionOperatorDeclarationSyntax conversionOperatorDeclaration:
                     if (conversionOperatorDeclaration.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Methods, conversionOperatorDeclaration.Body.OpenBraceToken, conversionOperatorDeclaration.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Methods, conversionOperatorDeclaration.Body.OpenBraceToken, conversionOperatorDeclaration.Body.CloseBraceToken, conversionOperatorDeclaration.Body.Statements.Count == 0);
                     }
 
                     break;
                 case LocalFunctionStatementSyntax localFunctionStatement:
                     if (localFunctionStatement.Body != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.LocalFunctions, localFunctionStatement.Body.OpenBraceToken, localFunctionStatement.Body.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.LocalFunctions, localFunctionStatement.Body.OpenBraceToken, localFunctionStatement.Body.CloseBraceToken, localFunctionStatement.Body.Statements.Count == 0);
                     }
 
                     break;
                 case AnonymousMethodExpressionSyntax anonymousMethodExpression:
                     if (anonymousMethodExpression.Block != null)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.AnonymousMethods, anonymousMethodExpression.Block.OpenBraceToken, anonymousMethodExpression.Block.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.AnonymousMethods, anonymousMethodExpression.Block.OpenBraceToken, anonymousMethodExpression.Block.CloseBraceToken, anonymousMethodExpression.Block.Statements.Count == 0);
                     }
 
                     break;
                 case ParenthesizedLambdaExpressionSyntax parenthesizedLambdaExpression:
                     if (parenthesizedLambdaExpression.Body is BlockSyntax parenthesizedLambdaBody)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Lambdas, parenthesizedLambdaBody.OpenBraceToken, parenthesizedLambdaBody.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Lambdas, parenthesizedLambdaBody.OpenBraceToken, parenthesizedLambdaBody.CloseBraceToken, parenthesizedLambdaBody.Statements.Count == 0);
                     }
 
                     break;
                 case SimpleLambdaExpressionSyntax simpleLambdaExpression:
                     if (simpleLambdaExpression.Body is BlockSyntax simpleLambdaBody)
                     {
-                        AnalyzeBrace(context, configuredCategories, BraceCategory.Lambdas, simpleLambdaBody.OpenBraceToken, simpleLambdaBody.Statements.Count == 0);
+                        AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.Lambdas, simpleLambdaBody.OpenBraceToken, simpleLambdaBody.CloseBraceToken, simpleLambdaBody.Statements.Count == 0);
                     }
 
                     break;
                 case IfStatementSyntax ifStatement:
-                    AnalyzeControlBlock(context, configuredCategories, ifStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, ifStatement.Statement);
                     break;
                 case ElseClauseSyntax elseClause:
-                    AnalyzeControlBlock(context, configuredCategories, elseClause.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, elseClause.Statement);
                     break;
                 case ForStatementSyntax forStatement:
-                    AnalyzeControlBlock(context, configuredCategories, forStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, forStatement.Statement);
                     break;
                 case ForEachStatementSyntax forEachStatement:
-                    AnalyzeControlBlock(context, configuredCategories, forEachStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, forEachStatement.Statement);
                     break;
                 case ForEachVariableStatementSyntax forEachVariableStatement:
-                    AnalyzeControlBlock(context, configuredCategories, forEachVariableStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, forEachVariableStatement.Statement);
                     break;
                 case WhileStatementSyntax whileStatement:
-                    AnalyzeControlBlock(context, configuredCategories, whileStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, whileStatement.Statement);
                     break;
                 case DoStatementSyntax doStatement:
-                    AnalyzeControlBlock(context, configuredCategories, doStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, doStatement.Statement);
                     break;
                 case UsingStatementSyntax usingStatement:
-                    AnalyzeControlBlock(context, configuredCategories, usingStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, usingStatement.Statement);
                     break;
                 case LockStatementSyntax lockStatement:
-                    AnalyzeControlBlock(context, configuredCategories, lockStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, lockStatement.Statement);
                     break;
                 case FixedStatementSyntax fixedStatement:
-                    AnalyzeControlBlock(context, configuredCategories, fixedStatement.Statement);
+                    AnalyzeControlBlock(context, configuredCategories, configuredStyle, fixedStatement.Statement);
                     break;
                 case CheckedStatementSyntax checkedStatement:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, checkedStatement.Block.OpenBraceToken, checkedStatement.Block.Statements.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, checkedStatement.Block.OpenBraceToken, checkedStatement.Block.CloseBraceToken, checkedStatement.Block.Statements.Count == 0);
                     break;
                 case UnsafeStatementSyntax unsafeStatement:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, unsafeStatement.Block.OpenBraceToken, unsafeStatement.Block.Statements.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, unsafeStatement.Block.OpenBraceToken, unsafeStatement.Block.CloseBraceToken, unsafeStatement.Block.Statements.Count == 0);
                     break;
                 case SwitchStatementSyntax switchStatement:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, switchStatement.OpenBraceToken, switchStatement.Sections.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, switchStatement.OpenBraceToken, switchStatement.CloseBraceToken, switchStatement.Sections.Count == 0);
                     break;
                 case SwitchSectionSyntax switchSection:
                     foreach (var statement in switchSection.Statements)
                     {
                         if (statement is BlockSyntax block)
                         {
-                            AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, block.OpenBraceToken, block.Statements.Count == 0);
+                            AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, block.OpenBraceToken, block.CloseBraceToken, block.Statements.Count == 0);
                         }
                     }
 
                     break;
                 case TryStatementSyntax tryStatement:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, tryStatement.Block.OpenBraceToken, tryStatement.Block.Statements.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, tryStatement.Block.OpenBraceToken, tryStatement.Block.CloseBraceToken, tryStatement.Block.Statements.Count == 0);
                     break;
                 case CatchClauseSyntax catchClause:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, catchClause.Block.OpenBraceToken, catchClause.Block.Statements.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, catchClause.Block.OpenBraceToken, catchClause.Block.CloseBraceToken, catchClause.Block.Statements.Count == 0);
                     break;
                 case FinallyClauseSyntax finallyClause:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, finallyClause.Block.OpenBraceToken, finallyClause.Block.Statements.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, finallyClause.Block.OpenBraceToken, finallyClause.Block.CloseBraceToken, finallyClause.Block.Statements.Count == 0);
                     break;
                 case InitializerExpressionSyntax initializerExpression:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.ObjectCollectionArrayInitializers, initializerExpression.OpenBraceToken, initializerExpression.Expressions.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ObjectCollectionArrayInitializers, initializerExpression.OpenBraceToken, initializerExpression.CloseBraceToken, initializerExpression.Expressions.Count == 0);
                     break;
                 case AnonymousObjectCreationExpressionSyntax anonymousObjectCreation:
-                    AnalyzeBrace(context, configuredCategories, BraceCategory.AnonymousTypes, anonymousObjectCreation.OpenBraceToken, anonymousObjectCreation.Initializers.Count == 0);
+                    AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.AnonymousTypes, anonymousObjectCreation.OpenBraceToken, anonymousObjectCreation.CloseBraceToken, anonymousObjectCreation.Initializers.Count == 0);
                     break;
             }
         }
@@ -263,40 +268,91 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeControlBlock(
             SyntaxNodeAnalysisContext context,
             BraceCategory configuredCategories,
+            BraceStyle configuredStyle,
             StatementSyntax statement)
         {
             if (statement is BlockSyntax block)
             {
-                AnalyzeBrace(context, configuredCategories, BraceCategory.ControlBlocks, block.OpenBraceToken, block.Statements.Count == 0);
+                AnalyzeBraces(context, configuredCategories, configuredStyle, BraceCategory.ControlBlocks, block.OpenBraceToken, block.CloseBraceToken, block.Statements.Count == 0);
             }
         }
 
-        private static void AnalyzeBrace(
+        private static void AnalyzeBraces(
             SyntaxNodeAnalysisContext context,
             BraceCategory configuredCategories,
+            BraceStyle configuredStyle,
             BraceCategory category,
             SyntaxToken openBrace,
+            SyntaxToken closeBrace,
             bool isEmptyEnclosure)
         {
-            if (openBrace.IsMissing || isEmptyEnclosure || (configuredCategories & category) == 0)
+            if (openBrace.IsMissing || closeBrace.IsMissing || isEmptyEnclosure || (configuredCategories & category) == 0)
             {
                 return;
             }
 
-            var previousToken = openBrace.GetPreviousToken(includeZeroWidth: false);
-            if (previousToken == default)
+            var previousOpenToken = openBrace.GetPreviousToken(includeZeroWidth: false);
+            if (previousOpenToken == default)
             {
                 return;
             }
 
             var tree = context.Node.SyntaxTree;
-            var previousTokenLine = tree.GetLineSpan(previousToken.Span).EndLinePosition.Line;
+            var previousTokenLine = tree.GetLineSpan(previousOpenToken.Span).EndLinePosition.Line;
             var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
+            var isBraceOnDeclarationLine = previousTokenLine == openBraceLine;
 
-            if (previousTokenLine == openBraceLine)
+            if (IsViolation(configuredStyle, isBraceOnDeclarationLine))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, openBrace.GetLocation()));
+                ReportDiagnostic(context, openBrace, configuredStyle, "opening", GetOpeningBracePlacementText(configuredStyle));
             }
+
+            var previousCloseToken = closeBrace.GetPreviousToken(includeZeroWidth: false);
+            if (previousCloseToken == default)
+            {
+                return;
+            }
+
+            var previousCloseTokenLine = tree.GetLineSpan(previousCloseToken.Span).EndLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(closeBrace.Span).StartLinePosition.Line;
+            if (previousCloseTokenLine == closeBraceLine)
+            {
+                ReportDiagnostic(context, closeBrace, configuredStyle, "closing", "on a new line");
+            }
+        }
+
+        private static void ReportDiagnostic(
+            SyntaxNodeAnalysisContext context,
+            SyntaxToken braceToken,
+            BraceStyle configuredStyle,
+            string braceKind,
+            string requiredPlacement)
+        {
+            var properties = ImmutableDictionary<string, string?>.Empty
+                .Add(StylePropertyKey, AnalyzerConfigCategoryParser.GetBraceStyleDisplayName(configuredStyle))
+                .Add(BraceKindPropertyKey, braceKind);
+
+            context.ReportDiagnostic(
+                Diagnostic.Create(
+                    Descriptor,
+                    braceToken.GetLocation(),
+                    properties,
+                    braceKind,
+                    requiredPlacement));
+        }
+
+        private static bool IsViolation(BraceStyle configuredStyle, bool isBraceOnDeclarationLine)
+        {
+            return configuredStyle == BraceStyle.Allman
+                ? isBraceOnDeclarationLine
+                : !isBraceOnDeclarationLine;
+        }
+
+        private static string GetOpeningBracePlacementText(BraceStyle configuredStyle)
+        {
+            return configuredStyle == BraceStyle.Allman
+                ? "on a new line"
+                : "on the declaration line";
         }
 
         private static BraceCategory GetConfiguredCategories(SyntaxNodeAnalysisContext context)
@@ -304,6 +360,13 @@ namespace GamesMayer.Diagnostics
             return AnalyzerConfigCategoryParser.GetConfiguredBraceCategories(
                 context,
                 OptionKey);
+        }
+
+        private static BraceStyle GetConfiguredStyle(SyntaxNodeAnalysisContext context)
+        {
+            return AnalyzerConfigCategoryParser.GetConfiguredBraceStyle(
+                context,
+                StyleOptionKey);
         }
     }
 }
