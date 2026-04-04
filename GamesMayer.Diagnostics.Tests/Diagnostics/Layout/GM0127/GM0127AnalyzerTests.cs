@@ -42,13 +42,13 @@ class Test {
         }
 
         [Fact]
-        public async Task FourArgs_AllOnOneLine_Diagnostic()
+        public async Task FourArgs_AllOnOneLine_ReportsAllArgs()
         {
             var testCode = @"
 class Test {
     void Call(int a, int b, int c, int d) { }
     public void Method() {
-        Call(1, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
+        Call({|GM0127:1|}, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
     }
 }
 ";
@@ -56,13 +56,30 @@ class Test {
         }
 
         [Fact]
-        public async Task FiveArgs_AllOnOneLine_Diagnostic()
+        public async Task FiveArgs_AllOnOneLine_ReportsAllArgs()
         {
             var testCode = @"
 class Test {
     void Call(int a, int b, int c, int d, int e) { }
     public void Method() {
-        Call(1, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|}, {|GM0127:5|});
+        Call({|GM0127:1|}, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|}, {|GM0127:5|});
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FourArgs_FirstOnSameLineAsOpenParen_ReportsFirstArg()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b, int c, int d) { }
+    public void Method() {
+        Call({|GM0127:1|},
+            2,
+            3,
+            4);
     }
 }
 ";
@@ -94,7 +111,7 @@ class Foo {
 }
 class Test {
     public void Method() {
-        var x = new Foo(1, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
+        var x = new Foo({|GM0127:1|}, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
     }
 }
 ";
@@ -108,7 +125,7 @@ class Test {
 class Test {
     void Call(int a, int b) { }
     public void Method() {
-        Call(1, {|GM0127:2|});
+        Call({|GM0127:1|}, {|GM0127:2|});
     }
 }
 ";
@@ -156,7 +173,7 @@ dotnet_diagnostic.GM0127.threshold = 5"));
 class Test {
     void Call(int a, int b, int c, int d) { }
     public void Method() {
-        Call(1, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
+        Call({|GM0127:1|}, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|});
     }
 }
 ";

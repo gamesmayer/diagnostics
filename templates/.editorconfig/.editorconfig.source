@@ -63,8 +63,6 @@ dotnet_diagnostic.IDE0027.severity = warning   # Use expression body for accesso
 dotnet_diagnostic.IDE0001.severity = warning  # Simplify name (e.g. System.Exception → Exception)
 dotnet_diagnostic.IDE0002.severity = warning  # Simplify member access (e.g. MyClass.Member → Member inside the same class)
 csharp_style_throw_expression = true:warning
-csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
-dotnet_diagnostic.IDE0090.severity = warning  # Use 'new(...)' instead of 'new T(...)'
 dotnet_diagnostic.IDE0041.severity = none     # Use 'is null' check instead of reference equality
 dotnet_diagnostic.IDE0031.severity = warning  # Use null propagation (?.) instead of ternary null check
 dotnet_diagnostic.IDE0029.severity = warning  # Use coalescing expression (??) where applicable
@@ -152,6 +150,7 @@ dotnet_diagnostic.GM0126.severity = warning  # Each parameter in a large paramet
 dotnet_diagnostic.GM0126.threshold = 4
 dotnet_diagnostic.GM0127.severity = warning  # Each argument in a large argument list must be on its own line
 dotnet_diagnostic.GM0127.threshold = 4
+dotnet_diagnostic.GM0128.severity = warning  # new keyword and type must be on the same line in object creation
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
 dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
@@ -279,6 +278,8 @@ dotnet_diagnostic.GM0125.enabled = true
 
 # GamesMayer.Diagnostics — Style
 dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed
+dotnet_diagnostic.GM0129.severity = warning  # Explicit object creation
+dotnet_diagnostic.GM0129.enabled = true
 
 # GamesMayer.Diagnostics — Architecture (GM0076)
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

@@ -43,6 +43,14 @@ namespace GamesMayer.Diagnostics
 
             var tree = context.Node.SyntaxTree;
 
+            var openParenLine = tree.GetLineSpan(argList.OpenParenToken.Span).EndLinePosition.Line;
+            var firstArgLine = tree.GetLineSpan(arguments[0].Span).StartLinePosition.Line;
+
+            if (firstArgLine == openParenLine)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, arguments[0].Span)));
+            }
+
             for (int i = 1; i < arguments.Count; i++)
             {
                 var prev = arguments[i - 1];
@@ -52,8 +60,11 @@ namespace GamesMayer.Diagnostics
                 var currLine = tree.GetLineSpan(curr.Span).StartLinePosition.Line;
 
                 if (currLine == prevLine)
+                {
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, curr.Span)));
+                }
             }
+
         }
 
         private static int GetMinimumArguments(SyntaxNodeAnalysisContext context)

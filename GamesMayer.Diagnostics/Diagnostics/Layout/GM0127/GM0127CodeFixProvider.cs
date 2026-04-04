@@ -52,16 +52,30 @@ namespace GamesMayer.Diagnostics
                 return document;
 
             string newline = DetectNewline(sourceText);
-            string indent = FindBaseIndent(sourceText, argList.SpanStart) + "    ";
+            string baseIndent = FindBaseIndent(sourceText, argList.SpanStart);
+            string indent = baseIndent + "    ";
 
             var replacements = new List<(int Start, int Length, string Text)>();
 
             var openParen = argList.OpenParenToken;
             var firstArg = argList.Arguments[0];
-            var openParenLine = sourceText.Lines.GetLineFromPosition(openParen.Span.End).LineNumber;
+
+            var prevToken = openParen.GetPreviousToken();
+            if (prevToken != default)
+            {
+                var prevTokenLine = sourceText.Lines.GetLineFromPosition(prevToken.Span.End).LineNumber;
+                var openParenStartLine = sourceText.Lines.GetLineFromPosition(openParen.SpanStart).LineNumber;
+
+                if (prevTokenLine == openParenStartLine)
+                {
+                    replacements.Add((prevToken.Span.End, openParen.SpanStart - prevToken.Span.End, newline + baseIndent));
+                }
+            }
+
+            var openParenEndLine = sourceText.Lines.GetLineFromPosition(openParen.Span.End).LineNumber;
             var firstArgLine = sourceText.Lines.GetLineFromPosition(firstArg.SpanStart).LineNumber;
 
-            if (openParenLine == firstArgLine)
+            if (openParenEndLine == firstArgLine)
             {
                 int afterOpen = openParen.Span.End;
                 int beforeFirst = firstArg.SpanStart;
@@ -82,6 +96,18 @@ namespace GamesMayer.Diagnostics
 
                 if (sepLine == nextLine)
                     replacements.Add((sepEnd, nextStart - sepEnd, newline + indent));
+            }
+
+            var lastArg = argList.Arguments[argList.Arguments.Count - 1];
+            var closeParen = argList.CloseParenToken;
+            var closeParenLine = sourceText.Lines.GetLineFromPosition(closeParen.SpanStart).LineNumber;
+            var lastArgLine = sourceText.Lines.GetLineFromPosition(lastArg.Span.End).LineNumber;
+
+            if (lastArgLine == closeParenLine)
+            {
+                int beforeClose = closeParen.SpanStart;
+                int afterLastArg = lastArg.Span.End;
+                replacements.Add((afterLastArg, beforeClose - afterLastArg, newline + baseIndent));
             }
 
             if (replacements.Count == 0)

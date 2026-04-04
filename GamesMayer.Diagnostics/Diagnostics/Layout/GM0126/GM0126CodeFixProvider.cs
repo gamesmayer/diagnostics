@@ -52,16 +52,30 @@ namespace GamesMayer.Diagnostics
                 return document;
 
             string newline = DetectNewline(sourceText);
-            string indent = FindBaseIndent(sourceText, paramList.SpanStart) + "    ";
+            string baseIndent = FindBaseIndent(sourceText, paramList.SpanStart);
+            string indent = baseIndent + "    ";
 
             var replacements = new List<(int Start, int Length, string Text)>();
 
             var openParen = paramList.OpenParenToken;
             var firstParam = paramList.Parameters[0];
-            var openParenLine = sourceText.Lines.GetLineFromPosition(openParen.Span.End).LineNumber;
+
+            var prevToken = openParen.GetPreviousToken();
+            if (prevToken != default)
+            {
+                var prevTokenLine = sourceText.Lines.GetLineFromPosition(prevToken.Span.End).LineNumber;
+                var openParenStartLine = sourceText.Lines.GetLineFromPosition(openParen.SpanStart).LineNumber;
+
+                if (prevTokenLine == openParenStartLine)
+                {
+                    replacements.Add((prevToken.Span.End, openParen.SpanStart - prevToken.Span.End, newline + baseIndent));
+                }
+            }
+
+            var openParenEndLine = sourceText.Lines.GetLineFromPosition(openParen.Span.End).LineNumber;
             var firstParamLine = sourceText.Lines.GetLineFromPosition(firstParam.SpanStart).LineNumber;
 
-            if (openParenLine == firstParamLine)
+            if (openParenEndLine == firstParamLine)
             {
                 int afterOpen = openParen.Span.End;
                 int beforeFirst = firstParam.SpanStart;
@@ -82,6 +96,18 @@ namespace GamesMayer.Diagnostics
 
                 if (sepLine == nextLine)
                     replacements.Add((sepEnd, nextStart - sepEnd, newline + indent));
+            }
+
+            var lastParam = paramList.Parameters[paramList.Parameters.Count - 1];
+            var closeParen = paramList.CloseParenToken;
+            var closeParenLine = sourceText.Lines.GetLineFromPosition(closeParen.SpanStart).LineNumber;
+            var lastParamLine = sourceText.Lines.GetLineFromPosition(lastParam.Span.End).LineNumber;
+
+            if (lastParamLine == closeParenLine)
+            {
+                int beforeClose = closeParen.SpanStart;
+                int afterLastParam = lastParam.Span.End;
+                replacements.Add((afterLastParam, beforeClose - afterLastParam, newline + baseIndent));
             }
 
             if (replacements.Count == 0)

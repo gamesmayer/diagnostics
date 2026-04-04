@@ -12,16 +12,18 @@ namespace GamesMayer.Diagnostics.Tests
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
             var fixedCode = @"
 class Test {
-    public void Method(
+    public void Method
+    (
         int a,
         int b,
         int c,
-        int d) { }
+        int d
+    ) { }
 }
 ";
             var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
@@ -38,17 +40,50 @@ class Test {
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}, {|GM0126:int e|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}, {|GM0126:int e|}) { }
 }
 ";
             var fixedCode = @"
 class Test {
-    public void Method(
+    public void Method
+    (
         int a,
         int b,
         int c,
         int d,
-        int e) { }
+        int e
+    ) { }
+}
+";
+            var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                NumberOfFixAllIterations = 1,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task FourParams_FirstOnSameLineAsOpenParen_Fix()
+        {
+            var testCode = @"
+class Test {
+    public void Method({|GM0126:int a|},
+        int b,
+        int c,
+        int d) { }
+}
+";
+            var fixedCode = @"
+class Test {
+    public void Method
+    (
+        int a,
+        int b,
+        int c,
+        int d
+    ) { }
 }
 ";
             var test = new CSharpCodeFixTest<GM0126Analyzer, GM0126CodeFixProvider, XUnitVerifier>

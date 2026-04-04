@@ -36,22 +36,36 @@ class Test {
         }
 
         [Fact]
-        public async Task FourParams_AllOnOneLine_Diagnostic()
+        public async Task FourParams_AllOnOneLine_ReportsAllParams()
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task FiveParams_AllOnOneLine_Diagnostic()
+        public async Task FiveParams_AllOnOneLine_ReportsAllParams()
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}, {|GM0126:int e|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}, {|GM0126:int e|}) { }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FourParams_FirstOnSameLineAsOpenParen_ReportsFirstParam()
+        {
+            var testCode = @"
+class Test {
+    public void Method({|GM0126:int a|},
+        int b,
+        int c,
+        int d) { }
 }
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
@@ -75,7 +89,7 @@ class Test {
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}) { }
 }
 ";
             var test = new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>
@@ -117,7 +131,7 @@ dotnet_diagnostic.GM0126.threshold = 5"));
         {
             var testCode = @"
 class Test {
-    public void Method(int a, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
+    public void Method({|GM0126:int a|}, {|GM0126:int b|}, {|GM0126:int c|}, {|GM0126:int d|}) { }
 }
 ";
             var test = new CSharpAnalyzerTest<GM0126Analyzer, XUnitVerifier>

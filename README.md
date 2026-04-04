@@ -76,6 +76,7 @@ Diagnostics are organized by category.
 | [GM0043](docs/Diagnostics/Layout/GM0043.md) | Each operand in a multi-operand logical expression must be on its own line         | Yes     | Yes     |
 | [GM0126](docs/Diagnostics/Layout/GM0126.md) | Each parameter in a large parameter list must be on its own line                   | Yes     | Yes     |
 | [GM0127](docs/Diagnostics/Layout/GM0127.md) | Each argument in a large argument list must be on its own line                     | Yes     | Yes     |
+| [GM0128](docs/Diagnostics/Layout/GM0128.md) | new keyword and type must be on the same line in object creation                   | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                        | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |
 | [GM0047](docs/Diagnostics/Layout/GM0047.md) | Multi-line assignment value must start on the same line as the assignment operator | Yes     | Yes     |
@@ -180,6 +181,7 @@ Diagnostics are organized by category.
 | ID                                         | Description                     | Fixable | Default |
 | ------------------------------------------ | ------------------------------- | ------- | ------- |
 | [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed | Yes     | Yes     |
+| [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation        | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
