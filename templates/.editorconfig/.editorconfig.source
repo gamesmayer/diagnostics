@@ -63,6 +63,7 @@ dotnet_diagnostic.IDE0027.severity = warning   # Use expression body for accesso
 dotnet_diagnostic.IDE0001.severity = warning  # Simplify name (e.g. System.Exception → Exception)
 dotnet_diagnostic.IDE0002.severity = warning  # Simplify member access (e.g. MyClass.Member → Member inside the same class)
 csharp_style_throw_expression = true:warning
+dotnet_diagnostic.IDE0090.severity = none     # Use 'new(...)' expression (disabled by default)
 dotnet_diagnostic.IDE0041.severity = none     # Use 'is null' check instead of reference equality
 dotnet_diagnostic.IDE0031.severity = warning  # Use null propagation (?.) instead of ternary null check
 dotnet_diagnostic.IDE0029.severity = warning  # Use coalescing expression (??) where applicable
