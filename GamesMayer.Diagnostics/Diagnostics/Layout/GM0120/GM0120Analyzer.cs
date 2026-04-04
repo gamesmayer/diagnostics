@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,34 +31,45 @@ namespace GamesMayer.Diagnostics
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode,
                 SyntaxKind.ObjectCreationExpression,
-                SyntaxKind.ImplicitObjectCreationExpression);
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            InitializerExpressionSyntax? initializer;
+            IReadOnlyList<SyntaxNode> members;
 
             if (context.Node is ObjectCreationExpressionSyntax objectCreation)
-                initializer = objectCreation.Initializer;
+            {
+                var initializer = objectCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
+            }
             else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
-                initializer = implicitCreation.Initializer;
+            {
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
+            }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                members = anonymousCreation.Initializers;
+            }
             else
                 return;
 
-            if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
-                return;
-
-            var expressions = initializer.Expressions;
-            if (expressions.Count < 2)
+            if (members.Count < 2)
                 return;
 
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);
 
-            for (int i = 1; i < expressions.Count; i++)
+            for (int i = 1; i < members.Count; i++)
             {
-                var previousLastToken = expressions[i - 1].GetLastToken();
-                var currentFirstToken = expressions[i].GetFirstToken();
+                var previousLastToken = members[i - 1].GetLastToken();
+                var currentFirstToken = members[i].GetFirstToken();
 
                 if (previousLastToken == default || currentFirstToken == default)
                     continue;

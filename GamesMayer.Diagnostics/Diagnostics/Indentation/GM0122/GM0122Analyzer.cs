@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,31 +31,44 @@ namespace GamesMayer.Diagnostics
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode,
                 SyntaxKind.ObjectCreationExpression,
-                SyntaxKind.ImplicitObjectCreationExpression);
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            InitializerExpressionSyntax? initializer;
+            IReadOnlyList<SyntaxNode> members;
             SyntaxToken newKeyword;
+            SyntaxToken openBrace;
 
             if (context.Node is ObjectCreationExpressionSyntax objectCreation)
             {
-                initializer = objectCreation.Initializer;
+                var initializer = objectCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
                 newKeyword = objectCreation.NewKeyword;
+                openBrace = initializer.OpenBraceToken;
             }
             else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
             {
-                initializer = implicitCreation.Initializer;
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
                 newKeyword = implicitCreation.NewKeyword;
+                openBrace = initializer.OpenBraceToken;
+            }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                members = anonymousCreation.Initializers;
+                newKeyword = anonymousCreation.NewKeyword;
+                openBrace = anonymousCreation.OpenBraceToken;
             }
             else
                 return;
 
-            if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
-                return;
-
-            if (initializer.Expressions.Count == 0)
+            if (members.Count == 0)
                 return;
 
             var tree = context.Node.SyntaxTree;
@@ -65,11 +79,11 @@ namespace GamesMayer.Diagnostics
             var declarationIndent = GM0121Analyzer.CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
             var expectedIndent = declarationIndent + indentStep;
 
-            var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
+            var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
 
-            foreach (var expression in initializer.Expressions)
+            foreach (var member in members)
             {
-                var firstToken = expression.GetFirstToken();
+                var firstToken = member.GetFirstToken();
                 if (firstToken == default)
                     continue;
 

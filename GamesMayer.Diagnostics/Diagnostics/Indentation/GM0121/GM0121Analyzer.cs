@@ -30,28 +30,39 @@ namespace GamesMayer.Diagnostics
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode,
                 SyntaxKind.ObjectCreationExpression,
-                SyntaxKind.ImplicitObjectCreationExpression);
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            InitializerExpressionSyntax? initializer;
-            SyntaxToken newKeyword;
+            SyntaxToken openBrace, closeBrace, newKeyword;
 
             if (context.Node is ObjectCreationExpressionSyntax objectCreation)
             {
-                initializer = objectCreation.Initializer;
+                var initializer = objectCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
                 newKeyword = objectCreation.NewKeyword;
             }
             else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
             {
-                initializer = implicitCreation.Initializer;
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
                 newKeyword = implicitCreation.NewKeyword;
             }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                openBrace = anonymousCreation.OpenBraceToken;
+                closeBrace = anonymousCreation.CloseBraceToken;
+                newKeyword = anonymousCreation.NewKeyword;
+            }
             else
-                return;
-
-            if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
                 return;
 
             var tree = context.Node.SyntaxTree;
@@ -60,8 +71,8 @@ namespace GamesMayer.Diagnostics
             var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
 
-            CheckBrace(context, tree, sourceText, initializer.OpenBraceToken, newKeywordLine, declarationIndent);
-            CheckBrace(context, tree, sourceText, initializer.CloseBraceToken, newKeywordLine, declarationIndent);
+            CheckBrace(context, tree, sourceText, openBrace, newKeywordLine, declarationIndent);
+            CheckBrace(context, tree, sourceText, closeBrace, newKeywordLine, declarationIndent);
         }
 
         private static void CheckBrace(
@@ -92,15 +103,17 @@ namespace GamesMayer.Diagnostics
             return count;
         }
 
-        internal static SyntaxToken FindNewKeyword(SyntaxNode braceParent)
+        internal static SyntaxToken FindNewKeyword(SyntaxNode node)
         {
-            var current = braceParent?.Parent;
+            var current = node;
             while (current != null)
             {
                 if (current is ObjectCreationExpressionSyntax objectCreation)
                     return objectCreation.NewKeyword;
                 if (current is ImplicitObjectCreationExpressionSyntax implicitCreation)
                     return implicitCreation.NewKeyword;
+                if (current is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+                    return anonymousCreation.NewKeyword;
                 current = current.Parent;
             }
             return default;

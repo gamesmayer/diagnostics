@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -29,48 +30,66 @@ namespace GamesMayer.Diagnostics
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode,
                 SyntaxKind.ObjectCreationExpression,
-                SyntaxKind.ImplicitObjectCreationExpression);
+                SyntaxKind.ImplicitObjectCreationExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            InitializerExpressionSyntax? initializer;
+            IReadOnlyList<SyntaxNode> members;
+            SyntaxToken openBrace;
+            SyntaxToken closeBrace;
 
             if (context.Node is ObjectCreationExpressionSyntax objectCreation)
-                initializer = objectCreation.Initializer;
+            {
+                var initializer = objectCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
+            }
             else if (context.Node is ImplicitObjectCreationExpressionSyntax implicitCreation)
-                initializer = implicitCreation.Initializer;
+            {
+                var initializer = implicitCreation.Initializer;
+                if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
+                    return;
+                members = initializer.Expressions;
+                openBrace = initializer.OpenBraceToken;
+                closeBrace = initializer.CloseBraceToken;
+            }
+            else if (context.Node is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+            {
+                members = anonymousCreation.Initializers;
+                openBrace = anonymousCreation.OpenBraceToken;
+                closeBrace = anonymousCreation.CloseBraceToken;
+            }
             else
                 return;
 
-            if (initializer == null || !initializer.IsKind(SyntaxKind.ObjectInitializerExpression))
-                return;
-
-            if (initializer.Expressions.Count == 0)
+            if (members.Count == 0)
                 return;
 
             var tree = context.Node.SyntaxTree;
 
-            var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
-            var closeBraceLine = tree.GetLineSpan(initializer.CloseBraceToken.Span).StartLinePosition.Line;
+            var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(closeBrace.Span).StartLinePosition.Line;
 
             if (openBraceLine == closeBraceLine)
                 return;
 
-            var expressions = initializer.Expressions;
-
-            var firstItemToken = expressions[0].GetFirstToken();
+            var firstItemToken = members[0].GetFirstToken();
             if (firstItemToken != default)
             {
                 var firstItemLine = tree.GetLineSpan(firstItemToken.Span).StartLinePosition.Line;
                 if (firstItemLine == openBraceLine)
-                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, expressions[0].GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, members[0].GetLocation()));
             }
 
-            for (int i = 1; i < expressions.Count; i++)
+            for (int i = 1; i < members.Count; i++)
             {
-                var current = expressions[i];
-                var previous = expressions[i - 1];
+                var current = members[i];
+                var previous = members[i - 1];
 
                 var currentToken = current.GetFirstToken();
                 var previousToken = previous.GetFirstToken();

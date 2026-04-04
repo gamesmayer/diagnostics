@@ -38,7 +38,8 @@ namespace GamesMayer.Diagnostics
                 SyntaxKind.ArrayInitializerExpression,
                 SyntaxKind.ObjectInitializerExpression,
                 SyntaxKind.CollectionInitializerExpression,
-                SyntaxKind.ComplexElementInitializerExpression);
+                SyntaxKind.ComplexElementInitializerExpression,
+                SyntaxKind.AnonymousObjectCreationExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)

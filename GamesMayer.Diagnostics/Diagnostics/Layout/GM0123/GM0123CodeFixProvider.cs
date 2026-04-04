@@ -47,14 +47,51 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var token = root.FindToken(tokenPosition);
 
+            SyntaxNode? member;
+            SyntaxToken openBrace;
+            SyntaxToken newKeyword;
+            int itemIndex;
+            int changeStart;
+
             var expression = token.Parent?
                 .AncestorsAndSelf()
                 .OfType<ExpressionSyntax>()
                 .FirstOrDefault(e => e.Parent is InitializerExpressionSyntax);
-            if (expression?.Parent is not InitializerExpressionSyntax initializer)
-                return document;
 
-            var newKeyword = GM0121Analyzer.FindNewKeyword(initializer);
+            if (expression?.Parent is InitializerExpressionSyntax initializer)
+            {
+                member = expression;
+                openBrace = initializer.OpenBraceToken;
+                newKeyword = GM0121Analyzer.FindNewKeyword(initializer);
+                var expressions = initializer.Expressions;
+                itemIndex = expressions.IndexOf(expression);
+                if (itemIndex < 0)
+                    return document;
+                changeStart = itemIndex == 0
+                    ? openBrace.Span.End
+                    : expressions.GetSeparator(itemIndex - 1).Span.End;
+            }
+            else
+            {
+                var memberDeclarator = token.Parent?
+                    .AncestorsAndSelf()
+                    .OfType<AnonymousObjectMemberDeclaratorSyntax>()
+                    .FirstOrDefault();
+                if (memberDeclarator?.Parent is not AnonymousObjectCreationExpressionSyntax anonymousCreation)
+                    return document;
+
+                member = memberDeclarator;
+                openBrace = anonymousCreation.OpenBraceToken;
+                newKeyword = GM0121Analyzer.FindNewKeyword(memberDeclarator);
+                var initializers = anonymousCreation.Initializers;
+                itemIndex = initializers.IndexOf(memberDeclarator);
+                if (itemIndex < 0)
+                    return document;
+                changeStart = itemIndex == 0
+                    ? openBrace.Span.End
+                    : initializers.GetSeparator(itemIndex - 1).Span.End;
+            }
+
             if (newKeyword == default)
                 return document;
 
@@ -72,24 +109,7 @@ namespace GamesMayer.Diagnostics
             }
 
             var expectedIndentation = new string(' ', declarationIndent + indentStep);
-
-            var expressions = initializer.Expressions;
-            int itemIndex = expressions.IndexOf(expression);
-            if (itemIndex < 0)
-                return document;
-
-            int changeStart;
-            if (itemIndex == 0)
-            {
-                changeStart = initializer.OpenBraceToken.Span.End;
-            }
-            else
-            {
-                var separator = expressions.GetSeparator(itemIndex - 1);
-                changeStart = separator.Span.End;
-            }
-
-            var currentFirstToken = expression.GetFirstToken();
+            var currentFirstToken = member.GetFirstToken();
             var changeSpan = TextSpan.FromBounds(changeStart, currentFirstToken.SpanStart);
             var updatedText = sourceText.WithChanges(new TextChange(changeSpan, "\n" + expectedIndentation));
 
