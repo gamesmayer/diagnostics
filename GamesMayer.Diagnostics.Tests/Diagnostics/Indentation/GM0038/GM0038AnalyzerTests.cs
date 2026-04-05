@@ -386,5 +386,55 @@ enum Ease
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task NullConditionalUnderIndented_Diagnostic()
+        {
+            var testCode = @"class WorldMapView { public void Despawn() {} }
+
+class C
+{
+    void M()
+    {
+        WorldMapView worldMapView = null;
+        worldMapView?
+        {|GM0038:.Despawn()|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NullConditionalCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class WorldMapView { public void Despawn() {} }
+
+class C
+{
+    void M()
+    {
+        WorldMapView worldMapView = null;
+        worldMapView?
+            .Despawn();
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NullConditionalSingleLine_NoDiagnostic()
+        {
+            var testCode = @"class WorldMapView { public void Despawn() {} }
+
+class C
+{
+    void M()
+    {
+        WorldMapView worldMapView = null;
+        worldMapView?.Despawn();
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

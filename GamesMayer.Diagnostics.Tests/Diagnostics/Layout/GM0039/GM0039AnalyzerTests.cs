@@ -94,5 +94,52 @@ class Test {
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task NullConditionalDotAtEndOfLine_Diagnostic()
+        {
+            var testCode = @"
+class WorldMapView { public void Despawn() {} }
+class Test {
+    void Method() {
+        WorldMapView worldMapView = null;
+        worldMapView?{|GM0039:.
+            Despawn()|};
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NullConditionalDotOnNextLine_NoDiagnostic()
+        {
+            var testCode = @"
+class WorldMapView { public void Despawn() {} }
+class Test {
+    void Method() {
+        WorldMapView worldMapView = null;
+        worldMapView
+            ?.Despawn();
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NullConditionalSingleLine_NoDiagnostic()
+        {
+            var testCode = @"
+class WorldMapView { public void Despawn() {} }
+class Test {
+    void Method() {
+        WorldMapView worldMapView = null;
+        worldMapView?.Despawn();
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

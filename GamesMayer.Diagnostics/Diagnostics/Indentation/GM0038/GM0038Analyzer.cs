@@ -150,12 +150,19 @@ namespace GamesMayer.Diagnostics
                 return false;
             }
 
+            if (expression.Parent is ConditionalAccessExpressionSyntax parentConditionalAccess
+                && parentConditionalAccess.Expression == expression)
+            {
+                return false;
+            }
+
             return true;
         }
 
         private static bool IsFluentChainExpression(ExpressionSyntax expression)
         {
             return expression is MemberAccessExpressionSyntax
+                || expression is ConditionalAccessExpressionSyntax
                 || (expression is InvocationExpressionSyntax invocation
                     && invocation.Expression is MemberAccessExpressionSyntax);
         }
@@ -206,6 +213,22 @@ namespace GamesMayer.Diagnostics
             {
                 CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
                 boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, memberAccess));
+                return;
+            }
+
+            if (expression is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                CollectFluentChainBoundaries(conditionalAccess.Expression, boundaries);
+
+                MemberBindingExpressionSyntax? memberBinding = null;
+                if (conditionalAccess.WhenNotNull is MemberBindingExpressionSyntax directBinding)
+                    memberBinding = directBinding;
+                else if (conditionalAccess.WhenNotNull is InvocationExpressionSyntax invocWhenNotNull
+                    && invocWhenNotNull.Expression is MemberBindingExpressionSyntax invocBinding)
+                    memberBinding = invocBinding;
+
+                if (memberBinding != null)
+                    boundaries.Add((conditionalAccess.Expression, memberBinding.OperatorToken, conditionalAccess));
             }
         }
 

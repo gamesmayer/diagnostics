@@ -122,12 +122,17 @@ namespace GamesMayer.Diagnostics
                 && parentMemberAccess.Expression == expression)
                 return false;
 
+            if (expression.Parent is ConditionalAccessExpressionSyntax parentConditionalAccess
+                && parentConditionalAccess.Expression == expression)
+                return false;
+
             return true;
         }
 
         private static bool IsFluentChainExpression(ExpressionSyntax expression)
         {
             return expression is MemberAccessExpressionSyntax
+                || expression is ConditionalAccessExpressionSyntax
                 || (expression is InvocationExpressionSyntax invocation
                     && invocation.Expression is MemberAccessExpressionSyntax);
         }
@@ -172,6 +177,26 @@ namespace GamesMayer.Diagnostics
                 CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
                 var nextToken = memberAccess.Name.GetFirstToken();
                 boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, nextToken, memberAccess));
+                return;
+            }
+
+            if (expression is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                CollectFluentChainBoundaries(conditionalAccess.Expression, boundaries);
+
+                MemberBindingExpressionSyntax? memberBinding = null;
+                if (conditionalAccess.WhenNotNull is MemberBindingExpressionSyntax directBinding)
+                    memberBinding = directBinding;
+                else if (conditionalAccess.WhenNotNull is InvocationExpressionSyntax invocWhenNotNull
+                    && invocWhenNotNull.Expression is MemberBindingExpressionSyntax invocBinding)
+                    memberBinding = invocBinding;
+
+                if (memberBinding != null)
+                {
+                    var dotToken = memberBinding.OperatorToken;
+                    var nextToken = memberBinding.Name.GetFirstToken();
+                    boundaries.Add((conditionalAccess.Expression, dotToken, nextToken, conditionalAccess));
+                }
             }
         }
     }

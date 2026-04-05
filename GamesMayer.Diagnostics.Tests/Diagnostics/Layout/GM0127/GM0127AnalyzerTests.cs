@@ -5,11 +5,16 @@ namespace GamesMayer.Diagnostics.Tests
     using Microsoft.CodeAnalysis.Testing;
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
-    using VerifyCS = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
-        GamesMayer.Diagnostics.GM0127Analyzer>;
 
     public class GM0127AnalyzerTests
     {
+        private static CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier> CreateTest(string testCode)
+            => new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+                MarkupOptions = MarkupOptions.UseFirstDescriptor,
+            };
+
         [Fact]
         public async Task ThreeArgs_AllOnOneLine_NoDiagnostic()
         {
@@ -21,7 +26,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -39,7 +44,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -53,7 +58,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -67,7 +72,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -84,7 +89,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -100,7 +105,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -116,7 +121,7 @@ class Test {
     }
 }
 ";
-            await VerifyCS.VerifyAnalyzerAsync(testCode);
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -130,10 +135,7 @@ class Test {
     }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
+            var test = CreateTest(testCode);
 
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
@@ -154,10 +156,7 @@ class Test {
     }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
+            var test = CreateTest(testCode);
 
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
@@ -178,10 +177,7 @@ class Test {
     }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-            };
+            var test = CreateTest(testCode);
 
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
 
@@ -204,12 +200,7 @@ class Test {
     }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-                MarkupOptions = MarkupOptions.UseFirstDescriptor,
-            };
-            await test.RunAsync();
+            await CreateTest(testCode).RunAsync();
         }
 
         [Fact]
@@ -228,11 +219,107 @@ class Item {
     public int Value { get; set; }
 }
 ";
-            var test = new CSharpAnalyzerTest<GM0127Analyzer, XUnitVerifier>
-            {
-                TestCode = testCode,
-                MarkupOptions = MarkupOptions.UseFirstDescriptor,
-            };
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoArgs_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b) { }
+    public void Method() {
+        Call(1, 2);
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoArgs_MultiLine_OpenParenOnSameLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b) { }
+    public void Method() {
+        Call{|GM0127:(1,
+            2)|};
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task OneArg_MultiLine_OpenParenOnOwnLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a) { }
+    public void Method() {
+        Call{|GM0127:(
+            1)|};
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoArgs_MultiLine_OpenParenOnOwnLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b) { }
+    public void Method() {
+        Call{|GM0127:(
+            1,
+            2)|};
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task TwoArgs_WithLambda_MultiLine_NoDiagnostic()
+        {
+            var testCode = @"
+using System;
+
+class Test {
+    void Call(int a, Action<int> b) { }
+    public void Method() {
+        Call(
+            1,
+            x => Console.WriteLine(x));
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task ConfiguredThresholdFive_ThreeArgs_MultiLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b, int c) { }
+    public void Method() {
+        Call{|GM0127:(
+            1,
+            2,
+            3)|};
+    }
+}
+";
+            var test = CreateTest(testCode);
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0127.threshold = 5"));
+
             await test.RunAsync();
         }
     }
