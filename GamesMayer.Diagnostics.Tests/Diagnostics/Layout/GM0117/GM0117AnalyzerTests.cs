@@ -124,9 +124,24 @@ namespace GamesMayer.Diagnostics.Tests
 {
     void M()
     {
+        Use(new int[] { 0, 1 });
+    }
+
+    void Use(int[] arr) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Argument_ArrayInitializer_AdjacentItemsOnSameLine_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
         Use(new int[]
         {
-            0, 1
+            0, {|GM0117:1|}
         });
     }
 

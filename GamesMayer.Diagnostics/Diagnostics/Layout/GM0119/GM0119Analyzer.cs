@@ -47,7 +47,8 @@ namespace GamesMayer.Diagnostics
             if (initializer == null || initializer.Expressions.Count < 2)
                 return;
 
-            if (context.Node.Parent is not EqualsValueClauseSyntax)
+            if (context.Node.Parent is not EqualsValueClauseSyntax &&
+                context.Node.Parent is not ArgumentSyntax)
                 return;
 
             var tree = context.Node.SyntaxTree;

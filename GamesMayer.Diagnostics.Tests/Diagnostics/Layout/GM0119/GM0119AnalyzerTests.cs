@@ -101,11 +101,26 @@ namespace GamesMayer.Diagnostics.Tests
 {
     void M()
     {
+        Use(new int[] { 0, 1 });
+    }
+
+    void Use(int[] arr) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task Argument_ArrayInitializer_BlankLineBetweenItems_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
         Use(new int[]
         {
             0,
-
-            1
+{|GM0119:
+|}            1
         });
     }
 

@@ -90,5 +90,41 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task Argument_AdjacentItems_OnSameLine_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0, {|GM0117:1|}
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0,
+            1
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

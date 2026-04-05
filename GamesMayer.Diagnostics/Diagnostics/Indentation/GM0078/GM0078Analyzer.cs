@@ -104,29 +104,32 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeArrayCreation(SyntaxNodeAnalysisContext context)
         {
             InitializerExpressionSyntax? initializer;
+            SyntaxToken newKeyword;
 
             if (context.Node is ArrayCreationExpressionSyntax arrayCreation)
+            {
                 initializer = arrayCreation.Initializer;
+                newKeyword = arrayCreation.NewKeyword;
+            }
             else if (context.Node is ImplicitArrayCreationExpressionSyntax implicitArrayCreation)
+            {
                 initializer = implicitArrayCreation.Initializer;
+                newKeyword = implicitArrayCreation.NewKeyword;
+            }
             else
                 return;
 
             if (initializer == null)
                 return;
 
-            var declarationFirstToken = FindDeclarationFirstToken(context.Node);
-            if (declarationFirstToken == default)
-                declarationFirstToken = context.Node.GetFirstToken();
-
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);
 
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var newKeywordLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[newKeywordLine].ToString());
 
-            CheckBrace(context, sourceText, tree, initializer.OpenBraceToken, declarationLine, declarationIndent);
-            CheckBrace(context, sourceText, tree, initializer.CloseBraceToken, declarationLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, initializer.OpenBraceToken, newKeywordLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, initializer.CloseBraceToken, newKeywordLine, declarationIndent);
         }
 
         private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
@@ -217,7 +220,8 @@ namespace GamesMayer.Diagnostics
             {
                 if (current is FieldDeclarationSyntax or
                     LocalDeclarationStatementSyntax or
-                    PropertyDeclarationSyntax)
+                    PropertyDeclarationSyntax or
+                    StatementSyntax)
                     return current.GetFirstToken();
                 current = current.Parent;
             }
