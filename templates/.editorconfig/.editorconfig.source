@@ -154,7 +154,12 @@ dotnet_diagnostic.GM0126.threshold = 4
 dotnet_diagnostic.GM0127.severity = warning  # Each argument in a large argument list must be on its own line
 dotnet_diagnostic.GM0127.threshold = 4
 dotnet_diagnostic.GM0128.severity = warning  # new keyword and type must be on the same line in object creation
+dotnet_diagnostic.GM0132.severity = warning  # Each parent class or interface in inheritance must be on its own line
+dotnet_diagnostic.GM0132.threshold = 2
+dotnet_diagnostic.GM0133.severity = warning  # Constructor initializer must be on its own line
+dotnet_diagnostic.GM0134.severity = warning  # No blank line allowed around colon in inheritance clause
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
+dotnet_diagnostic.GM0121.severity = warning  # No blank line between constructor declaration and constructor initializer
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line
 dotnet_diagnostic.GM0047.severity = warning  # Multi-line assignment value must start on the same line as the assignment operator
 dotnet_diagnostic.GM0048.severity = warning  # Expression body must start on the same line as '=>'
@@ -194,6 +199,7 @@ dotnet_diagnostic.GM0120.severity = warning  # No blank lines between object ini
 dotnet_diagnostic.GM0123.severity = warning  # Each member in object initializer must be on its own line
 
 # GamesMayer.Diagnostics — Indentation
+dotnet_diagnostic.GM0024.severity = warning  # Parent type in inheritance must be indented one step from the declaration
 dotnet_diagnostic.GM0027.severity = none     # Parenthesis K&R indentation style in multi-line list (disabled by default)
 dotnet_diagnostic.GM0028.severity = warning  # Closing parenthesis indentation in multi-line list
 dotnet_diagnostic.GM0029.severity = warning  # Parenthesis Allman indentation style in multi-line list
@@ -202,6 +208,7 @@ dotnet_diagnostic.GM0038.severity = warning  # Fluent-chain segment indentation
 dotnet_diagnostic.GM0045.severity = warning  # Lambda expression body must be indented one step from the arrow line
 dotnet_diagnostic.GM0049.severity = warning  # Wrapped operator-expression item must be indented one step from expression start line
 dotnet_diagnostic.GM0054.severity = warning  # 'where' constraint clause must be indented one step from the declaration
+dotnet_diagnostic.GM0115.severity = warning  # Constructor initializer must be indented one step from the declaration
 dotnet_diagnostic.GM0077.severity = warning  # Block contents must be indented one step from the block braces
 dotnet_diagnostic.GM0078.severity = warning  # Brace must be indented at the declaration level
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword

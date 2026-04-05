@@ -249,8 +249,6 @@ namespace GamesMayer.Diagnostics.Tests
             await test.RunAsync();
         }
 
-        // ── Array initializer fix tests (formerly GM0115) ─────────────────────
-
         [Fact]
         public async Task ArrayInitializer_OpenBrace_OverIndented_Fix()
         {
@@ -473,8 +471,6 @@ class Foo { public int A { get; set; } }";
             };
             await test.RunAsync();
         }
-
-        // ── Lambda / anonymous method brace fix tests (formerly GM0024) ──────
 
         [Fact]
         public async Task Lambda_OpenBrace_OverIndented_Fix()

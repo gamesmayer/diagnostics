@@ -253,8 +253,6 @@ namespace GamesMayer.Diagnostics.Tests
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
-        // ── Array initializer tests (formerly GM0115) ─────────────────────────
-
         [Fact]
         public async Task ArrayInitializer_BracesCorrectlyIndented_NoDiagnostic()
         {
@@ -600,7 +598,6 @@ class Foo { public int A { get; set; } }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
-        // ── Lambda / anonymous method brace tests (formerly GM0024) ──────────
 
         [Fact]
         public async Task Lambda_BracesCorrectlyIndented_NoDiagnostic()

@@ -152,8 +152,6 @@ namespace GamesMayer.Diagnostics.Tests
             await test.RunAsync();
         }
 
-        // ── Lambda / anonymous method statement fix tests (formerly GM0024) ───
-
         [Fact]
         public async Task LambdaStatement_UnderIndented_Fix()
         {

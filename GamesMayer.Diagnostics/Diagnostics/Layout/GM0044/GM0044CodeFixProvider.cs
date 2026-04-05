@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -79,7 +80,7 @@ namespace GamesMayer.Diagnostics
                     if (bodyFirstToken != default
                         && lambda.ArrowToken.Span.End <= diagnosticPosition
                         && diagnosticPosition <= bodyFirstToken.SpanStart
-                        && GM0044Analyzer.TryGetFirstBlankLineStart(sourceText, syntaxTree, lambda.ArrowToken, bodyFirstToken, out _))
+                        && BlankLineDetectionUtils.TryGetFirstBlankLineStart(sourceText, syntaxTree, lambda.ArrowToken, bodyFirstToken, out _))
                     {
                         return lambda;
                     }

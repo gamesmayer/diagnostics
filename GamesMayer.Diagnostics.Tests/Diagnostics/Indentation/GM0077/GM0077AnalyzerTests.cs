@@ -180,8 +180,6 @@ namespace GamesMayer.Diagnostics.Tests
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
-        // ── Lambda / anonymous method statement tests (formerly GM0024) ───────
-
         [Fact]
         public async Task LambdaStatement_CorrectlyIndented_NoDiagnostic()
         {

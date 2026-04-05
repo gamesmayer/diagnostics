@@ -77,7 +77,11 @@ Diagnostics are organized by category.
 | [GM0126](docs/Diagnostics/Layout/GM0126.md) | Each parameter in a large parameter list must be on its own line                   | Yes     | Yes     |
 | [GM0127](docs/Diagnostics/Layout/GM0127.md) | Each argument in a large argument list must be on its own line                     | Yes     | Yes     |
 | [GM0128](docs/Diagnostics/Layout/GM0128.md) | new keyword and type must be on the same line in object creation                   | Yes     | Yes     |
+| [GM0132](docs/Diagnostics/Layout/GM0132.md) | Parent inheritance line placement is enforced by threshold                         | Yes     | Yes     |
+| [GM0133](docs/Diagnostics/Layout/GM0133.md) | Constructor initializer must be on its own line                                    | Yes     | Yes     |
+| [GM0134](docs/Diagnostics/Layout/GM0134.md) | No blank line allowed around colon in inheritance clause                           | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                        | Yes     | Yes     |
+| [GM0121](docs/Diagnostics/Layout/GM0121.md) | No blank line between constructor declaration and constructor initializer          | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |
 | [GM0047](docs/Diagnostics/Layout/GM0047.md) | Multi-line assignment value must start on the same line as the assignment operator | Yes     | Yes     |
 | [GM0048](docs/Diagnostics/Layout/GM0048.md) | Expression body must start on the same line as '=>'                                | Yes     | Yes     |
@@ -120,6 +124,7 @@ Diagnostics are organized by category.
 
 | ID                                               | Description                                                                           | Fixable | Default |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------- | ------- | ------- |
+| [GM0024](docs/Diagnostics/Indentation/GM0024.md) | Parent type in inheritance must be indented one step from the declaration             | Yes     | Yes     |
 | [GM0027](docs/Diagnostics/Indentation/GM0027.md) | Opening parenthesis placement in multi-line argument/parameter list                   | Yes     | Yes     |
 | [GM0028](docs/Diagnostics/Indentation/GM0028.md) | Closing parenthesis indentation in multi-line argument/parameter list                 | Yes     | Yes     |
 | [GM0029](docs/Diagnostics/Indentation/GM0029.md) | Opening parenthesis must be on a new line in multi-line list                          | Yes     | Yes     |
@@ -128,6 +133,7 @@ Diagnostics are organized by category.
 | [GM0045](docs/Diagnostics/Indentation/GM0045.md) | Lambda expression body must be indented one step from the arrow line                  | Yes     | Yes     |
 | [GM0049](docs/Diagnostics/Indentation/GM0049.md) | Wrapped operator-expression item must be indented one step from expression start line | Yes     | Yes     |
 | [GM0054](docs/Diagnostics/Indentation/GM0054.md) | 'where' constraint clause must be indented one step from the declaration              | Yes     | Yes     |
+| [GM0115](docs/Diagnostics/Indentation/GM0115.md) | Constructor initializer must be indented one step from the declaration                | Yes     | Yes     |
 | [GM0077](docs/Diagnostics/Indentation/GM0077.md) | Block contents must be indented one step from the block braces                        | Yes     | Yes     |
 | [GM0078](docs/Diagnostics/Indentation/GM0078.md) | Brace must be indented at the declaration level                                       | Yes     | Yes     |
 | [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
