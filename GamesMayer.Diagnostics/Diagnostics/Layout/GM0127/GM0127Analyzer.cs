@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
+using GamesMayer.Diagnostics.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -50,9 +51,9 @@ namespace GamesMayer.Diagnostics
             var arguments = argList.Arguments;
 
             int minArguments = GetMinimumArguments(context);
+            var configOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
 
-            // Treat complex expressions (lambdas, object initializers, etc.) as if they met the threshold
-            bool hasComplexExpression = arguments.Any(IsComplexExpression);
+            bool hasComplexExpression = arguments.Any(a => ComplexExpressionUtils.IsComplexExpression(a.Expression, configOptions));
 
             var tree = context.Node.SyntaxTree;
 
@@ -133,27 +134,5 @@ namespace GamesMayer.Diagnostics
             return DefaultMinArguments;
         }
 
-        private static bool IsComplexExpression(ArgumentSyntax argument)
-        {
-            var expr = argument.Expression;
-            
-            // Lambda expressions
-            if (expr is LambdaExpressionSyntax)
-                return true;
-            
-            // Anonymous methods
-            if (expr is AnonymousMethodExpressionSyntax)
-                return true;
-            
-            // Anonymous types
-            if (expr is AnonymousObjectCreationExpressionSyntax)
-                return true;
-            
-            // Object creation with initializer
-            if (expr is ObjectCreationExpressionSyntax objCreation && objCreation.Initializer != null)
-                return true;
-            
-            return false;
-        }
     }
 }

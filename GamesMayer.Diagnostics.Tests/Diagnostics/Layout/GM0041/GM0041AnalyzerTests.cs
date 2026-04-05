@@ -251,5 +251,106 @@ dotnet_diagnostic.GM0041.threshold = 3"));
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task SingleInvocation_OnOwnLine_Diagnostic()
+        {
+            // Single invocation is below the default threshold of 2, so it must stay on the same line
+            var testCode = @"
+class Test {
+    static void Method() {
+        Installer
+            {|GM0041:.Install()|};
+    }
+}
+class Installer {
+    public static void Install() {}
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConfiguredThresholdThree_TwoInvocations_AllOnOwnLines_Diagnostic()
+        {
+            var testCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items
+            {|GM0041:.Where(x => x > 1)|}
+            {|GM0041:.ToList()|};
+    }
+}
+";
+
+            var test = new CSharpAnalyzerTest<GM0041Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0041.threshold = 3"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ConfiguredThresholdThree_TwoInvocations_OnSameLine_NoDiagnostic()
+        {
+            var testCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items.Where(x => x > 1).ToList();
+    }
+}
+";
+
+            var test = new CSharpAnalyzerTest<GM0041Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0041.threshold = 3"));
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ConfiguredThresholdThree_ThreeInvocations_AllOnOwnLines_NoDiagnostic()
+        {
+            var testCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items
+            .Where(x => x > 1)
+            .Select(x => x * 2)
+            .ToList();
+    }
+}
+";
+
+            var test = new CSharpAnalyzerTest<GM0041Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0041.threshold = 3"));
+
+            await test.RunAsync();
+        }
     }
 }

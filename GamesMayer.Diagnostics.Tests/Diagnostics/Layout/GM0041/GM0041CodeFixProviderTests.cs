@@ -113,5 +113,48 @@ class Test {
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task ConfiguredThresholdThree_TwoInvocations_AllOnOwnLines_CollapseFix()
+        {
+            var testCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items
+            {|GM0041:.Where(x => x > 1)|}
+            {|GM0041:.ToList()|};
+    }
+}
+";
+            var fixedCode = @"
+using System.Linq;
+class Test {
+    public void Method() {
+        var items = new System.Collections.Generic.List<int> { 1, 2, 3 };
+        var result = items.Where(x => x > 1).ToList();
+    }
+}
+";
+            var test = new CSharpCodeFixTest<GM0041Analyzer, GM0041CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                NumberOfFixAllIterations = 1,
+            };
+
+            test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0041.threshold = 3"));
+
+            test.FixedState.AnalyzerConfigFiles.Add(("/.editorconfig", @"root = true
+
+[*.cs]
+dotnet_diagnostic.GM0041.threshold = 3"));
+
+            await test.RunAsync();
+        }
     }
 }

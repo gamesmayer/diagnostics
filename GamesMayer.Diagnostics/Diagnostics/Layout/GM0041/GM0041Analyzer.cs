@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using GamesMayer.Diagnostics.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,12 +17,12 @@ namespace GamesMayer.Diagnostics
 
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
-            title: "Each segment in a multi-invocation fluent chain must be on its own line",
-            messageFormat: "Move this segment to its own line",
+            title: "Fluent chain segments must be on the expected line based on threshold",
+            messageFormat: "Move this segment to the expected line based on threshold",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "In a fluent-chain expression with more than one invocation, every segment must be on its own line for clarity.");
+            description: "In a fluent-chain expression, segments must be on their own lines when the invocation count meets the threshold; otherwise they must be on the same line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -67,7 +68,7 @@ namespace GamesMayer.Diagnostics
 
         private static void AnalyzeExpression(SyntaxNodeAnalysisContext context, ExpressionSyntax expression)
         {
-            var chainRoot = GetChainRoot(expression);
+            var chainRoot = FluentChainUtils.GetChainRoot(expression);
             if (chainRoot == null)
                 return;
 
@@ -77,7 +78,7 @@ namespace GamesMayer.Diagnostics
 
             foreach (var node in chainRoot.DescendantNodesAndSelf())
             {
-                if (node is ExpressionSyntax candidate && IsFluentChainStart(candidate))
+                if (node is ExpressionSyntax candidate && FluentChainUtils.IsFluentChainStart(candidate))
                 {
                     AnalyzeChain(context, candidate, tree, minInvocations);
                 }
@@ -90,12 +91,12 @@ namespace GamesMayer.Diagnostics
             SyntaxTree tree,
             int minInvocations)
         {
-            var normalizedChain = GetChainRoot(chainExpression);
+            var normalizedChain = FluentChainUtils.GetChainRoot(chainExpression);
             if (normalizedChain == null)
                 return;
 
-            var boundaries = new List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, SyntaxToken NextToken, ExpressionSyntax SegmentExpression)>();
-            CollectFluentChainBoundaries(normalizedChain, boundaries);
+            var boundaries = new List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression)>();
+            FluentChainUtils.CollectFluentChainBoundaries(normalizedChain, boundaries);
             if (boundaries.Count == 0)
                 return;
 
@@ -112,7 +113,7 @@ namespace GamesMayer.Diagnostics
                 }
             }
 
-            if (invocationCount < minInvocations || firstInvocationIndex < 0)
+            if (firstInvocationIndex < 0)
                 return;
 
             var segmentRanges = new List<(int StartIndex, int EndIndex)>();
@@ -126,32 +127,58 @@ namespace GamesMayer.Diagnostics
                 }
             }
 
-            if (segmentRanges.Count <= 1)
+            var enforceOwnLine = invocationCount >= minInvocations;
+
+            if (enforceOwnLine && segmentRanges.Count <= 1)
                 return;
 
-            // Check if any segment from the first invocation onward is already on its own line.
-            // If so, this is a mixed-layout chain that GM0040 handles; skip it here.
-            foreach (var segmentRange in segmentRanges)
+            if (enforceOwnLine)
             {
-                var startBoundary = boundaries[segmentRange.StartIndex];
-                var leftLastToken = startBoundary.LeftExpression.GetLastToken();
-                var leftLine = tree.GetLineSpan(leftLastToken.Span).EndLinePosition.Line;
-                var dotLine = tree.GetLineSpan(startBoundary.DotToken.Span).StartLinePosition.Line;
+                // Check if any segment from the first invocation onward is already on its own line.
+                // If so, this is a mixed-layout chain that GM0040 handles; skip it here.
+                foreach (var segmentRange in segmentRanges)
+                {
+                    var startBoundary = boundaries[segmentRange.StartIndex];
+                    var leftLastToken = startBoundary.LeftExpression.GetLastToken();
+                    var leftLine = tree.GetLineSpan(leftLastToken.Span).EndLinePosition.Line;
+                    var dotLine = tree.GetLineSpan(startBoundary.DotToken.Span).StartLinePosition.Line;
 
-                if (dotLine > leftLine)
-                    return;
+                    if (dotLine > leftLine)
+                        return;
+                }
+
+                // All invocation segments are on the same line — report each one (expand).
+                // A segment can include property-access subchains plus the next invocation.
+                foreach (var segmentRange in segmentRanges)
+                {
+                    var startBoundary = boundaries[segmentRange.StartIndex];
+                    var endBoundary = boundaries[segmentRange.EndIndex];
+                    var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(
+                        startBoundary.DotToken.SpanStart,
+                        endBoundary.SegmentExpression.Span.End);
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
+                }
             }
-
-            // All invocation segments are on the same line — report each one.
-            // A segment can include property-access subchains plus the next invocation.
-            foreach (var segmentRange in segmentRanges)
+            else
             {
-                var startBoundary = boundaries[segmentRange.StartIndex];
-                var endBoundary = boundaries[segmentRange.EndIndex];
-                var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(
-                    startBoundary.DotToken.SpanStart,
-                    endBoundary.SegmentExpression.Span.End);
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
+                // Below threshold — segments should be on the same line as the chain root.
+                // Report each segment that is on its own line (collapse).
+                foreach (var segmentRange in segmentRanges)
+                {
+                    var startBoundary = boundaries[segmentRange.StartIndex];
+                    var leftLastToken = startBoundary.LeftExpression.GetLastToken();
+                    var leftLine = tree.GetLineSpan(leftLastToken.Span).EndLinePosition.Line;
+                    var dotLine = tree.GetLineSpan(startBoundary.DotToken.Span).StartLinePosition.Line;
+
+                    if (dotLine <= leftLine)
+                        continue;
+
+                    var endBoundary = boundaries[segmentRange.EndIndex];
+                    var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(
+                        startBoundary.DotToken.SpanStart,
+                        endBoundary.SegmentExpression.Span.End);
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
+                }
             }
         }
 
@@ -166,72 +193,6 @@ namespace GamesMayer.Diagnostics
             }
 
             return DefaultMinInvocations;
-        }
-
-        private static bool IsFluentChainStart(ExpressionSyntax expression)
-        {
-            if (!IsFluentChainExpression(expression))
-                return false;
-
-            if (expression.Parent is InvocationExpressionSyntax parentInvocation
-                && parentInvocation.Expression == expression)
-                return false;
-
-            if (expression.Parent is MemberAccessExpressionSyntax parentMemberAccess
-                && parentMemberAccess.Expression == expression)
-                return false;
-
-            return true;
-        }
-
-        private static bool IsFluentChainExpression(ExpressionSyntax expression)
-        {
-            return expression is MemberAccessExpressionSyntax
-                || (expression is InvocationExpressionSyntax invocation
-                    && invocation.Expression is MemberAccessExpressionSyntax);
-        }
-
-        private static ExpressionSyntax GetChainRoot(ExpressionSyntax expression)
-        {
-            var current = expression;
-            while (true)
-            {
-                switch (current)
-                {
-                    case ParenthesizedExpressionSyntax p:
-                        current = p.Expression;
-                        continue;
-                    case AwaitExpressionSyntax a:
-                        current = a.Expression;
-                        continue;
-                    case AssignmentExpressionSyntax ae:
-                        current = ae.Right;
-                        continue;
-                    default:
-                        return current;
-                }
-            }
-        }
-
-        private static void CollectFluentChainBoundaries(
-            ExpressionSyntax expression,
-            List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, SyntaxToken NextToken, ExpressionSyntax SegmentExpression)> boundaries)
-        {
-            if (expression is InvocationExpressionSyntax invocation
-                && invocation.Expression is MemberAccessExpressionSyntax invMemberAccess)
-            {
-                CollectFluentChainBoundaries(invMemberAccess.Expression, boundaries);
-                var nextToken = invMemberAccess.Name.GetFirstToken();
-                boundaries.Add((invMemberAccess.Expression, invMemberAccess.OperatorToken, nextToken, invocation));
-                return;
-            }
-
-            if (expression is MemberAccessExpressionSyntax memberAccess)
-            {
-                CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
-                var nextToken = memberAccess.Name.GetFirstToken();
-                boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, nextToken, memberAccess));
-            }
         }
     }
 }
