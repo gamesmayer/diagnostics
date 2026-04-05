@@ -27,10 +27,11 @@ namespace GamesMayer.Diagnostics
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ObjectCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeImplicitArrayCreation, SyntaxKind.ImplicitArrayCreationExpression);
         }
 
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
         {
             var objectCreation = (ObjectCreationExpressionSyntax)context.Node;
             var tree = objectCreation.SyntaxTree;
@@ -44,6 +45,23 @@ namespace GamesMayer.Diagnostics
             if (typeLine != newLine)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, objectCreation.Type.GetLocation()));
+            }
+        }
+
+        private static void AnalyzeImplicitArrayCreation(SyntaxNodeAnalysisContext context)
+        {
+            var arrayCreation = (ImplicitArrayCreationExpressionSyntax)context.Node;
+            var tree = arrayCreation.SyntaxTree;
+
+            var newKeyword = arrayCreation.NewKeyword;
+            var openBracket = arrayCreation.OpenBracketToken;
+
+            var newLine = tree.GetLineSpan(newKeyword.Span).EndLinePosition.Line;
+            var bracketLine = tree.GetLineSpan(openBracket.Span).StartLinePosition.Line;
+
+            if (bracketLine != newLine)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, openBracket.GetLocation()));
             }
         }
     }

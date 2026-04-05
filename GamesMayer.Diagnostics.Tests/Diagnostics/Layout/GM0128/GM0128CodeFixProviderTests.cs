@@ -80,5 +80,43 @@ class Test {
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task NewAndImplicitArrayOnDifferentLines_Fix()
+        {
+            var testCode = @"
+class Test {
+    private string[] _messages = new
+        {|GM0128:[|}] { ""Message 1"" };
+}
+";
+            var fixedCode = @"
+class Test {
+    private string[] _messages = new [] { ""Message 1"" };
+}
+";
+            var test = new Microsoft.CodeAnalysis.CSharp.Testing.CSharpCodeFixTest<GM0128Analyzer, GM0128CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task NewAndImplicitArrayOnSameLine_NoFix()
+        {
+            var testCode = @"
+class Test {
+    private string[] _messages = new[] { ""Message 1"" };
+}
+";
+            var test = new Microsoft.CodeAnalysis.CSharp.Testing.CSharpCodeFixTest<GM0128Analyzer, GM0128CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = testCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

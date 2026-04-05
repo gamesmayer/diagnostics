@@ -162,6 +162,7 @@ dotnet_diagnostic.GM0135.severity = warning  # All arguments must use named synt
 dotnet_diagnostic.GM0136.severity = warning  # Generic type argument list must be written on a single line
 dotnet_diagnostic.GM0137.severity = warning  # Cast expression and its operand must be on the same line
 dotnet_diagnostic.GM0138.severity = warning  # Lambda parameter list and '=>' must be on the same line
+dotnet_diagnostic.GM0139.severity = warning  # Type expression must be on a single line
 dotnet_diagnostic.GM0044.severity = warning  # No blank line between lambda arrow and body
 dotnet_diagnostic.GM0121.severity = warning  # No blank line between constructor declaration and constructor initializer
 dotnet_diagnostic.GM0046.severity = warning  # Binary operator in multi-line expression must be at the end of the previous line

@@ -84,6 +84,7 @@ Diagnostics are organized by category.
 | [GM0136](docs/Diagnostics/Layout/GM0136.md) | Generic type argument list must be written on a single line                        | Yes     | Yes     |
 | [GM0137](docs/Diagnostics/Layout/GM0137.md) | Cast expression and its operand must be on the same line                           | Yes     | Yes     |
 | [GM0138](docs/Diagnostics/Layout/GM0138.md) | Lambda parameters and '=>' must be on the same line                                | Yes     | Yes     |
+| [GM0139](docs/Diagnostics/Layout/GM0139.md) | Type expression must be on a single line                                           | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                        | Yes     | Yes     |
 | [GM0121](docs/Diagnostics/Layout/GM0121.md) | No blank line between constructor declaration and constructor initializer          | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |

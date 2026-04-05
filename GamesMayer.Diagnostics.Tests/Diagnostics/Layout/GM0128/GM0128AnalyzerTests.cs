@@ -64,5 +64,28 @@ class Test {
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task NewAndImplicitArrayOnSameLine_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    private string[] _messages = new[] { ""Message 1"" };
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NewAndImplicitArrayOnDifferentLines_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    private string[] _messages = new
+        {|GM0128:[|}] { ""Message 1"" };
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
