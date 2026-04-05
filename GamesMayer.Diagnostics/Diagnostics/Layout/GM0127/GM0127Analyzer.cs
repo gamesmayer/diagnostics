@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using GamesMayer.Diagnostics.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -53,7 +52,7 @@ namespace GamesMayer.Diagnostics
             int minArguments = GetMinimumArguments(context);
             var configOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
 
-            bool hasComplexExpression = arguments.Any(a => ComplexExpressionUtils.IsComplexExpression(a.Expression, configOptions));
+            bool hasComplexExpression = ComplexExpressionUtils.IsComplexArgumentList(arguments, configOptions);
 
             var tree = context.Node.SyntaxTree;
 

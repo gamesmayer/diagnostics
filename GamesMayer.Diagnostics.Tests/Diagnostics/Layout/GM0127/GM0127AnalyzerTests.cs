@@ -322,5 +322,67 @@ dotnet_diagnostic.GM0127.threshold = 5"));
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task OneArg_NamedParameter_AllOnOneLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a) { }
+    public void Method() {
+        Call({|GM0127:a: 1|});
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task ThreeArgs_OneNamed_AllOnOwnLines_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b, int c) { }
+    public void Method() {
+        Call(
+            1,
+            b: 2,
+            3);
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task ThreeArgs_OneNamed_AllOnOneLine_Diagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b, int c) { }
+    public void Method() {
+        Call({|GM0127:1|}, {|GM0127:b: 2|}, {|GM0127:3|});
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task ThreeArgs_AllNamed_MultiLine_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    void Call(int a, int b, int c) { }
+    public void Method() {
+        Call(
+            a: 1,
+            b: 2,
+            c: 3);
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -31,12 +32,12 @@ namespace GamesMayer.Diagnostics.Utils
                 return true;
 
             if (expr is InvocationExpressionSyntax invocation
-                && invocation.ArgumentList.Arguments.Any(arg => IsComplexExpression(arg.Expression, options)))
+                && IsComplexArgumentList(invocation.ArgumentList.Arguments, options))
                 return true;
 
             if (expr is ObjectCreationExpressionSyntax objCreationWithComplexArg
                 && objCreationWithComplexArg.ArgumentList != null
-                && objCreationWithComplexArg.ArgumentList.Arguments.Any(arg => IsComplexExpression(arg.Expression, options)))
+                && IsComplexArgumentList(objCreationWithComplexArg.ArgumentList.Arguments, options))
                 return true;
 
             if (expr is BinaryExpressionSyntax binary
@@ -44,6 +45,11 @@ namespace GamesMayer.Diagnostics.Utils
                 return true;
 
             return false;
+        }
+
+        public static bool IsComplexArgumentList(SeparatedSyntaxList<ArgumentSyntax> arguments, AnalyzerConfigOptions? options = null)
+        {
+            return arguments.Any(arg => arg.NameColon != null || IsComplexExpression(arg.Expression, options));
         }
 
         private static bool IsComplexFluentChain(ExpressionSyntax expr, AnalyzerConfigOptions? options)

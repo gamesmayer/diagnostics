@@ -80,6 +80,10 @@ Diagnostics are organized by category.
 | [GM0132](docs/Diagnostics/Layout/GM0132.md) | Parent inheritance line placement is enforced by threshold                         | Yes     | Yes     |
 | [GM0133](docs/Diagnostics/Layout/GM0133.md) | Constructor initializer must be on its own line                                    | Yes     | Yes     |
 | [GM0134](docs/Diagnostics/Layout/GM0134.md) | No blank line allowed around colon in inheritance clause                           | Yes     | Yes     |
+| [GM0135](docs/Diagnostics/Layout/GM0135.md) | All arguments must use named syntax when any argument is named                     | Yes     | Yes     |
+| [GM0136](docs/Diagnostics/Layout/GM0136.md) | Generic type argument list must be written on a single line                        | Yes     | Yes     |
+| [GM0137](docs/Diagnostics/Layout/GM0137.md) | Cast expression and its operand must be on the same line                           | Yes     | Yes     |
+| [GM0138](docs/Diagnostics/Layout/GM0138.md) | Lambda parameters and '=>' must be on the same line                                | Yes     | Yes     |
 | [GM0044](docs/Diagnostics/Layout/GM0044.md) | No blank line between lambda arrow and body                                        | Yes     | Yes     |
 | [GM0121](docs/Diagnostics/Layout/GM0121.md) | No blank line between constructor declaration and constructor initializer          | Yes     | Yes     |
 | [GM0046](docs/Diagnostics/Layout/GM0046.md) | Binary operator in multi-line expression must be at the end of the previous line   | Yes     | Yes     |
