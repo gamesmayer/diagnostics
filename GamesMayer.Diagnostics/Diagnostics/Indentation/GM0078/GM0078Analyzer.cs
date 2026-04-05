@@ -52,6 +52,11 @@ namespace GamesMayer.Diagnostics
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);
 
+            var openBraceLine = tree.GetLineSpan(block.OpenBraceToken.Span).StartLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(block.CloseBraceToken.Span).StartLinePosition.Line;
+            if (openBraceLine == closeBraceLine)
+                return;
+
             var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
             var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());

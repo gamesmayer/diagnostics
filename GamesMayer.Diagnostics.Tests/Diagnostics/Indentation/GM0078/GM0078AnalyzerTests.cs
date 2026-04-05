@@ -823,6 +823,19 @@ class Foo { public int A { get; set; } }";
         }
 
         [Fact]
+        public async Task ConstructorWithInitializer_EmptyBody_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    public Foo() :
+        this(string.Empty, 1) { }
+
+    public Foo(string s, int n) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task CollectionInitializer_AsArgument_OpenBraceOverIndented_Diagnostic()
         {
             var testCode = @"class C
