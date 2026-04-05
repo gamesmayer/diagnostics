@@ -77,7 +77,7 @@ namespace GamesMayer.Diagnostics
                 case InitializerExpressionSyntax init
                     when init.Parent is ArrayCreationExpressionSyntax or ImplicitArrayCreationExpressionSyntax:
                     var arrayToken = GM0078Analyzer.FindDeclarationFirstToken(init.Parent!);
-                    return arrayToken == default ? null : arrayToken;
+                    return arrayToken == default ? init.Parent!.GetFirstToken() : arrayToken;
                 case InitializerExpressionSyntax init:
                     var newKeyword = GM0078Analyzer.FindNewKeyword(init.Parent!);
                     return newKeyword == default ? null : newKeyword;

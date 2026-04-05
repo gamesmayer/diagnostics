@@ -26,7 +26,7 @@ namespace GamesMayer.Diagnostics
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Fix block content indentation",
+                    title: "Fix content indentation",
                     createChangedDocument: ct => FixIndentAsync(context.Document, diagnostic, ct),
                     equivalenceKey: nameof(GM0077CodeFixProvider)),
                 diagnostic);
@@ -49,34 +49,56 @@ namespace GamesMayer.Diagnostics
             var tree = root.SyntaxTree;
 
             int expectedIndent;
-            var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
-            if (block != null)
+            var initializer = token.Parent?.FirstAncestorOrSelf<InitializerExpressionSyntax>();
+            if (initializer != null && initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ArrayInitializerExpression))
             {
-                var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
-                var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
+                var openBraceIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[openBraceLine].ToString());
+                expectedIndent = openBraceIndent + 4;
+            }
+            else if (initializer != null &&
+                     (initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ObjectInitializerExpression) ||
+                      initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.CollectionInitializerExpression)))
+            {
+                var newKeyword = FindNewKeyword(initializer.Parent);
+                if (newKeyword == default)
+                    return document;
+
+                var declarationLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
                 var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
                 expectedIndent = declarationIndent + 4;
             }
             else
             {
-                var accessor = token.Parent?.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
-                if (accessor?.Parent is AccessorListSyntax accessorList)
+                var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
+                if (block != null)
                 {
-                    var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+                    var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
                     var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
                     var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
                     expectedIndent = declarationIndent + 4;
                 }
                 else
                 {
-                    var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
-                    var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
-                    if (member == null || typeDeclaration == null)
-                        return document;
+                    var accessor = token.Parent?.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
+                    if (accessor?.Parent is AccessorListSyntax accessorList)
+                    {
+                        var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+                        var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                        var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                        expectedIndent = declarationIndent + 4;
+                    }
+                    else
+                    {
+                        var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
+                        var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
+                        if (member == null || typeDeclaration == null)
+                            return document;
 
-                    var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
-                    var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
-                    expectedIndent = declarationIndent + 4;
+                        var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
+                        var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                        expectedIndent = declarationIndent + 4;
+                    }
                 }
             }
 
@@ -86,6 +108,23 @@ namespace GamesMayer.Diagnostics
             var indentSpan = new TextSpan(statementTextLine.Start, actualIndent);
             var updatedText = sourceText.WithChanges(new TextChange(indentSpan, new string(' ', expectedIndent)));
             return document.WithText(updatedText);
+        }
+
+        private static SyntaxToken FindNewKeyword(SyntaxNode? node)
+        {
+            var current = node;
+            while (current != null)
+            {
+                if (current is ObjectCreationExpressionSyntax objectCreation)
+                    return objectCreation.NewKeyword;
+                if (current is ImplicitObjectCreationExpressionSyntax implicitCreation)
+                    return implicitCreation.NewKeyword;
+                if (current is AnonymousObjectCreationExpressionSyntax anonymousCreation)
+                    return anonymousCreation.NewKeyword;
+                current = current.Parent;
+            }
+
+            return default;
         }
     }
 }

@@ -395,5 +395,43 @@ class Foo { public int A { get; set; } }";
 class Foo { public int A { get; set; } }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ArrayInitializer_AsArgument_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int[] values)
+    {
+        Use(new int[]
+        {
+            1,
+            2
+        });
+    }
+
+    void Use(int[] values) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_AsArgument_ItemUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int[] values)
+    {
+        Use(new int[]
+        {
+        {|GM0077:1|},
+            2
+        });
+    }
+
+    void Use(int[] values) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

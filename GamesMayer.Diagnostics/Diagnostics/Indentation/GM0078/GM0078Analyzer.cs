@@ -115,12 +115,9 @@ namespace GamesMayer.Diagnostics
             if (initializer == null)
                 return;
 
-            if (context.Node.Parent is not EqualsValueClauseSyntax)
-                return;
-
             var declarationFirstToken = FindDeclarationFirstToken(context.Node);
             if (declarationFirstToken == default)
-                return;
+                declarationFirstToken = context.Node.GetFirstToken();
 
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);

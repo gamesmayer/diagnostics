@@ -368,7 +368,7 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
-        public async Task NotAnInitialValue_NoDiagnostic()
+        public async Task ArrayInitializer_AsArgument_BracesCorrectlyIndented_NoDiagnostic()
         {
             var testCode = @"class C
 {
@@ -379,6 +379,25 @@ namespace GamesMayer.Diagnostics.Tests
             0,
             1
         });
+    }
+
+    void Use(int[] arr) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_AsArgument_BracesWrongIndent_TwoDiagnostics()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+    {|GM0078:{|}
+            0,
+            1
+    {|GM0078:}|});
     }
 
     void Use(int[] arr) { }

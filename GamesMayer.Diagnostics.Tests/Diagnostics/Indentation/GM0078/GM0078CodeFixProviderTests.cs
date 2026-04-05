@@ -304,6 +304,80 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task ArrayInitializer_AsArgument_OpenBrace_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+    {|GM0078:{|}
+            0,
+            1
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0,
+            1
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_AsArgument_CloseBrace_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0,
+            1
+    {|GM0078:}|});
+    }
+
+    void Use(int[] arr) { }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            0,
+            1
+        });
+    }
+
+    void Use(int[] arr) { }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
         public async Task LocalVariable_ArrayInitializer_OpenBrace_OverIndented_Fix()
         {
             var testCode = @"class C
@@ -554,6 +628,72 @@ class Foo { public int A { get; set; } }";
         System.Action action = delegate
         {
             return;
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_OpenBrace_OverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+            {|GM0078:{|}
+            1,
+            2
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_CloseBrace_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+{|GM0078:}|};
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
         };
     }
 }";

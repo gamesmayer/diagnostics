@@ -40,6 +40,9 @@ namespace GamesMayer.Diagnostics
                 SyntaxKind.ObjectCreationExpression,
                 SyntaxKind.ImplicitObjectCreationExpression,
                 SyntaxKind.AnonymousObjectCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeArrayCreation,
+                SyntaxKind.ArrayCreationExpression,
+                SyntaxKind.ImplicitArrayCreationExpression);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -214,6 +217,50 @@ namespace GamesMayer.Diagnostics
             var openBraceLine = tree.GetLineSpan(openBrace.Span).StartLinePosition.Line;
 
             foreach (var expression in expressions)
+            {
+                var firstToken = expression.GetFirstToken();
+                if (firstToken == default)
+                    continue;
+
+                var expressionLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
+                if (expressionLine == openBraceLine)
+                    continue;
+
+                var actualIndent = CountLeadingWhitespace(sourceText.Lines[expressionLine].ToString());
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
+            }
+        }
+
+        private static void AnalyzeArrayCreation(SyntaxNodeAnalysisContext context)
+        {
+            InitializerExpressionSyntax? initializer;
+
+            if (context.Node is ArrayCreationExpressionSyntax arrayCreation)
+                initializer = arrayCreation.Initializer;
+            else if (context.Node is ImplicitArrayCreationExpressionSyntax implicitArrayCreation)
+                initializer = implicitArrayCreation.Initializer;
+            else
+                return;
+
+            if (initializer == null || initializer.Expressions.Count == 0)
+                return;
+
+            if (initializer.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+            var indentSize = GetIndentSize(context);
+
+            var declarationFirstToken = context.Node.GetFirstToken();
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var expectedIndent = declarationIndent + indentSize;
+
+            var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
+
+            foreach (var expression in initializer.Expressions)
             {
                 var firstToken = expression.GetFirstToken();
                 if (firstToken == default)

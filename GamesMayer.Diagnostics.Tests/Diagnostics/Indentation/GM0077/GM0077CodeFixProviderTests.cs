@@ -182,5 +182,108 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task CollectionInitializer_ItemUnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+{|GM0077:1|},
+            2
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task CollectionInitializer_ItemOverIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+                {|GM0077:1|},
+            2
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        var x = new System.Collections.Generic.List<int>
+        {
+            1,
+            2
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ArrayInitializer_AsArgument_ItemUnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+        {|GM0077:1|},
+            2
+        });
+    }
+
+    void Use(int[] values) { }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        Use(new int[]
+        {
+            1,
+            2
+        });
+    }
+
+    void Use(int[] values) { }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }
