@@ -49,6 +49,7 @@ namespace GamesMayer.Diagnostics.Utils
         public static bool IsFluentChainExpression(ExpressionSyntax expression)
         {
             return expression is MemberAccessExpressionSyntax
+                || expression is ConditionalAccessExpressionSyntax
                 || (expression is InvocationExpressionSyntax invocation
                     && invocation.Expression is MemberAccessExpressionSyntax);
         }
@@ -64,6 +65,10 @@ namespace GamesMayer.Diagnostics.Utils
 
             if (expression.Parent is MemberAccessExpressionSyntax parentMemberAccess
                 && parentMemberAccess.Expression == expression)
+                return false;
+
+            if (expression.Parent is ConditionalAccessExpressionSyntax parentConditionalAccess
+                && parentConditionalAccess.Expression == expression)
                 return false;
 
             return true;
@@ -85,7 +90,29 @@ namespace GamesMayer.Diagnostics.Utils
             {
                 CollectFluentChainBoundaries(memberAccess.Expression, boundaries);
                 boundaries.Add((memberAccess.Expression, memberAccess.OperatorToken, memberAccess));
+                return;
             }
+
+            if (expression is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                CollectFluentChainBoundaries(conditionalAccess.Expression, boundaries);
+
+                MemberBindingExpressionSyntax? memberBinding = null;
+                if (conditionalAccess.WhenNotNull is MemberBindingExpressionSyntax directBinding)
+                    memberBinding = directBinding;
+                else if (conditionalAccess.WhenNotNull is InvocationExpressionSyntax invocWhenNotNull
+                    && invocWhenNotNull.Expression is MemberBindingExpressionSyntax invocBinding)
+                    memberBinding = invocBinding;
+
+                if (memberBinding != null)
+                    boundaries.Add((conditionalAccess.Expression, memberBinding.OperatorToken, conditionalAccess));
+            }
+        }
+
+        public static bool IsInvocationSegment(ExpressionSyntax segment)
+        {
+            return segment is InvocationExpressionSyntax
+                || (segment is ConditionalAccessExpressionSyntax ca && ca.WhenNotNull is InvocationExpressionSyntax);
         }
 
         public static int CountChainInvocations(ExpressionSyntax expression)
@@ -96,7 +123,7 @@ namespace GamesMayer.Diagnostics.Utils
             int count = 0;
             foreach (var boundary in boundaries)
             {
-                if (boundary.SegmentExpression is InvocationExpressionSyntax)
+                if (IsInvocationSegment(boundary.SegmentExpression))
                     count++;
             }
 

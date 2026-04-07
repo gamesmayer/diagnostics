@@ -105,7 +105,7 @@ namespace GamesMayer.Diagnostics
             int firstInvocationIndex = -1;
             for (int i = 0; i < boundaries.Count; i++)
             {
-                if (boundaries[i].SegmentExpression is InvocationExpressionSyntax)
+                if (FluentChainUtils.IsInvocationSegment(boundaries[i].SegmentExpression))
                 {
                     invocationCount++;
                     if (firstInvocationIndex < 0)
@@ -120,7 +120,7 @@ namespace GamesMayer.Diagnostics
             int currentSegmentStart = firstInvocationIndex;
             for (int i = firstInvocationIndex; i < boundaries.Count; i++)
             {
-                if (boundaries[i].SegmentExpression is InvocationExpressionSyntax)
+                if (FluentChainUtils.IsInvocationSegment(boundaries[i].SegmentExpression))
                 {
                     segmentRanges.Add((currentSegmentStart, i));
                     currentSegmentStart = i + 1;
@@ -154,7 +154,7 @@ namespace GamesMayer.Diagnostics
                     var startBoundary = boundaries[segmentRange.StartIndex];
                     var endBoundary = boundaries[segmentRange.EndIndex];
                     var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(
-                        startBoundary.DotToken.SpanStart,
+                        GetSegmentSpanStart(startBoundary, tree),
                         endBoundary.SegmentExpression.Span.End);
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
                 }
@@ -175,11 +175,25 @@ namespace GamesMayer.Diagnostics
 
                     var endBoundary = boundaries[segmentRange.EndIndex];
                     var diagnosticSpan = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(
-                        startBoundary.DotToken.SpanStart,
+                        GetSegmentSpanStart(startBoundary, tree),
                         endBoundary.SegmentExpression.Span.End);
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, Location.Create(tree, diagnosticSpan)));
                 }
             }
+        }
+
+        private static int GetSegmentSpanStart(
+            (ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression) boundary,
+            SyntaxTree tree)
+        {
+            if (boundary.SegmentExpression is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                var leftLine = tree.GetLineSpan(boundary.LeftExpression.GetLastToken().Span).EndLinePosition.Line;
+                var questionLine = tree.GetLineSpan(conditionalAccess.OperatorToken.Span).StartLinePosition.Line;
+                if (questionLine > leftLine)
+                    return conditionalAccess.OperatorToken.SpanStart;
+            }
+            return boundary.DotToken.SpanStart;
         }
 
         private static int GetMinimumInvocations(SyntaxNodeAnalysisContext context)

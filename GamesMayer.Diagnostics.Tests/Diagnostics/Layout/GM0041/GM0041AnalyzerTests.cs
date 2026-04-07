@@ -325,6 +325,50 @@ dotnet_diagnostic.GM0041.threshold = 3"));
         }
 
         [Fact]
+        public async Task ConditionalAccess_SingleInvocation_SameLine_NoDiagnostic()
+        {
+            var testCode = @"
+class Foo { public void Despawn() {} }
+class Test {
+    static void Method(Foo worldMapView) {
+        worldMapView?.Despawn();
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConditionalAccess_SingleInvocation_QuestionDotOnOwnLine_Diagnostic()
+        {
+            var testCode = @"
+class Foo { public void Despawn() {} }
+class Test {
+    static void Method(Foo worldMapView) {
+        worldMapView
+            {|GM0041:?.Despawn()|};
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ConditionalAccess_SingleInvocation_DotOnNextLine_Diagnostic()
+        {
+            var testCode = @"
+class Foo { public void Despawn() {} }
+class Test {
+    static void Method(Foo worldMapView) {
+        worldMapView?
+            {|GM0041:.Despawn()|};
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task ConfiguredThresholdThree_ThreeInvocations_AllOnOwnLines_NoDiagnostic()
         {
             var testCode = @"

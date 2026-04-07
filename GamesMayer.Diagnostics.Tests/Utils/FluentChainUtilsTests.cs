@@ -151,6 +151,39 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public void IsInvocationSegment_InvocationExpression_ReturnsTrue()
+        {
+            var code = @"class C { void M() { obj.Method(); } }";
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var invocation = root.DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
+            Assert.True(FluentChainUtils.IsInvocationSegment(invocation));
+        }
+
+        [Fact]
+        public void IsInvocationSegment_ConditionalAccessWithInvocation_ReturnsTrue()
+        {
+            var code = @"class C { void M(object x) { x?.ToString(); } }";
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var conditionalAccess = root.DescendantNodes().OfType<ConditionalAccessExpressionSyntax>().Single();
+            Assert.True(FluentChainUtils.IsInvocationSegment(conditionalAccess));
+        }
+
+        [Fact]
+        public void IsInvocationSegment_MemberAccess_ReturnsFalse()
+        {
+            var code = @"class C { void M() { var x = obj.Property; } }";
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var memberAccess = root.DescendantNodes().OfType<MemberAccessExpressionSyntax>().Single();
+            Assert.False(FluentChainUtils.IsInvocationSegment(memberAccess));
+        }
+
+        [Fact]
         public void CountChainInvocations_ThreeInvocations_ReturnsThree()
         {
             var code = @"class C { void M() { items.Where(x => x > 0).OrderBy(x => x).ToList(); } }";
