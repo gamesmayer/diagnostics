@@ -31,7 +31,7 @@ csharp_prefer_braces = true:warning
 
 # Using directives
 dotnet_diagnostic.IDE0005.severity = none  # Remove unnecessary using directives
-dotnet_diagnostic.CS8019.severity = warning  # Unnecessary using directive (compiler warning)
+dotnet_diagnostic.CS8019.severity = warning   # Unnecessary using directive (compiler warning)
 
 # Unused variables
 dotnet_diagnostic.CS0219.severity = none      # Unused variable (compiler warning)
@@ -293,6 +293,7 @@ dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed
 dotnet_diagnostic.GM0129.severity = warning  # Explicit object creation
 dotnet_diagnostic.GM0129.enabled = true
 dotnet_diagnostic.GM0131.severity = warning  # Anonymous object field must have explicit name
+dotnet_diagnostic.GM0140.severity = hidden   # Unused using directive
 
 # GamesMayer.Diagnostics — Architecture
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

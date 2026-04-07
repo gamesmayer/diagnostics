@@ -191,6 +191,7 @@ Diagnostics are organized by category.
 | [GM0124](docs/Diagnostics/Style/GM0124.md) | Trailing commas are not allowed                | Yes     | Yes     |
 | [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation                       | Yes     | Yes     |
 | [GM0131](docs/Diagnostics/Style/GM0131.md) | Anonymous object field must have explicit name | Yes     | Yes     |
+| [GM0140](docs/Diagnostics/Style/GM0140.md) | Unused using directive                         | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
