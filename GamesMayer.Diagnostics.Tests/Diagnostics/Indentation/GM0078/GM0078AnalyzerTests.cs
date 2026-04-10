@@ -902,29 +902,46 @@ class Foo { public int A { get; set; } }";
         }
 
         [Fact]
-        public async Task MethodBlock_MultilineWhereClause_ContinuationIndentedBraces_NoDiagnostic()
+        public async Task MethodBlock_MultilineWhereClause_BracesAtDeclarationLevel_NoDiagnostic()
         {
             var testCode = @"class C
 {
     void M<T>()
         where T : class
-        {
-            _ = typeof(T);
-        }
+    {
+        _ = typeof(T);
+    }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
         [Fact]
-        public async Task MethodBlock_MultilineWhereClause_OpenBraceUnderIndented_Diagnostic()
+        public async Task MethodBlock_MultilineWhereClause_BracesOverIndented_Diagnostic()
         {
             var testCode = @"class C
 {
     void M<T>()
         where T : class
-    {|GM0078:{|}
+        {|GM0078:{|}
             _ = typeof(T);
+        {|GM0078:}|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task MethodBlock_MultilineParamsAndWhereClause_BracesAtDeclarationLevel_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M<T>
+    (
+        int x
+    )
+        where T : class
+    {
+        _ = typeof(T);
+    }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
