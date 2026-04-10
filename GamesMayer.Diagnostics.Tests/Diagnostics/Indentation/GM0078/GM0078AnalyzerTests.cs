@@ -179,6 +179,18 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task ClassBraces_MultilineBaseList_InlineEmptyBody_NoDiagnostic()
+        {
+            var testCode = @"public class BaseHandler { }
+public interface IViewHandler { }
+
+public abstract class MonoViewHandler :
+    BaseHandler,
+    IViewHandler { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task NamespaceBraces_CorrectlyIndented_NoDiagnostic()
         {
             var testCode = @"namespace MyNamespace
@@ -850,6 +862,34 @@ class Foo { public int A { get; set; } }";
         this(string.Empty, 1) { }
 
     public Foo(string s, int n) { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MethodBlock_MultilineWhereClause_ContinuationIndentedBraces_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M<T>()
+        where T : class
+        {
+            _ = typeof(T);
+        }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MethodBlock_MultilineWhereClause_OpenBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M<T>()
+        where T : class
+    {|GM0078:{|}
+            _ = typeof(T);
+        }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

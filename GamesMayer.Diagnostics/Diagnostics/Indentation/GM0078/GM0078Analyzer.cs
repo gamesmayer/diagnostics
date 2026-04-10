@@ -58,7 +58,7 @@ namespace GamesMayer.Diagnostics
                 return;
 
             var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationLine = GetDeclarationLine(tree, block.OpenBraceToken, declarationFirstToken);
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             CheckBrace(context, sourceText, tree, block.OpenBraceToken, declarationLine, declarationIndent);
@@ -94,7 +94,7 @@ namespace GamesMayer.Diagnostics
             var sourceText = tree.GetText(context.CancellationToken);
 
             var declarationFirstToken = context.Node.GetFirstToken();
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationLine = GetDeclarationLine(tree, openBrace, declarationFirstToken);
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             CheckBrace(context, sourceText, tree, openBrace, declarationLine, declarationIndent);
@@ -205,6 +205,18 @@ namespace GamesMayer.Diagnostics
             while (count < text.Length && (text[count] == ' ' || text[count] == '\t'))
                 count++;
             return count;
+        }
+
+        private static int GetDeclarationLine(
+            SyntaxTree tree,
+            SyntaxToken openBraceToken,
+            SyntaxToken fallbackToken)
+        {
+            var previousToken = openBraceToken.GetPreviousToken();
+            if (previousToken != default && previousToken.SpanStart < openBraceToken.SpanStart)
+                return tree.GetLineSpan(previousToken.Span).StartLinePosition.Line;
+
+            return tree.GetLineSpan(fallbackToken.Span).StartLinePosition.Line;
         }
 
         internal static string GetLeadingWhitespace(string text)
