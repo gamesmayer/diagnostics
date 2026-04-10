@@ -94,7 +94,7 @@ namespace GamesMayer.Diagnostics
             var sourceText = tree.GetText(context.CancellationToken);
 
             var declarationFirstToken = context.Node.GetFirstToken();
-            var declarationLine = GetDeclarationLine(tree, openBrace, declarationFirstToken);
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             CheckBrace(context, sourceText, tree, openBrace, declarationLine, declarationIndent);

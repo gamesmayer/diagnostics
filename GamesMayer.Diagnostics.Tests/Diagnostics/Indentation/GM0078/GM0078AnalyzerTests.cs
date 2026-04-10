@@ -191,6 +191,41 @@ public abstract class MonoViewHandler :
         }
 
         [Fact]
+        public async Task ClassBraces_MultilineBaseList_SeparateLine_NoDiagnostic()
+        {
+            var testCode = @"public class BaseHandler { }
+public interface IInitializable { }
+public interface IFixedTickable { }
+public interface IEventRegistrable { }
+
+public abstract class MonoViewHandler : BaseHandler { }
+
+public class GamePlayerFlipViewHandler :
+    MonoViewHandler,
+    IInitializable,
+    IFixedTickable,
+    IEventRegistrable
+{
+    public void MyMethod() { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassBraces_MultilineBaseList_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"public class Base { }
+public interface IFoo { }
+
+public class Derived :
+    Base,
+    IFoo
+    {|GM0078:{|}
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task NamespaceBraces_CorrectlyIndented_NoDiagnostic()
         {
             var testCode = @"namespace MyNamespace
