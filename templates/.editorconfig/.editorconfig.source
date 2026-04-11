@@ -219,6 +219,7 @@ dotnet_diagnostic.GM0078.severity = warning  # Brace must be indented at the dec
 dotnet_diagnostic.GM0081.severity = warning  # Case labels must be indented one step right from the switch keyword
 dotnet_diagnostic.GM0116.severity = warning  # Array initializer items must be indented one step from the declaration
 dotnet_diagnostic.GM0122.severity = warning  # Object initializer members must be indented one step from the declaration
+dotnet_diagnostic.GM0143.severity = warning  # Each clause in a compound statement must start on its own line
 
 # GamesMayer.Diagnostics — Spacing
 dotnet_diagnostic.GM0079.severity = warning  # No more than one space between tokens

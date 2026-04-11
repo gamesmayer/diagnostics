@@ -49,55 +49,76 @@ namespace GamesMayer.Diagnostics
             var tree = root.SyntaxTree;
 
             int expectedIndent;
-            var initializer = token.Parent?.FirstAncestorOrSelf<InitializerExpressionSyntax>();
-            if (initializer != null && initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ArrayInitializerExpression))
+            if (token.Parent is ElseClauseSyntax elseClause &&
+                elseClause.Parent is IfStatementSyntax parentIf)
             {
-                var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
-                var openBraceIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[openBraceLine].ToString());
-                expectedIndent = openBraceIndent + 4;
+                var ifLine = tree.GetLineSpan(parentIf.IfKeyword.Span).StartLinePosition.Line;
+                expectedIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[ifLine].ToString());
             }
-            else if (initializer != null &&
-                     (initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ObjectInitializerExpression) ||
-                      initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.CollectionInitializerExpression)))
+            else if (token.Parent is CatchClauseSyntax catchClause &&
+                     catchClause.Parent is TryStatementSyntax parentTryForCatch)
             {
-                var newKeyword = FindNewKeyword(initializer.Parent);
-                if (newKeyword == default)
-                    return document;
-
-                var declarationLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
-                var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
-                expectedIndent = declarationIndent + 4;
+                var tryLine = tree.GetLineSpan(parentTryForCatch.TryKeyword.Span).StartLinePosition.Line;
+                expectedIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[tryLine].ToString());
+            }
+            else if (token.Parent is FinallyClauseSyntax finallyClause &&
+                     finallyClause.Parent is TryStatementSyntax parentTryForFinally)
+            {
+                var tryLine = tree.GetLineSpan(parentTryForFinally.TryKeyword.Span).StartLinePosition.Line;
+                expectedIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[tryLine].ToString());
             }
             else
             {
-                var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
-                if (block != null)
+                var initializer = token.Parent?.FirstAncestorOrSelf<InitializerExpressionSyntax>();
+                if (initializer != null && initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ArrayInitializerExpression))
                 {
-                    var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
-                    var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                    var openBraceLine = tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line;
+                    var openBraceIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[openBraceLine].ToString());
+                    expectedIndent = openBraceIndent + 4;
+                }
+                else if (initializer != null &&
+                         (initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ObjectInitializerExpression) ||
+                          initializer.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.CollectionInitializerExpression)))
+                {
+                    var newKeyword = FindNewKeyword(initializer.Parent);
+                    if (newKeyword == default)
+                        return document;
+
+                    var declarationLine = tree.GetLineSpan(newKeyword.Span).StartLinePosition.Line;
                     var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
                     expectedIndent = declarationIndent + 4;
                 }
                 else
                 {
-                    var accessor = token.Parent?.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
-                    if (accessor?.Parent is AccessorListSyntax accessorList)
+                    var block = token.Parent?.FirstAncestorOrSelf<BlockSyntax>();
+                    if (block != null)
                     {
-                        var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+                        var declarationFirstToken = block.Parent?.GetFirstToken() ?? block.OpenBraceToken;
                         var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
                         var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
                         expectedIndent = declarationIndent + 4;
                     }
                     else
                     {
-                        var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
-                        var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
-                        if (member == null || typeDeclaration == null)
-                            return document;
+                        var accessor = token.Parent?.FirstAncestorOrSelf<AccessorDeclarationSyntax>();
+                        if (accessor?.Parent is AccessorListSyntax accessorList)
+                        {
+                            var declarationFirstToken = accessorList.Parent?.GetFirstToken() ?? accessorList.OpenBraceToken;
+                            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                            var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                            expectedIndent = declarationIndent + 4;
+                        }
+                        else
+                        {
+                            var member = token.Parent?.FirstAncestorOrSelf<MemberDeclarationSyntax>();
+                            var typeDeclaration = member?.Parent as TypeDeclarationSyntax;
+                            if (member == null || typeDeclaration == null)
+                                return document;
 
-                        var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
-                        var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
-                        expectedIndent = declarationIndent + 4;
+                            var declarationLine = tree.GetLineSpan(typeDeclaration.Identifier.Span).StartLinePosition.Line;
+                            var declarationIndent = GM0077Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+                            expectedIndent = declarationIndent + 4;
+                        }
                     }
                 }
             }

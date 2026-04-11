@@ -285,5 +285,145 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task CatchClause_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+{|GM0077:catch|} (System.Exception)
+        {
+        }
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+        catch (System.Exception)
+        {
+        }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task FinallyClause_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+{|GM0077:finally|}
+        {
+        }
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+        finally
+        {
+        }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ElseClause_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+{|GM0077:else|}
+        {
+        }
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+        else
+        {
+        }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ElseIfClause_UnderIndented_Fix()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+{|GM0077:else|} if (false)
+        {
+        }
+    }
+}";
+            var fixedCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+        else if (false)
+        {
+        }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0077Analyzer, GM0077CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

@@ -29,6 +29,9 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
+            context.RegisterSyntaxNodeAction(AnalyzeElseClause, SyntaxKind.ElseClause);
+            context.RegisterSyntaxNodeAction(AnalyzeCatchClause, SyntaxKind.CatchClause);
+            context.RegisterSyntaxNodeAction(AnalyzeFinallyClause, SyntaxKind.FinallyClause);
             context.RegisterSyntaxNodeAction(AnalyzeAccessorList, SyntaxKind.AccessorList);
             context.RegisterSyntaxNodeAction(
                 AnalyzeTypeDeclaration,
@@ -84,6 +87,72 @@ namespace GamesMayer.Diagnostics
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
                 }
             }
+        }
+
+        private static void AnalyzeElseClause(SyntaxNodeAnalysisContext context)
+        {
+            var elseClause = (ElseClauseSyntax)context.Node;
+            if (elseClause.Parent is not IfStatementSyntax ifStatement)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var ifKeywordLine = tree.GetLineSpan(ifStatement.IfKeyword.Span).StartLinePosition.Line;
+            var elseKeywordLine = tree.GetLineSpan(elseClause.ElseKeyword.Span).StartLinePosition.Line;
+
+            if (elseKeywordLine == ifKeywordLine)
+                return;
+
+            var expectedIndent = CountLeadingWhitespace(sourceText.Lines[ifKeywordLine].ToString());
+            var actualIndent = CountLeadingWhitespace(sourceText.Lines[elseKeywordLine].ToString());
+
+            if (actualIndent != expectedIndent)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, elseClause.ElseKeyword.GetLocation()));
+        }
+
+        private static void AnalyzeCatchClause(SyntaxNodeAnalysisContext context)
+        {
+            var catchClause = (CatchClauseSyntax)context.Node;
+            if (catchClause.Parent is not TryStatementSyntax tryStatement)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var tryKeywordLine = tree.GetLineSpan(tryStatement.TryKeyword.Span).StartLinePosition.Line;
+            var catchKeywordLine = tree.GetLineSpan(catchClause.CatchKeyword.Span).StartLinePosition.Line;
+
+            if (catchKeywordLine == tryKeywordLine)
+                return;
+
+            var expectedIndent = CountLeadingWhitespace(sourceText.Lines[tryKeywordLine].ToString());
+            var actualIndent = CountLeadingWhitespace(sourceText.Lines[catchKeywordLine].ToString());
+
+            if (actualIndent != expectedIndent)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, catchClause.CatchKeyword.GetLocation()));
+        }
+
+        private static void AnalyzeFinallyClause(SyntaxNodeAnalysisContext context)
+        {
+            var finallyClause = (FinallyClauseSyntax)context.Node;
+            if (finallyClause.Parent is not TryStatementSyntax tryStatement)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var tryKeywordLine = tree.GetLineSpan(tryStatement.TryKeyword.Span).StartLinePosition.Line;
+            var finallyKeywordLine = tree.GetLineSpan(finallyClause.FinallyKeyword.Span).StartLinePosition.Line;
+
+            if (finallyKeywordLine == tryKeywordLine)
+                return;
+
+            var expectedIndent = CountLeadingWhitespace(sourceText.Lines[tryKeywordLine].ToString());
+            var actualIndent = CountLeadingWhitespace(sourceText.Lines[finallyKeywordLine].ToString());
+
+            if (actualIndent != expectedIndent)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, finallyClause.FinallyKeyword.GetLocation()));
         }
 
         private static void AnalyzeTypeDeclaration(SyntaxNodeAnalysisContext context)

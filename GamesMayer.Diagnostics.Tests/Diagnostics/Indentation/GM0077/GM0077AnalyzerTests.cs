@@ -433,5 +433,252 @@ class Foo { public int A { get; set; } }";
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── catch / finally tests ─────────────────────────────────────────────
+
+        [Fact]
+        public async Task CatchClause_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+        catch (System.Exception)
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CatchClause_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+{|GM0077:catch|} (System.Exception)
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task CatchClause_OverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+                {|GM0077:catch|} (System.Exception)
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FinallyClause_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+        finally
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task FinallyClause_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+{|GM0077:finally|}
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task TryCatchFinally_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+        catch (System.Exception)
+        {
+        }
+        finally
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task TryCatchFinally_BothWrong_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        try
+        {
+        }
+{|GM0077:catch|} (System.Exception)
+        {
+        }
+{|GM0077:finally|}
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        // ── else / else if tests ───────────────────────────────────────────────
+
+        [Fact]
+        public async Task ElseClause_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+        else
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ElseClause_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+{|GM0077:else|}
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ElseClause_OverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+                {|GM0077:else|}
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ElseIfClause_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+        else if (false)
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ElseIfClause_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+{|GM0077:else|} if (false)
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ElseIfChain_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M()
+    {
+        if (true)
+        {
+        }
+        else if (false)
+        {
+        }
+        else
+        {
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -144,6 +144,7 @@ Diagnostics are organized by category.
 | [GM0081](docs/Diagnostics/Indentation/GM0081.md) | Case labels must be indented one step right from the switch keyword                   | Yes     | Yes     |
 | [GM0116](docs/Diagnostics/Indentation/GM0116.md) | Array initializer items must be indented one step from the declaration                | Yes     | Yes     |
 | [GM0122](docs/Diagnostics/Indentation/GM0122.md) | Object initializer members must be indented one step from the declaration             | Yes     | Yes     |
+| [GM0143](docs/Diagnostics/Indentation/GM0143.md) | Each clause in a compound statement must start on its own line                        | Yes     | Yes     |
 
 ### Spacing Diagnostics
 
