@@ -153,6 +153,51 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task ClassMember_MultipleAttributes_AllCorrect_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    [A]
+    [B]
+    private int _value;
+}
+
+class A : System.Attribute { }
+class B : System.Attribute { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMember_MultipleAttributes_SecondOverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    [A]
+          {|GM0077:[|}B]
+    private int _value;
+}
+
+class A : System.Attribute { }
+class B : System.Attribute { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMember_MultipleAttributes_BothWrong_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+        {|GM0077:[|}A]
+          {|GM0077:[|}B]
+    private int _value;
+}
+
+class A : System.Attribute { }
+class B : System.Attribute { }";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task PropertyAccessorCorrectlyIndented_NoDiagnostic()
         {
             var testCode = @"class Foo
@@ -677,6 +722,60 @@ class Foo { public int A { get; set; } }";
         {
         }
     }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        // ── namespace member indentation tests ────────────────────────────────
+
+        [Fact]
+        public async Task NamespaceMember_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"namespace Foo
+{
+    class Bar { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceMember_OverIndented_Diagnostic()
+        {
+            var testCode = @"namespace Foo
+{
+        {|GM0077:class|} Bar { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceMember_UnderIndented_Diagnostic()
+        {
+            var testCode = @"namespace Foo
+{
+{|GM0077:class|} Bar { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceMember_AttributeOverIndented_Diagnostic()
+        {
+            var testCode = @"namespace Foo
+{
+        {|GM0077:[|} System.Obsolete]
+    class Bar { }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NamespaceMember_AttributeCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"namespace Foo
+{
+    [System.Obsolete]
+    class Bar { }
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }

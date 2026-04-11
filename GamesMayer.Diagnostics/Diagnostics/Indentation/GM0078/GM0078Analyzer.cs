@@ -67,21 +67,24 @@ namespace GamesMayer.Diagnostics
 
         private static void AnalyzeDeclarationBraces(SyntaxNodeAnalysisContext context)
         {
-            SyntaxToken openBrace, closeBrace;
+            SyntaxToken openBrace, closeBrace, declarationFirstToken;
 
             switch (context.Node)
             {
                 case NamespaceDeclarationSyntax ns:
                     openBrace = ns.OpenBraceToken;
                     closeBrace = ns.CloseBraceToken;
+                    declarationFirstToken = context.Node.GetFirstToken();
                     break;
                 case ClassDeclarationSyntax cls:
                     openBrace = cls.OpenBraceToken;
                     closeBrace = cls.CloseBraceToken;
+                    declarationFirstToken = cls.Modifiers.Count > 0 ? cls.Modifiers[0] : cls.Keyword;
                     break;
                 case StructDeclarationSyntax str:
                     openBrace = str.OpenBraceToken;
                     closeBrace = str.CloseBraceToken;
+                    declarationFirstToken = str.Modifiers.Count > 0 ? str.Modifiers[0] : str.Keyword;
                     break;
                 default:
                     return;
@@ -93,7 +96,6 @@ namespace GamesMayer.Diagnostics
             var tree = context.Node.SyntaxTree;
             var sourceText = tree.GetText(context.CancellationToken);
 
-            var declarationFirstToken = context.Node.GetFirstToken();
             var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
             var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 

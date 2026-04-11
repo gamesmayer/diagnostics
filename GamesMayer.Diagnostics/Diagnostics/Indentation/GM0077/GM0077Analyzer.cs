@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace GamesMayer.Diagnostics
 {
@@ -33,6 +34,7 @@ namespace GamesMayer.Diagnostics
             context.RegisterSyntaxNodeAction(AnalyzeCatchClause, SyntaxKind.CatchClause);
             context.RegisterSyntaxNodeAction(AnalyzeFinallyClause, SyntaxKind.FinallyClause);
             context.RegisterSyntaxNodeAction(AnalyzeAccessorList, SyntaxKind.AccessorList);
+            context.RegisterSyntaxNodeAction(AnalyzeNamespaceDeclaration, SyntaxKind.NamespaceDeclaration);
             context.RegisterSyntaxNodeAction(
                 AnalyzeTypeDeclaration,
                 SyntaxKind.ClassDeclaration,
@@ -155,6 +157,29 @@ namespace GamesMayer.Diagnostics
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, finallyClause.FinallyKeyword.GetLocation()));
         }
 
+        private static void AnalyzeNamespaceDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var ns = (NamespaceDeclarationSyntax)context.Node;
+            if (ns.Members.Count == 0)
+                return;
+
+            if (ns.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+            var indentSize = GetIndentSize(context);
+
+            var declarationLine = tree.GetLineSpan(ns.NamespaceKeyword.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var expectedIndent = declarationIndent + indentSize;
+
+            var openBraceLine = tree.GetLineSpan(ns.OpenBraceToken.Span).StartLinePosition.Line;
+
+            foreach (var member in ns.Members)
+                CheckMemberIndentation(context, tree, sourceText, member, expectedIndent, openBraceLine);
+        }
+
         private static void AnalyzeTypeDeclaration(SyntaxNodeAnalysisContext context)
         {
             var declaration = (TypeDeclarationSyntax)context.Node;
@@ -176,21 +201,7 @@ namespace GamesMayer.Diagnostics
             var openBraceLine = tree.GetLineSpan(declaration.OpenBraceToken.Span).StartLinePosition.Line;
 
             foreach (var member in declaration.Members)
-            {
-                var firstToken = member.GetFirstToken();
-                if (firstToken == default)
-                    continue;
-
-                var memberLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
-                if (memberLine == openBraceLine)
-                    continue;
-
-                var memberLineText = sourceText.Lines[memberLine].ToString();
-                var actualIndent = CountLeadingWhitespace(memberLineText);
-
-                if (actualIndent != expectedIndent)
-                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
-            }
+                CheckMemberIndentation(context, tree, sourceText, member, expectedIndent, openBraceLine);
         }
 
         private static void AnalyzeAccessorList(SyntaxNodeAnalysisContext context)
@@ -343,6 +354,41 @@ namespace GamesMayer.Diagnostics
                 if (actualIndent != expectedIndent)
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }
+        }
+
+        private static void CheckMemberIndentation(
+            SyntaxNodeAnalysisContext context,
+            SyntaxTree tree,
+            SourceText sourceText,
+            MemberDeclarationSyntax member,
+            int expectedIndent,
+            int openBraceLine)
+        {
+            foreach (var attrList in member.AttributeLists)
+            {
+                var token = attrList.OpenBracketToken;
+                var line = tree.GetLineSpan(token.Span).StartLinePosition.Line;
+                if (line == openBraceLine)
+                    continue;
+                var actualIndent = CountLeadingWhitespace(sourceText.Lines[line].ToString());
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, token.GetLocation()));
+            }
+
+            var firstNonAttr = member.AttributeLists.Count > 0
+                ? member.AttributeLists.Last().GetLastToken().GetNextToken()
+                : member.GetFirstToken();
+
+            if (firstNonAttr == default || firstNonAttr.IsMissing)
+                return;
+
+            var firstNonAttrLine = tree.GetLineSpan(firstNonAttr.Span).StartLinePosition.Line;
+            if (firstNonAttrLine == openBraceLine)
+                return;
+
+            var firstNonAttrIndent = CountLeadingWhitespace(sourceText.Lines[firstNonAttrLine].ToString());
+            if (firstNonAttrIndent != expectedIndent)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstNonAttr.GetLocation()));
         }
 
         internal static int CountLeadingWhitespace(string text)
