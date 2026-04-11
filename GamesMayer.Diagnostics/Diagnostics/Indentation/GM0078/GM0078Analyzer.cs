@@ -192,7 +192,12 @@ namespace GamesMayer.Diagnostics
             if (braceLine == declarationLine)
                 return;
 
-            var actualIndent = CountLeadingWhitespace(sourceText.Lines[braceLine].ToString());
+            var braceLineText = sourceText.Lines[braceLine].ToString();
+            var braceColumn = tree.GetLineSpan(braceToken.Span).StartLinePosition.Character;
+            if (braceColumn > CountLeadingWhitespace(braceLineText))
+                return;
+
+            var actualIndent = CountLeadingWhitespace(braceLineText);
             if (actualIndent != declarationIndent)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, braceToken.GetLocation()));

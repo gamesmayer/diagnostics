@@ -17,7 +17,7 @@ namespace GamesMayer.Diagnostics
             title: "Unused using directive",
             messageFormat: "Remove unused 'using {0}'",
             category: "Style",
-            defaultSeverity: DiagnosticSeverity.Hidden,
+            defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Using directives that are not referenced by any code in the file should be removed.",
             customTags: new[] { WellKnownDiagnosticTags.Unnecessary });

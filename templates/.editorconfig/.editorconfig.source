@@ -293,7 +293,7 @@ dotnet_diagnostic.GM0124.severity = warning  # Trailing commas are not allowed
 dotnet_diagnostic.GM0129.severity = warning  # Explicit object creation
 dotnet_diagnostic.GM0129.enabled = true
 dotnet_diagnostic.GM0131.severity = warning  # Anonymous object field must have explicit name
-dotnet_diagnostic.GM0140.severity = hidden   # Unused using directive
+dotnet_diagnostic.GM0140.severity = warning   # Unused using directive
 
 # GamesMayer.Diagnostics — Architecture
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
