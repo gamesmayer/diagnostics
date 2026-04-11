@@ -294,6 +294,8 @@ dotnet_diagnostic.GM0129.severity = warning  # Explicit object creation
 dotnet_diagnostic.GM0129.enabled = true
 dotnet_diagnostic.GM0131.severity = warning  # Anonymous object field must have explicit name
 dotnet_diagnostic.GM0140.severity = warning   # Unused using directive
+dotnet_diagnostic.GM0141.severity = error    # continue statement is not allowed
+dotnet_diagnostic.GM0142.severity = error    # Generic array creation is not allowed
 
 # GamesMayer.Diagnostics — Architecture
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly
