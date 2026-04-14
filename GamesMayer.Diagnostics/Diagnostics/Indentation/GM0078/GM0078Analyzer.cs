@@ -40,6 +40,8 @@ namespace GamesMayer.Diagnostics
                 SyntaxKind.ObjectCreationExpression,
                 SyntaxKind.ImplicitObjectCreationExpression,
                 SyntaxKind.AnonymousObjectCreationExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeSwitchStatement, SyntaxKind.SwitchStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeSwitchExpression, SyntaxKind.SwitchExpression);
         }
 
         private static void AnalyzeBlock(SyntaxNodeAnalysisContext context)
@@ -177,6 +179,51 @@ namespace GamesMayer.Diagnostics
 
             CheckBrace(context, sourceText, tree, openBrace, newKeywordLine, declarationIndent);
             CheckBrace(context, sourceText, tree, closeBrace, newKeywordLine, declarationIndent);
+        }
+
+        private static void AnalyzeSwitchStatement(SyntaxNodeAnalysisContext context)
+        {
+            var switchStatement = (SwitchStatementSyntax)context.Node;
+
+            if (switchStatement.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var openBraceLine = tree.GetLineSpan(switchStatement.OpenBraceToken.Span).StartLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(switchStatement.CloseBraceToken.Span).StartLinePosition.Line;
+            if (openBraceLine == closeBraceLine)
+                return;
+
+            var declarationLine = tree.GetLineSpan(switchStatement.SwitchKeyword.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+
+            CheckBrace(context, sourceText, tree, switchStatement.OpenBraceToken, declarationLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, switchStatement.CloseBraceToken, declarationLine, declarationIndent);
+        }
+
+        private static void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context)
+        {
+            var switchExpr = (SwitchExpressionSyntax)context.Node;
+
+            if (switchExpr.ContainsDirectives)
+                return;
+
+            var tree = context.Node.SyntaxTree;
+            var sourceText = tree.GetText(context.CancellationToken);
+
+            var openBraceLine = tree.GetLineSpan(switchExpr.OpenBraceToken.Span).StartLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(switchExpr.CloseBraceToken.Span).StartLinePosition.Line;
+            if (openBraceLine == closeBraceLine)
+                return;
+
+            var declarationFirstToken = switchExpr.Parent?.GetFirstToken() ?? switchExpr.SwitchKeyword;
+            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+            var declarationIndent = CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+
+            CheckBrace(context, sourceText, tree, switchExpr.OpenBraceToken, declarationLine, declarationIndent);
+            CheckBrace(context, sourceText, tree, switchExpr.CloseBraceToken, declarationLine, declarationIndent);
         }
 
         private static void CheckBrace(

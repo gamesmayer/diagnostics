@@ -28,6 +28,7 @@ namespace GamesMayer.Diagnostics
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SwitchStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeSwitchExpression, SyntaxKind.SwitchExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
@@ -50,6 +51,68 @@ namespace GamesMayer.Diagnostics
                         context.ReportDiagnostic(Diagnostic.Create(Descriptor, label.GetLocation()));
                 }
             }
+        }
+
+        private static void AnalyzeSwitchExpression(SyntaxNodeAnalysisContext context)
+        {
+            var switchExpr = (SwitchExpressionSyntax)context.Node;
+            var tree = context.Node.SyntaxTree;
+
+            var openBraceLine = tree.GetLineSpan(switchExpr.OpenBraceToken.Span).StartLinePosition.Line;
+            var closeBraceLine = tree.GetLineSpan(switchExpr.CloseBraceToken.Span).StartLinePosition.Line;
+            if (openBraceLine == closeBraceLine)
+                return;
+
+            var containingStatement = FindContainingStatement(switchExpr);
+            var refToken = containingStatement != null
+                ? containingStatement.GetFirstToken()
+                : switchExpr.GetFirstToken();
+            var refCol = tree.GetLineSpan(refToken.Span).StartLinePosition.Character;
+
+            var indentStep = DetectIndentStepForExpression(switchExpr, tree, refCol);
+            var expectedCol = refCol + indentStep;
+
+            foreach (var arm in switchExpr.Arms)
+            {
+                var armToken = arm.GetFirstToken();
+                var armLine = tree.GetLineSpan(armToken.Span).StartLinePosition.Line;
+                if (armLine == openBraceLine)
+                    continue;
+
+                var armCol = tree.GetLineSpan(armToken.Span).StartLinePosition.Character;
+                if (armCol != expectedCol)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, arm.GetLocation()));
+            }
+        }
+
+        private static SyntaxNode? FindContainingStatement(SyntaxNode node)
+        {
+            var current = node.Parent;
+            while (current != null)
+            {
+                if (current is StatementSyntax)
+                    return current;
+                current = current.Parent;
+            }
+            return null;
+        }
+
+        internal static int DetectIndentStepForExpression(SwitchExpressionSyntax switchExpr, SyntaxTree tree, int refCol)
+        {
+            var current = (SyntaxNode)switchExpr;
+            while (current != null)
+            {
+                if (current is BlockSyntax block && block.Parent != null)
+                {
+                    var parentCol = tree.GetLineSpan(block.Parent.GetFirstToken().Span).StartLinePosition.Character;
+                    var step = refCol - parentCol;
+                    if (step > 0)
+                        return step;
+                    break;
+                }
+                current = current.Parent;
+            }
+            return 4;
         }
 
         internal static int DetectIndentStep(SwitchStatementSyntax switchStatement, SyntaxTree tree, int switchCol)

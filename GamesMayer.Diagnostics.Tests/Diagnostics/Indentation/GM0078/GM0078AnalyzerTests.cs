@@ -964,5 +964,128 @@ class Foo { public int A { get; set; } }";
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Switch statement tests ────────────────────────────────────────────
+
+        [Fact]
+        public async Task SwitchStatement_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        switch (x)
+        {
+            case 1:
+                break;
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchStatement_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        switch (x)
+            {|GM0078:{|}
+            case 1:
+                break;
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchStatement_CloseBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        switch (x)
+        {
+            case 1:
+                break;
+{|GM0078:}|}
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchStatement_BothBracesWrongIndent_TwoDiagnostics()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        switch (x)
+            {|GM0078:{|}
+            case 1:
+                break;
+            {|GM0078:}|}
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        // ── Switch expression tests ───────────────────────────────────────────
+
+        [Fact]
+        public async Task SwitchExpression_BracesCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        int y = x switch
+        {
+            1 => 10,
+            _ => 0
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_OpenBraceOverIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        int y = x switch
+            {|GM0078:{|}
+            1 => 10,
+            _ => 0
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_CloseBraceUnderIndented_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    void M(int x)
+    {
+        int y = x switch
+        {
+            1 => 10,
+            _ => 0
+{|GM0078:}|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

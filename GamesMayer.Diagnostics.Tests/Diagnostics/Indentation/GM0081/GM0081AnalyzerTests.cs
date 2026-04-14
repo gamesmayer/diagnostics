@@ -155,5 +155,107 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        // ── Switch expression tests ───────────────────────────────────────────
+
+        [Fact]
+        public async Task SwitchExpression_Arms_CorrectIndentation_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int M(int x)
+    {
+        return x switch
+        {
+            1 => 10,
+            2 => 20,
+            _ => 0
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_Arms_SameColumnAsStatement_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int M(int x)
+    {
+        return x switch
+        {
+        {|GM0081:1 => 10|},
+        {|GM0081:2 => 20|},
+        {|GM0081:_ => 0|}
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_Arms_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int M(int x)
+    {
+        return x switch
+        {
+                {|GM0081:1 => 10|},
+                {|GM0081:2 => 20|},
+                {|GM0081:_ => 0|}
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_SingleLine_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int M(int x) => x switch { 1 => 10, _ => 0 };
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_PatternArms_CorrectIndentation_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    string M(object o)
+    {
+        return o switch
+        {
+            int n => n.ToString(),
+            string s => s,
+            _ => string.Empty
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_PatternArms_SameColumnAsStatement_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    string M(object o)
+    {
+        return o switch
+        {
+        {|GM0081:int n => n.ToString()|},
+        {|GM0081:string s => s|},
+        {|GM0081:_ => string.Empty|}
+        };
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
