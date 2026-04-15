@@ -257,5 +257,43 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task SwitchExpression_InsideLambda_CorrectIndentation_NoDiagnostic()
+        {
+            var testCode = @"using System.Linq;
+class Foo
+{
+    bool M(object[] items, int key)
+    {
+        return items.Any(
+            item => item switch
+            {
+                int n => n == key,
+                _ => false
+            });
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SwitchExpression_InsideLambda_WrongIndentation_Diagnostic()
+        {
+            var testCode = @"using System.Linq;
+class Foo
+{
+    bool M(object[] items, int key)
+    {
+        return items.Any(
+            item => item switch
+            {
+            {|GM0081:int n => n == key|},
+            {|GM0081:_ => false|}
+            });
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

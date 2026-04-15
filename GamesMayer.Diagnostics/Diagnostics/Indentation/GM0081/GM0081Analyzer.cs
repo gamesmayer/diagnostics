@@ -63,14 +63,9 @@ namespace GamesMayer.Diagnostics
             if (openBraceLine == closeBraceLine)
                 return;
 
-            var containingStatement = FindContainingStatement(switchExpr);
-            var refToken = containingStatement != null
-                ? containingStatement.GetFirstToken()
-                : switchExpr.GetFirstToken();
-            var refCol = tree.GetLineSpan(refToken.Span).StartLinePosition.Character;
-
-            var indentStep = DetectIndentStepForExpression(switchExpr, tree, refCol);
-            var expectedCol = refCol + indentStep;
+            var openBraceCol = tree.GetLineSpan(switchExpr.OpenBraceToken.Span).StartLinePosition.Character;
+            var indentStep = DetectIndentStepForExpression(switchExpr, tree);
+            var expectedCol = openBraceCol + indentStep;
 
             foreach (var arm in switchExpr.Arms)
             {
@@ -85,30 +80,22 @@ namespace GamesMayer.Diagnostics
             }
         }
 
-        private static SyntaxNode? FindContainingStatement(SyntaxNode node)
-        {
-            var current = node.Parent;
-            while (current != null)
-            {
-                if (current is StatementSyntax)
-                    return current;
-                current = current.Parent;
-            }
-            return null;
-        }
-
-        internal static int DetectIndentStepForExpression(SwitchExpressionSyntax switchExpr, SyntaxTree tree, int refCol)
+        internal static int DetectIndentStepForExpression(SwitchExpressionSyntax switchExpr, SyntaxTree tree)
         {
             var current = (SyntaxNode)switchExpr;
             while (current != null)
             {
-                if (current is BlockSyntax block && block.Parent != null)
+                if (current is BlockSyntax block)
                 {
-                    var parentCol = tree.GetLineSpan(block.Parent.GetFirstToken().Span).StartLinePosition.Character;
-                    var step = refCol - parentCol;
-                    if (step > 0)
-                        return step;
-                    break;
+                    var firstStatement = block.Statements.FirstOrDefault();
+                    if (firstStatement != null)
+                    {
+                        var stmtCol = tree.GetLineSpan(firstStatement.GetFirstToken().Span).StartLinePosition.Character;
+                        var blockBraceCol = tree.GetLineSpan(block.OpenBraceToken.Span).StartLinePosition.Character;
+                        var step = stmtCol - blockBraceCol;
+                        if (step > 0)
+                            return step;
+                    }
                 }
                 current = current.Parent;
             }
