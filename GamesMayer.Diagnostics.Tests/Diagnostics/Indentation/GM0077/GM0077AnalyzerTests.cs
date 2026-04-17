@@ -726,6 +726,111 @@ class Foo { public int A { get; set; } }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
 
+        // ── comment trivia indentation tests ─────────────────────────────────
+
+        [Fact]
+        public async Task SingleLineComment_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+        // comment
+        int y = 2;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SingleLineComment_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+                {|GM0077:// comment|}
+        int y = 2;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SingleLineComment_UnderIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+{|GM0077:// comment|}
+        int y = 2;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SingleLineComment_BeforeClosingBrace_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+        // comment
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SingleLineComment_BeforeClosingBrace_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+                {|GM0077:// comment|}
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultiLineComment_CorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+        /* comment */
+        int y = 2;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultiLineComment_OverIndented_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Method()
+    {
+        int x = 1;
+                {|GM0077:/* comment */|}
+        int y = 2;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
         // ── namespace member indentation tests ────────────────────────────────
 
         [Fact]

@@ -77,6 +77,8 @@ namespace GamesMayer.Diagnostics
                 if (firstToken == default)
                     continue;
 
+                CheckCommentTriviaIndentation(context, tree, sourceText, firstToken.LeadingTrivia, expectedIndent, openBraceLine);
+
                 var statementLine = tree.GetLineSpan(firstToken.Span).StartLinePosition.Line;
                 if (statementLine == openBraceLine)
                     continue;
@@ -89,6 +91,8 @@ namespace GamesMayer.Diagnostics
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
                 }
             }
+
+            CheckCommentTriviaIndentation(context, tree, sourceText, block.CloseBraceToken.LeadingTrivia, expectedIndent, openBraceLine);
         }
 
         private static void AnalyzeElseClause(SyntaxNodeAnalysisContext context)
@@ -389,6 +393,30 @@ namespace GamesMayer.Diagnostics
             var firstNonAttrIndent = CountLeadingWhitespace(sourceText.Lines[firstNonAttrLine].ToString());
             if (firstNonAttrIndent != expectedIndent)
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstNonAttr.GetLocation()));
+        }
+
+        private static void CheckCommentTriviaIndentation(
+            SyntaxNodeAnalysisContext context,
+            SyntaxTree tree,
+            SourceText sourceText,
+            SyntaxTriviaList triviaList,
+            int expectedIndent,
+            int openBraceLine)
+        {
+            foreach (var trivia in triviaList)
+            {
+                if (!trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) &&
+                    !trivia.IsKind(SyntaxKind.MultiLineCommentTrivia))
+                    continue;
+
+                var triviaLine = tree.GetLineSpan(trivia.Span).StartLinePosition.Line;
+                if (triviaLine == openBraceLine)
+                    continue;
+
+                var actualIndent = CountLeadingWhitespace(sourceText.Lines[triviaLine].ToString());
+                if (actualIndent != expectedIndent)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, trivia.GetLocation()));
+            }
         }
 
         internal static int CountLeadingWhitespace(string text)
