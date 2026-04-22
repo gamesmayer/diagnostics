@@ -167,7 +167,7 @@ namespace GamesMayer.Diagnostics
             if (ns.Members.Count == 0)
                 return;
 
-            if (ns.ContainsDirectives)
+            if (HasDirectivesInMemberList(ns.Members, ns.CloseBraceToken))
                 return;
 
             var tree = context.Node.SyntaxTree;
@@ -190,7 +190,7 @@ namespace GamesMayer.Diagnostics
             if (declaration.Members.Count == 0)
                 return;
 
-            if (declaration.ContainsDirectives)
+            if (HasDirectivesInMemberList(declaration.Members, declaration.CloseBraceToken))
                 return;
 
             var tree = context.Node.SyntaxTree;
@@ -359,6 +359,23 @@ namespace GamesMayer.Diagnostics
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, firstToken.GetLocation()));
             }
         }
+
+        private static bool HasDirectivesInMemberList<T>(SyntaxList<T> members, SyntaxToken closeBrace)
+            where T : MemberDeclarationSyntax
+        {
+            foreach (var trivia in closeBrace.LeadingTrivia)
+                if (IsConditionalDirective(trivia)) return true;
+            foreach (var member in members)
+                foreach (var trivia in member.GetFirstToken().LeadingTrivia)
+                    if (IsConditionalDirective(trivia)) return true;
+            return false;
+        }
+
+        private static bool IsConditionalDirective(SyntaxTrivia trivia) =>
+            trivia.IsKind(SyntaxKind.IfDirectiveTrivia) ||
+            trivia.IsKind(SyntaxKind.ElifDirectiveTrivia) ||
+            trivia.IsKind(SyntaxKind.ElseDirectiveTrivia) ||
+            trivia.IsKind(SyntaxKind.EndIfDirectiveTrivia);
 
         private static void CheckMemberIndentation(
             SyntaxNodeAnalysisContext context,

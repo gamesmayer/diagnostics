@@ -884,5 +884,54 @@ class Foo { public int A { get; set; } }";
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ClassMember_OverIndented_ClassHasDirectivesInsideMethodBody_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+        {|GM0077:private|} int _value;
+
+    void Bar()
+    {
+#if DEBUG
+        int x = 1;
+#endif
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMember_AttributeOverIndented_ClassHasDirectivesInsideMethodBody_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+        {|GM0077:[|}System.Obsolete]
+    private int _value;
+
+    void Bar()
+    {
+#if DEBUG
+        int x = 1;
+#endif
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ClassMember_OverIndented_ClassHasRegionDirective_Diagnostic()
+        {
+            var testCode = @"class Foo
+{
+        {|GM0077:private|} int _value;
+
+    #region Methods
+    void Bar() { }
+    #endregion
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }
