@@ -436,5 +436,101 @@ class C
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task MixedNullConditionalAndMemberAccessChainCorrectlyIndented_NoDiagnostic()
+        {
+            var testCode = @"using System;
+using System.Collections;
+using System.Reflection;
+
+class C
+{
+    void M(IEnumerator coroutine)
+    {
+        coroutine.Current
+            ?.GetType()
+            .GetMethod(""WaitForCompletion"")
+            ?.Invoke(coroutine.Current, null);
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task SimpleNullConditionalWithChainedMemberOverIndented_Diagnostic()
+        {
+            var testCode = @"using System;
+
+class C
+{
+    void M(object x)
+    {
+        x
+            ?.GetType()
+                {|GM0038:.GetHashCode()|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task NullConditionalWithChainedMemberOverIndented_NoOuterConditional_Diagnostic()
+        {
+            var testCode = @"using System;
+using System.Collections;
+using System.Reflection;
+
+class C
+{
+    void M(IEnumerator coroutine)
+    {
+        coroutine.Current
+            ?.GetType()
+                {|GM0038:.GetMethod(""WaitForCompletion"")|}
+;    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MixedNullConditionalAndMemberAccessChainOverIndented_Diagnostic()
+        {
+            var testCode = @"using System;
+using System.Collections;
+using System.Reflection;
+
+class C
+{
+    void M(IEnumerator coroutine)
+    {
+        coroutine.Current
+            ?.GetType()
+                {|GM0038:.GetMethod(""WaitForCompletion"")|}
+            ?.Invoke(coroutine.Current, null);
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MemberAccessSegmentsAfterNullConditionalOverIndented_Diagnostics()
+        {
+            var testCode = @"using System;
+using System.Collections;
+using System.Reflection;
+
+class C
+{
+    void M(IEnumerator coroutine)
+    {
+        coroutine.Current
+            ?.GetType()
+                {|GM0038:.GetMethod(""WaitForCompletion"")|}
+                {|GM0038:.Invoke(coroutine.Current, null)|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

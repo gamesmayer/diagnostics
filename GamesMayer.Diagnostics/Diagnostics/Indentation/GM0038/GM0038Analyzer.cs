@@ -156,6 +156,12 @@ namespace GamesMayer.Diagnostics
                 return false;
             }
 
+            if (expression.Parent is ConditionalAccessExpressionSyntax parentConditionalAccessWhenNotNull
+                && parentConditionalAccessWhenNotNull.WhenNotNull == expression)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -164,7 +170,8 @@ namespace GamesMayer.Diagnostics
             return expression is MemberAccessExpressionSyntax
                 || expression is ConditionalAccessExpressionSyntax
                 || (expression is InvocationExpressionSyntax invocation
-                    && invocation.Expression is MemberAccessExpressionSyntax);
+                    && (invocation.Expression is MemberAccessExpressionSyntax
+                        || invocation.Expression is ConditionalAccessExpressionSyntax));
         }
 
         internal static string GetExpectedIndentation(string baseIndentation, int indentSize)
@@ -201,6 +208,13 @@ namespace GamesMayer.Diagnostics
             ExpressionSyntax expression,
             List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression)> boundaries)
         {
+            if (expression is InvocationExpressionSyntax conditionalInvocation
+                && conditionalInvocation.Expression is ConditionalAccessExpressionSyntax conditionalExpression)
+            {
+                CollectFluentChainBoundaries(conditionalExpression, boundaries);
+                return;
+            }
+
             if (expression is InvocationExpressionSyntax invocation
                 && invocation.Expression is MemberAccessExpressionSyntax invMemberAccess)
             {
@@ -219,17 +233,66 @@ namespace GamesMayer.Diagnostics
             if (expression is ConditionalAccessExpressionSyntax conditionalAccess)
             {
                 CollectFluentChainBoundaries(conditionalAccess.Expression, boundaries);
-
-                MemberBindingExpressionSyntax? memberBinding = null;
-                if (conditionalAccess.WhenNotNull is MemberBindingExpressionSyntax directBinding)
-                    memberBinding = directBinding;
-                else if (conditionalAccess.WhenNotNull is InvocationExpressionSyntax invocWhenNotNull
-                    && invocWhenNotNull.Expression is MemberBindingExpressionSyntax invocBinding)
-                    memberBinding = invocBinding;
-
-                if (memberBinding != null)
-                    boundaries.Add((conditionalAccess.Expression, memberBinding.OperatorToken, conditionalAccess));
+                CollectWhenNotNullBoundaries(conditionalAccess.Expression, conditionalAccess.WhenNotNull, boundaries);
             }
+        }
+
+        private static void CollectWhenNotNullBoundaries(
+            ExpressionSyntax leftOfConditional,
+            ExpressionSyntax whenNotNull,
+            List<(ExpressionSyntax LeftExpression, SyntaxToken DotToken, ExpressionSyntax SegmentExpression)> boundaries)
+        {
+            var segments = new List<(SyntaxToken Dot, ExpressionSyntax Segment)>();
+            DecomposeWhenNotNull(whenNotNull, segments);
+
+            var left = leftOfConditional;
+            foreach (var (dot, segment) in segments)
+            {
+                boundaries.Add((left, dot, segment));
+                left = segment;
+            }
+        }
+
+        private static void DecomposeWhenNotNull(
+            ExpressionSyntax expr,
+            List<(SyntaxToken Dot, ExpressionSyntax Segment)> segments)
+        {
+            if (expr is ConditionalAccessExpressionSyntax conditionalAccess)
+            {
+                DecomposeWhenNotNull(conditionalAccess.Expression, segments);
+                DecomposeWhenNotNull(conditionalAccess.WhenNotNull, segments);
+                return;
+            }
+
+            if (expr is InvocationExpressionSyntax invoc)
+            {
+                if (invoc.Expression is MemberBindingExpressionSyntax binding)
+                {
+                    segments.Add((binding.OperatorToken, invoc));
+                    return;
+                }
+                if (invoc.Expression is MemberAccessExpressionSyntax memberAccess)
+                {
+                    DecomposeWhenNotNull(memberAccess.Expression, segments);
+                    segments.Add((memberAccess.OperatorToken, invoc));
+                    return;
+                }
+            }
+
+            if (expr is MemberAccessExpressionSyntax ma)
+            {
+                if (ma.Expression is MemberBindingExpressionSyntax directBinding)
+                {
+                    segments.Add((directBinding.OperatorToken, ma));
+                    return;
+                }
+                DecomposeWhenNotNull(ma.Expression, segments);
+                segments.Add((ma.OperatorToken, ma));
+                return;
+            }
+
+            if (expr is MemberBindingExpressionSyntax memberBinding)
+                segments.Add((memberBinding.OperatorToken, memberBinding));
         }
 
         private static int GetIndentSize(SyntaxNodeAnalysisContext context)
