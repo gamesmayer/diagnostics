@@ -65,7 +65,7 @@ dotnet_diagnostic.IDE0002.severity = warning  # Simplify member access (e.g. MyC
 csharp_style_throw_expression = true:warning
 dotnet_diagnostic.IDE0090.severity = none     # Use 'new(...)' expression (disabled by default)
 dotnet_diagnostic.IDE0041.severity = none     # Use 'is null' check instead of reference equality
-dotnet_diagnostic.IDE0031.severity = warning  # Use null propagation (?.) instead of ternary null check
+dotnet_diagnostic.IDE0031.severity = none     # Use null propagation (?.) instead of ternary null check
 dotnet_diagnostic.IDE0037.severity = none     # Use inferred member name (disabled by default)
 dotnet_diagnostic.IDE0029.severity = warning  # Use coalescing expression (??) where applicable
 dotnet_diagnostic.IDE0270.severity = warning  # Null check can be simplified
@@ -297,6 +297,7 @@ dotnet_diagnostic.GM0131.severity = warning  # Anonymous object field must have 
 dotnet_diagnostic.GM0140.severity = warning   # Unused using directive
 dotnet_diagnostic.GM0141.severity = error    # continue statement is not allowed
 dotnet_diagnostic.GM0142.severity = error    # Generic array creation is not allowed
+dotnet_diagnostic.GM0144.severity = warning  # Use null-conditional operator
 
 # GamesMayer.Diagnostics — Architecture
 dotnet_diagnostic.GM0076.severity = warning  # Avoid using Unity Debug.Log methods directly

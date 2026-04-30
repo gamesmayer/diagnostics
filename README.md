@@ -195,6 +195,7 @@ Diagnostics are organized by category.
 | [GM0140](docs/Diagnostics/Style/GM0140.md) | Unused using directive                         | Yes     | Yes     |
 | [GM0141](docs/Diagnostics/Style/GM0141.md) | continue statement is not allowed              | No      | Yes     |
 | [GM0142](docs/Diagnostics/Style/GM0142.md) | Generic array creation is not allowed          | Yes     | Yes     |
+| [GM0144](docs/Diagnostics/Style/GM0144.md) | Use null-conditional operator                  | Yes     | Yes     |
 
 ### Architecture Diagnostics
 
