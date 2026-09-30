@@ -8,11 +8,23 @@
 
 ## Installation
 
-Add the local NuGet feed to your `nuget.config`:
+The package is published to the private GitHub Packages NuGet feed. Create a [personal access token (classic)](https://github.com/settings/tokens) with the `read:packages` scope, then add the feed to your `nuget.config`:
 
 ```xml
-<add key="GamesMayer Local" value="../gamesmayer-diagnostics/nupkg" />
+<configuration>
+  <packageSources>
+    <add key="GamesMayer" value="https://nuget.pkg.github.com/gamesmayer/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <GamesMayer>
+      <add key="Username" value="%GITHUB_USERNAME%" />
+      <add key="ClearTextPassword" value="%GITHUB_TOKEN%" />
+    </GamesMayer>
+  </packageSourceCredentials>
+</configuration>
 ```
+
+Set the `GITHUB_USERNAME` and `GITHUB_TOKEN` environment variables to your GitHub username and token.
 
 Then reference the package in `Directory.Build.props`:
 
@@ -253,7 +265,7 @@ dotnet_diagnostic.GM0002.severity = warning
 # ... and so on for each rule
 ```
 
-A ready-to-use example covering all diagnostics is available at [`templates/.editorconfig/.editorconfig.source`](templates/.editorconfig/.editorconfig.source). Rename it to `.editorconfig` and place it in the root of your source code.
+A ready-to-use example covering all diagnostics is available at [`templates/.editorconfig/.editorconfig.source`](templates/.editorconfig/.editorconfig.source). Rename it to `.editorconfig` and place it in the root of your source code. The templates are also attached to every [GitHub Release](https://github.com/gamesmayer/diagnostics/releases/latest) as `editorconfig.source` and `editorconfig.root`.
 
 > **Note:** Architecture, Ordering, and Naming diagnostics (GM0076, GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
 
@@ -276,21 +288,32 @@ dotnet restore /path/to/consumer.sln --force
 dotnet test GamesMayer.Diagnostics.Tests/GamesMayer.Diagnostics.Tests.csproj
 ```
 
-## Deploy to NuGet.org
+## Publishing a Release
 
-1. Bump `<Version>` in [GamesMayer.Diagnostics.csproj](GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj).
-2. Pack the project:
+Releases are published by the [Release workflow](.github/workflows/release.yml) when a `v*` tag is pushed. The current version is the `<Version>` in [GamesMayer.Diagnostics.csproj](GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj).
+
+1. Bump `<Version>` in the csproj and commit it.
+2. Tag that commit with the same version, prefixed with `v`, and push the tag:
    ```sh
-   dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
-   ```
-3. Push to NuGet.org — get your API key from [nuget.org/account/apikeys](https://www.nuget.org/account/apikeys):
-   ```sh
-   dotnet nuget push nupkg/GamesMayer.Diagnostics.<version>.nupkg \
-     --api-key <your-api-key> \
-     --source https://api.nuget.org/v3/index.json
+   git tag v0.2.0
+   git push origin v0.2.0
    ```
 
-See the [NuGet publishing docs](https://learn.microsoft.com/en-us/nuget/nuget-org/publish-a-package) for more details.
+The workflow:
+
+1. Fails if the tag does not match `<Version>` (e.g. `v0.2.0` requires `<Version>0.2.0</Version>`).
+2. Runs the test suite (a failure stops the release).
+3. Packs `GamesMayer.Diagnostics` and pushes it to the private [GitHub Packages](https://github.com/gamesmayer/diagnostics/packages) NuGet feed.
+4. Creates a [GitHub Release](https://github.com/gamesmayer/diagnostics/releases) with auto-generated notes, attaching `editorconfig.source`, `editorconfig.root` and the `.nupkg`.
+
+To publish manually instead, use a personal access token with the `write:packages` scope:
+
+```sh
+dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
+dotnet nuget push nupkg/GamesMayer.Diagnostics.<version>.nupkg \
+  --api-key <your-token> \
+  --source https://nuget.pkg.github.com/gamesmayer/index.json
+```
 
 ## License
 

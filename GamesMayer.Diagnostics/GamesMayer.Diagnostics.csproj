@@ -9,9 +9,10 @@
     <RootNamespace>GamesMayer.Diagnostics</RootNamespace>
     <AssemblyName>GamesMayer.Diagnostics</AssemblyName>
     <PackageId>GamesMayer.Diagnostics</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>GAMESMAYER</Authors>
     <Description>GAMESMAYER C# code diagnostics.</Description>
+    <RepositoryUrl>https://github.com/gamesmayer/diagnostics</RepositoryUrl>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <DevelopmentDependency>true</DevelopmentDependency>
