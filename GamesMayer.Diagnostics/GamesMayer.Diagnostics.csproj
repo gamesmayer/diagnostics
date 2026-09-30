@@ -9,10 +9,14 @@
     <RootNamespace>GamesMayer.Diagnostics</RootNamespace>
     <AssemblyName>GamesMayer.Diagnostics</AssemblyName>
     <PackageId>GamesMayer.Diagnostics</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>GAMESMAYER</Authors>
     <Description>GAMESMAYER C# code diagnostics.</Description>
     <RepositoryUrl>https://github.com/gamesmayer/diagnostics</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/gamesmayer/diagnostics</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>gamesmayer-icon.png</PackageIcon>
+    <PackageTags>roslyn;analyzers;diagnostics;codefix;csharp;unity;code-style</PackageTags>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -27,6 +31,7 @@
   <ItemGroup>
     <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true"
           PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="../assets/gamesmayer-icon.png" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
 </Project>

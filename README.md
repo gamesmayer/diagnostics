@@ -8,28 +8,10 @@
 
 ## Installation
 
-The package is published to the private GitHub Packages NuGet feed. Create a [personal access token (classic)](https://github.com/settings/tokens) with the `read:packages` scope, then add the feed to your `nuget.config`:
+The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<configuration>
-  <packageSources>
-    <add key="GamesMayer" value="https://nuget.pkg.github.com/gamesmayer/index.json" />
-  </packageSources>
-  <packageSourceCredentials>
-    <GamesMayer>
-      <add key="Username" value="%GITHUB_USERNAME%" />
-      <add key="ClearTextPassword" value="%GITHUB_TOKEN%" />
-    </GamesMayer>
-  </packageSourceCredentials>
-</configuration>
-```
-
-Set the `GITHUB_USERNAME` and `GITHUB_TOKEN` environment variables to your GitHub username and token.
-
-Then reference the package in `Directory.Build.props`:
-
-```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.1.0">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.2.1">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
@@ -295,24 +277,24 @@ Releases are published by the [Release workflow](.github/workflows/release.yml) 
 1. Bump `<Version>` in the csproj and commit it.
 2. Tag that commit with the same version, prefixed with `v`, and push the tag:
    ```sh
-   git tag v0.2.0
-   git push origin v0.2.0
+   git tag v0.2.1
+   git push origin v0.2.1
    ```
 
 The workflow:
 
-1. Fails if the tag does not match `<Version>` (e.g. `v0.2.0` requires `<Version>0.2.0</Version>`).
+1. Fails if the tag does not match `<Version>` (e.g. `v0.2.1` requires `<Version>0.2.1</Version>`).
 2. Runs the test suite (a failure stops the release).
-3. Packs `GamesMayer.Diagnostics` and pushes it to the private [GitHub Packages](https://github.com/gamesmayer/diagnostics/packages) NuGet feed.
+3. Packs `GamesMayer.Diagnostics` and pushes it to [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics) using [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) (no stored API key). The nuget.org policy is bound to this repository and `release.yml`, and the `NUGET_USER` repository secret holds the nuget.org profile name that owns the policy. New versions can take a few minutes to be indexed after the workflow finishes.
 4. Creates a [GitHub Release](https://github.com/gamesmayer/diagnostics/releases) with auto-generated notes, attaching `editorconfig.source`, `editorconfig.root` and the `.nupkg`.
 
-To publish manually instead, use a personal access token with the `write:packages` scope:
+To publish manually instead, create an API key scoped to `GamesMayer.Diagnostics` at [nuget.org/account/apikeys](https://www.nuget.org/account/apikeys):
 
 ```sh
 dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
 dotnet nuget push nupkg/GamesMayer.Diagnostics.<version>.nupkg \
-  --api-key <your-token> \
-  --source https://nuget.pkg.github.com/gamesmayer/index.json
+  --api-key <your-api-key> \
+  --source https://api.nuget.org/v3/index.json
 ```
 
 ## License
