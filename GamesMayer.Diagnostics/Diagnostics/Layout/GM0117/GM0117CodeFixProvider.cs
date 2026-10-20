@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -18,7 +19,7 @@ namespace GamesMayer.Diagnostics
             ImmutableArray.Create(GM0117Analyzer.DiagnosticId);
 
         public override FixAllProvider? GetFixAllProvider() =>
-            WellKnownFixAllProviders.BatchFixer;
+            new SequentialFixAllProvider(this);
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -50,13 +51,26 @@ namespace GamesMayer.Diagnostics
             if (expression?.Parent is not InitializerExpressionSyntax initializer)
                 return document;
 
-            var declarationFirstToken = GM0078Analyzer.FindDeclarationFirstToken(initializer);
-            if (declarationFirstToken == default)
-                return document;
-
             var tree = root.SyntaxTree;
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
-            int declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            var openBraceLine = sourceText.Lines[tree.GetLineSpan(initializer.OpenBraceToken.Span).StartLinePosition.Line];
+            var openBraceStartsLine = string.IsNullOrWhiteSpace(sourceText.ToString(TextSpan.FromBounds(openBraceLine.Start, initializer.OpenBraceToken.SpanStart)));
+            int declarationIndent;
+
+            // Items go one step in from their own '{' when it starts a line, so nested arrays (an argument, a
+            // member of an anonymous object, a return value) indent from where they are, not from the statement.
+            if (openBraceStartsLine)
+            {
+                declarationIndent = GM0078Analyzer.CountLeadingWhitespace(openBraceLine.ToString());
+            }
+            else
+            {
+                var declarationFirstToken = GM0078Analyzer.FindDeclarationFirstToken(initializer);
+                if (declarationFirstToken == default)
+                    return document;
+
+                var declarationLine = tree.GetLineSpan(declarationFirstToken.Span).StartLinePosition.Line;
+                declarationIndent = GM0078Analyzer.CountLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
+            }
 
             var analyzerOptions = document.Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree);
             int indentStep = 4;

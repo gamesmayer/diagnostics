@@ -21,7 +21,7 @@ namespace GamesMayer.Diagnostics
             ImmutableArray.Create(GM0020Analyzer.DiagnosticId);
 
         public override FixAllProvider? GetFixAllProvider() =>
-            WellKnownFixAllProviders.BatchFixer;
+            new SequentialFixAllProvider(this);
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {

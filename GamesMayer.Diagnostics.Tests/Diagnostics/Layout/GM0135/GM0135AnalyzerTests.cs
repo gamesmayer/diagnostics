@@ -142,5 +142,46 @@ class Foo
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task AllNamed_NullForgivingArgument_NoDiagnostic()
+        {
+            var testCode = @"
+#nullable enable
+class Identity
+{
+    public Identity(string id, string? name) { }
+}
+
+class Foo
+{
+    Identity Test(string? value)
+    {
+        return new Identity(id: value!.Trim()!, name: null);
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task AllNamed_ChainedArgument_NoDiagnostic()
+        {
+            var testCode = @"
+class Identity
+{
+    public Identity(string id, string name) { }
+}
+
+class Foo
+{
+    Identity Test(string value)
+    {
+        return new Identity(id: value.Trim().ToUpper(), name: ""x"");
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

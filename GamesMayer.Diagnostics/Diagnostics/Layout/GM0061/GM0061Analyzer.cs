@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace GamesMayer.Diagnostics
 {
@@ -75,6 +76,11 @@ namespace GamesMayer.Diagnostics
             }
 
             if (innerPattern is not ConstantPatternSyntax)
+                return;
+
+            // A qualified type (x is not System.OperationCanceledException) parses as a constant pattern too:
+            // only a real constant can become == or !=.
+            if (context.SemanticModel.GetOperation(innerPattern, context.CancellationToken) is not IConstantPatternOperation)
                 return;
 
             var properties = ImmutableDictionary<string, string?>.Empty

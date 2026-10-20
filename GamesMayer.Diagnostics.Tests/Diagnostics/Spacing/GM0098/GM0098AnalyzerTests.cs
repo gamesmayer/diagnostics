@@ -1,6 +1,7 @@
 namespace GamesMayer.Diagnostics.Tests
 {
     using System.Threading.Tasks;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Testing;
     using Microsoft.CodeAnalysis.Testing.Verifiers;
     using Xunit;
@@ -103,6 +104,32 @@ dotnet_diagnostic.GM0098.enabled = true"));
 class Foo { }";
 
             await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ListPattern_DefaultSetting_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    bool M(int[] values)
+    {
+        return values is [1, 2];
+    }
+}";
+
+            // Roslyn 4.3 only parses list patterns as a preview feature.
+            var test = new CSharpAnalyzerTest<GM0098Analyzer, XUnitVerifier>
+            {
+                TestCode = testCode,
+            };
+
+            test.SolutionTransforms.Add((solution, projectId) =>
+            {
+                var parseOptions = (CSharpParseOptions)solution.GetProject(projectId)!.ParseOptions!;
+                return solution.WithProjectParseOptions(projectId, parseOptions.WithLanguageVersion(LanguageVersion.Preview));
+            });
+
+            await test.RunAsync();
         }
     }
 }

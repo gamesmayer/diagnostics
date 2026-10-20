@@ -82,7 +82,10 @@ namespace GamesMayer.Diagnostics
 
         private static bool IsNamedInSyntax(IArgumentOperation arg)
         {
-            return arg.Syntax is ArgumentSyntax argSyntax && argSyntax.NameColon != null;
+            // A null-forgiving argument (name: x!) has the expression inside the '!' as its syntax, not the
+            // ArgumentSyntax. An explicit argument's syntax always sits inside its own ArgumentSyntax.
+            var argSyntax = arg.Syntax.FirstAncestorOrSelf<ArgumentSyntax>();
+            return argSyntax?.NameColon != null;
         }
     }
 }

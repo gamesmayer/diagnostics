@@ -162,5 +162,33 @@ class Foo
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task IsNotQualifiedType_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    bool M(System.Exception ex)
+    {
+        return ex is not System.OperationCanceledException;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task IsNotSimpleType_NoDiagnostic()
+        {
+            var testCode = @"using System;
+
+class Foo
+{
+    bool M(Exception ex)
+    {
+        return ex is not OperationCanceledException;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

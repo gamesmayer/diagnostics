@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,7 +35,8 @@ namespace GamesMayer.Diagnostics
         {
             var conditional = (ConditionalExpressionSyntax)context.Node;
 
-            if (TryGetNullConditionalPattern(conditional, out _, out _))
+            if (TryGetNullConditionalPattern(conditional, out _, out _) &&
+                !IsInExpressionTree(conditional, context.SemanticModel, context.CancellationToken))
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, conditional.GetLocation()));
         }
 
@@ -78,6 +80,21 @@ namespace GamesMayer.Diagnostics
             checkedExpression = nonNullOperand;
             memberAccess = memberAccessCandidate;
             return true;
+        }
+
+        // Expression trees (IQueryable lambdas, Expression<T>) can't contain '?.'.
+        private static bool IsInExpressionTree(SyntaxNode node, SemanticModel semanticModel, System.Threading.CancellationToken cancellationToken)
+        {
+            foreach (var lambda in node.Ancestors().OfType<AnonymousFunctionExpressionSyntax>())
+            {
+                var convertedType = semanticModel.GetTypeInfo(lambda, cancellationToken).ConvertedType;
+
+                if (convertedType is INamedTypeSymbol { Name: "Expression", ContainingNamespace: { } ns } &&
+                    ns.ToDisplayString() == "System.Linq.Expressions")
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool IsNullLiteral(ExpressionSyntax expr) =>

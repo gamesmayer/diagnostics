@@ -9,7 +9,7 @@
     <RootNamespace>GamesMayer.Diagnostics</RootNamespace>
     <AssemblyName>GamesMayer.Diagnostics</AssemblyName>
     <PackageId>GamesMayer.Diagnostics</PackageId>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Authors>GAMESMAYER</Authors>
     <Description>GAMESMAYER C# code diagnostics.</Description>
     <RepositoryUrl>https://github.com/gamesmayer/diagnostics</RepositoryUrl>

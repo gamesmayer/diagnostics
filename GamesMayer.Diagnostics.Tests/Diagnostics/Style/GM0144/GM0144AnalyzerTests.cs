@@ -112,5 +112,55 @@ class C
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task InsideExpressionTree_NoDiagnostic()
+        {
+            var testCode = @"using System;
+using System.Linq.Expressions;
+
+class Foo { public string Value = """"; }
+class C
+{
+    Expression<Func<Foo, string>> M()
+    {
+        return x => x != null ? x.Value : null;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task InsideQueryableSelect_NoDiagnostic()
+        {
+            var testCode = @"using System.Linq;
+
+class Foo { public string Value = """"; }
+class Row { public Foo Account; }
+class C
+{
+    IQueryable<string> M(IQueryable<Row> rows)
+    {
+        return rows.Select(r => r.Account != null ? r.Account.Value : null);
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task InsideDelegateLambda_Diagnostic()
+        {
+            var testCode = @"using System;
+
+class Foo { public string Value = """"; }
+class C
+{
+    Func<Foo, string> M()
+    {
+        return x => {|GM0144:x != null ? x.Value : null|};
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -126,5 +126,75 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task AnonymousObjectMember_FirstItemOnOpenBraceLine_Fix()
+        {
+            var testCode = @"class C
+{
+    object M(string id)
+    {
+        return new
+        {
+            players = new[]
+            { {|GM0117:id|},
+                id
+            }
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    object M(string id)
+    {
+        return new
+        {
+            players = new[]
+            {
+                id,
+                id
+            }
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task ReturnValue_AdjacentItems_OnSameLine_Fix()
+        {
+            var testCode = @"class C
+{
+    int[] M()
+    {
+        return new[]
+        {
+            0, {|GM0117:1|}
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    int[] M()
+    {
+        return new[]
+        {
+            0,
+            1
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

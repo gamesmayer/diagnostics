@@ -40,7 +40,7 @@ class Foo { }";
             {
                 TestCode = testCode,
                 FixedCode = fixedCode,
-                NumberOfFixAllIterations = 2,
+                NumberOfFixAllIterations = 1,
             };
             await test.RunAsync();
         }

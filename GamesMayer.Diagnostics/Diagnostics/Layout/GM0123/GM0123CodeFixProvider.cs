@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -19,7 +20,7 @@ namespace GamesMayer.Diagnostics
             ImmutableArray.Create(GM0123Analyzer.DiagnosticId);
 
         public override FixAllProvider? GetFixAllProvider() =>
-            WellKnownFixAllProviders.BatchFixer;
+            new SequentialFixAllProvider(this);
 
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
@@ -53,10 +54,14 @@ namespace GamesMayer.Diagnostics
             int itemIndex;
             int changeStart;
 
-            var expression = token.Parent?
+            // The closest container wins: a member of an anonymous object that is itself an element of an
+            // initializer (new[] { new { a = 1, b = 2 } }) belongs to the anonymous object.
+            var container = token.Parent?
                 .AncestorsAndSelf()
-                .OfType<ExpressionSyntax>()
-                .FirstOrDefault(e => e.Parent is InitializerExpressionSyntax);
+                .FirstOrDefault(node =>
+                    node is AnonymousObjectMemberDeclaratorSyntax ||
+                    (node is ExpressionSyntax && node.Parent is InitializerExpressionSyntax));
+            var expression = container as ExpressionSyntax;
 
             if (expression?.Parent is InitializerExpressionSyntax initializer)
             {
@@ -73,10 +78,7 @@ namespace GamesMayer.Diagnostics
             }
             else
             {
-                var memberDeclarator = token.Parent?
-                    .AncestorsAndSelf()
-                    .OfType<AnonymousObjectMemberDeclaratorSyntax>()
-                    .FirstOrDefault();
+                var memberDeclarator = container as AnonymousObjectMemberDeclaratorSyntax;
                 if (memberDeclarator?.Parent is not AnonymousObjectCreationExpressionSyntax anonymousCreation)
                     return document;
 

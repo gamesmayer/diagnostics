@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -40,6 +41,11 @@ namespace GamesMayer.Diagnostics
             foreach (var token in root.DescendantTokens())
             {
                 if (!token.IsKind(SyntaxKind.OpenBracketToken))
+                    continue;
+
+                // Like csharp_space_before_open_square_brackets, only element access (a[0]) and array types
+                // (int[]). Collection expressions (x = [1]) and list patterns (x is [1]) keep their space.
+                if (token.Parent is not BracketedArgumentListSyntax and not ArrayRankSpecifierSyntax)
                     continue;
 
                 var prevToken = token.GetPreviousToken();

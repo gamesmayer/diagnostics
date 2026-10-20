@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -19,7 +20,7 @@ namespace GamesMayer.Diagnostics
             ImmutableArray.Create(GM0004Analyzer.DiagnosticId);
 
         public override FixAllProvider? GetFixAllProvider() =>
-            WellKnownFixAllProviders.BatchFixer;
+            new SequentialFixAllProvider(this);
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
