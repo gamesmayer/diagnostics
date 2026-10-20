@@ -16,7 +16,7 @@ namespace GamesMayer.Diagnostics
             messageFormat: "Remove the 'continue' statement",
             category: "Style",
             defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: false,
+            isEnabledByDefault: true,
             description: "The 'continue' keyword adds complexity to code readability and should not be used.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
