@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Linq;
 using GamesMayer.Diagnostics.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -59,6 +60,15 @@ namespace GamesMayer.Diagnostics
             if (arguments.Count < minArguments && !hasComplexExpression)
             {
                 if (arguments.Count == 0)
+                    return;
+
+                // An argument holding a call that must stay split keeps this list multi-line too:
+                // collapsing it would leave a list spanning lines that the parenthesis rules expand again.
+                if (arguments.Any(argument => argument
+                        .DescendantNodes()
+                        .OfType<ArgumentListSyntax>()
+                        .Any(inner => inner.Arguments.Count >= minArguments ||
+                            ComplexExpressionUtils.IsComplexArgumentList(inner.Arguments, configOptions))))
                     return;
 
                 var openParenLine = tree.GetLineSpan(argList.OpenParenToken.Span).EndLinePosition.Line;

@@ -384,5 +384,31 @@ class Test {
 ";
             await CreateTest(testCode).RunAsync();
         }
+
+        [Fact]
+        public async Task TwoArgs_MultiLine_ArgumentContainsSplitCall_NoDiagnostic()
+        {
+            var testCode = @"
+class Response { public int Code; }
+class Test {
+    void Equal(int a, int b) { }
+    Response Operate(int a, int b, int c, int d) => new Response();
+    public void Method() {
+        Equal
+        (
+            1,
+            Operate
+            (
+                1,
+                2,
+                3,
+                4
+            ).Code
+        );
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
     }
 }
