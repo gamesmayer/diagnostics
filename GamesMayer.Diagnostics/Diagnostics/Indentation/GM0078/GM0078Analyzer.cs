@@ -12,6 +12,8 @@ namespace GamesMayer.Diagnostics
     {
         public const string DiagnosticId = "GM0078";
 
+        internal const string DeclarationLineKey = "DeclarationLine";
+
         private static readonly DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             id: DiagnosticId,
             title: "Brace must be indented at the declaration level",
@@ -249,7 +251,9 @@ namespace GamesMayer.Diagnostics
             var actualIndent = CountLeadingWhitespace(braceLineText);
             if (actualIndent != declarationIndent)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, braceToken.GetLocation()));
+                // The fix copies the indentation of this line, so both always agree on the target.
+                var properties = ImmutableDictionary<string, string?>.Empty.Add(DeclarationLineKey, declarationLine.ToString());
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, braceToken.GetLocation(), properties));
             }
         }
 

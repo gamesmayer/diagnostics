@@ -127,5 +127,52 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task SwitchExpressionArms_MultiLine_Fix()
+        {
+            var testCode = @"class C
+{
+    int Problem(string detail, int code) => code;
+
+    int M(int outcome)
+    {
+        return outcome switch
+        {
+    {|GM0081:0 => 200|},
+    {|GM0081:1 => Problem
+    (
+        detail: ""Not enough."",
+        code: 409
+    )|},
+    {|GM0081:_ => 404|}
+        };
+    }
+}";
+            var fixedCode = @"class C
+{
+    int Problem(string detail, int code) => code;
+
+    int M(int outcome)
+    {
+        return outcome switch
+        {
+            0 => 200,
+            1 => Problem
+            (
+                detail: ""Not enough."",
+                code: 409
+            ),
+            _ => 404
+        };
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0081Analyzer, GM0081CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

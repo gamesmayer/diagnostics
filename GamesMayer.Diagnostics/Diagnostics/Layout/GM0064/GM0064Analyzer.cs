@@ -19,7 +19,7 @@ namespace GamesMayer.Diagnostics
             messageFormat: "Remove the early return statement",
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
+            isEnabledByDefault: false,
             description: "Functions should have a single return statement at the end. Early return statements make control flow harder to follow and reason about.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>

@@ -51,8 +51,13 @@ namespace GamesMayer.Diagnostics
                     return;
             }
 
+            // Only the arguments written in the call's own list: an extension method's receiver
+            // (builder.Header(name: ...)) is an argument too, but it can't take a name.
+            var argumentList = (context.Operation.Syntax as InvocationExpressionSyntax)?.ArgumentList
+                ?? (context.Operation.Syntax as BaseObjectCreationExpressionSyntax)?.ArgumentList;
             var explicitArgs = arguments
                 .Where(a => a.ArgumentKind == ArgumentKind.Explicit)
+                .Where(a => argumentList != null && argumentList.Span.Contains(a.Syntax.Span))
                 .ToList();
 
             if (explicitArgs.Count == 0)

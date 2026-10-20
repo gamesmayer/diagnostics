@@ -47,12 +47,23 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            var declarationFirstToken = GetDeclarationFirstToken(token);
-            if (declarationFirstToken == null)
-                return document;
-
             var tree = root.SyntaxTree;
-            var declarationLine = tree.GetLineSpan(declarationFirstToken.Value.Span).StartLinePosition.Line;
+            int declarationLine;
+
+            if (diagnostic.Properties.TryGetValue(GM0078Analyzer.DeclarationLineKey, out var reportedLine) &&
+                int.TryParse(reportedLine, out var parsedLine) &&
+                parsedLine < sourceText.Lines.Count)
+            {
+                declarationLine = parsedLine;
+            }
+            else
+            {
+                var declarationFirstToken = GetDeclarationFirstToken(token);
+                if (declarationFirstToken == null)
+                    return document;
+
+                declarationLine = tree.GetLineSpan(declarationFirstToken.Value.Span).StartLinePosition.Line;
+            }
             var declarationIndentStr = GM0078Analyzer.GetLeadingWhitespace(sourceText.Lines[declarationLine].ToString());
 
             var braceLine = sourceText.Lines.GetLineFromPosition(diagnostic.Location.SourceSpan.Start);

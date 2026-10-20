@@ -183,5 +183,47 @@ class Foo
 ";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task ExtensionMethod_AllNamed_NoDiagnostic()
+        {
+            var testCode = @"
+static class Extensions
+{
+    public static int Header(this string builder, string name, string description) => 0;
+}
+
+class Foo
+{
+    int Test(string builder)
+    {
+        return builder.Header(name: ""X"", description: ""Y"");
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ExtensionMethod_ReceiverInsideNamedArgument_NoDiagnostic()
+        {
+            var testCode = @"
+static class Extensions
+{
+    public static int Header(this string builder, string name) => 0;
+}
+
+class Foo
+{
+    int Wrap(int value, int other) => value;
+
+    int Test(string builder)
+    {
+        return Wrap(value: builder.Header(name: ""X""), other: 1);
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

@@ -704,5 +704,62 @@ class Foo { public int A { get; set; } }";
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task SwitchInsideLambdaArgument_Fix()
+        {
+            var testCode = @"using System;
+
+class C
+{
+    void Run(Func<int, int> f) { }
+
+    void M()
+    {
+        Run
+        (
+            x =>
+            {
+                switch (x)
+        {|GM0078:{|}
+                    case 1:
+                        return 1;
+                    default:
+                        return 0;
+        {|GM0078:}|}
+            }
+        );
+    }
+}";
+            var fixedCode = @"using System;
+
+class C
+{
+    void Run(Func<int, int> f) { }
+
+    void M()
+    {
+        Run
+        (
+            x =>
+            {
+                switch (x)
+                {
+                    case 1:
+                        return 1;
+                    default:
+                        return 0;
+                }
+            }
+        );
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0078Analyzer, GM0078CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }

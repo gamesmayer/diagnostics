@@ -11,7 +11,7 @@
 The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.3">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.4">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
@@ -97,7 +97,7 @@ Diagnostics are organized by category.
 | [GM0061](docs/Diagnostics/Layout/GM0061.md) | Use '==' or '!=' instead of 'is' pattern for equality comparison                   | Yes     | Yes     |
 | [GM0062](docs/Diagnostics/Layout/GM0062.md) | Use 'is or' syntax for multiple type checks on the same expression                 | Yes     | Yes     |
 | [GM0063](docs/Diagnostics/Layout/GM0063.md) | Methods and lambda expressions with braces cannot be single line statements        | Yes     | Yes     |
-| [GM0064](docs/Diagnostics/Layout/GM0064.md) | Early return in function                                                           | No      | Yes     |
+| [GM0064](docs/Diagnostics/Layout/GM0064.md) | Early return in function                                                           | No      | No      |
 | [GM0065](docs/Diagnostics/Layout/GM0065.md) | Return statement must be preceded by a blank line                                  | Yes     | Yes     |
 | [GM0066](docs/Diagnostics/Layout/GM0066.md) | Block statement must be preceded by blank line                                     | Yes     | Yes     |
 | [GM0067](docs/Diagnostics/Layout/GM0067.md) | Block statement must be followed by a blank line                                   | Yes     | Yes     |
@@ -187,7 +187,7 @@ Diagnostics are organized by category.
 | [GM0129](docs/Diagnostics/Style/GM0129.md) | Explicit object creation                       | Yes     | Yes     |
 | [GM0131](docs/Diagnostics/Style/GM0131.md) | Anonymous object field must have explicit name | Yes     | Yes     |
 | [GM0140](docs/Diagnostics/Style/GM0140.md) | Unused using directive                         | Yes     | Yes     |
-| [GM0141](docs/Diagnostics/Style/GM0141.md) | continue statement is not allowed              | No      | Yes     |
+| [GM0141](docs/Diagnostics/Style/GM0141.md) | continue statement is not allowed              | No      | No      |
 | [GM0142](docs/Diagnostics/Style/GM0142.md) | Generic array creation is not allowed          | Yes     | Yes     |
 | [GM0144](docs/Diagnostics/Style/GM0144.md) | Use null-conditional operator                  | Yes     | Yes     |
 
@@ -313,13 +313,13 @@ Releases are published by the [Release workflow](.github/workflows/release.yml) 
 1. Bump `<Version>` in the csproj and commit it.
 2. Tag that commit with the same version, prefixed with `v`, and push the tag:
    ```sh
-   git tag v0.3.3
-   git push origin v0.3.3
+   git tag v0.3.4
+   git push origin v0.3.4
    ```
 
 The workflow:
 
-1. Fails if the tag does not match `<Version>` (e.g. `v0.3.3` requires `<Version>0.3.3</Version>`).
+1. Fails if the tag does not match `<Version>` (e.g. `v0.3.4` requires `<Version>0.3.4</Version>`).
 2. Runs the test suite (a failure stops the release).
 3. Packs `GamesMayer.Diagnostics` and pushes it to [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics) using [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) (no stored API key). The nuget.org policy is bound to this repository and `release.yml`, and the `NUGET_USER` repository secret holds the nuget.org profile name that owns the policy. New versions can take a few minutes to be indexed after the workflow finishes.
 4. Creates a [GitHub Release](https://github.com/gamesmayer/diagnostics/releases) with auto-generated notes, attaching `editorconfig.source`, `editorconfig.root` and the `.nupkg`.
