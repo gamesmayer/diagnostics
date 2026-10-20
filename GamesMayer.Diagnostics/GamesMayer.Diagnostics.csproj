@@ -9,7 +9,7 @@
     <RootNamespace>GamesMayer.Diagnostics</RootNamespace>
     <AssemblyName>GamesMayer.Diagnostics</AssemblyName>
     <PackageId>GamesMayer.Diagnostics</PackageId>
-    <Version>0.2.1</Version>
+    <Version>0.3.0</Version>
     <Authors>GAMESMAYER</Authors>
     <Description>GAMESMAYER C# code diagnostics.</Description>
     <RepositoryUrl>https://github.com/gamesmayer/diagnostics</RepositoryUrl>
@@ -32,6 +32,7 @@
     <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true"
           PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="../assets/gamesmayer-icon.png" Pack="true" PackagePath="" Visible="false" />
+    <None Include="../scripts/*.sh" Pack="true" PackagePath="tools/" Visible="false" />
   </ItemGroup>
 
 </Project>

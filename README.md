@@ -11,7 +11,7 @@
 The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.2.1">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.0">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
@@ -251,6 +251,42 @@ A ready-to-use example covering all diagnostics is available at [`templates/.edi
 
 > **Note:** Architecture, Ordering, and Naming diagnostics (GM0076, GM1200–GM1216, GM1300) do not have code fix providers, so `dotnet format` will report them as violations but cannot auto-fix them.
 
+## Scripts
+
+The package ships the scripts every GAMESMAYER repository uses to lint C# in its `tools/` folder. They run with the local .NET SDK:
+
+| Script | Purpose |
+| --- | --- |
+| `lint-cs.sh [--dir=<folder>] [--sln=<file>] [--fix]` | Runs `dotnet format style` and `dotnet format analyzers` (`--severity warn`) on the `.cs` files under `--dir`, loading `--sln` (default: the only `.slnx` in the current folder). Without `--fix` it only checks (`--verify-no-changes`) and fails on any issue. |
+| `require-dotnet.sh [min] [max]` | Fails unless `dotnet` is installed and its SDK version is in the range (default `3.0`–`10.0`). The range is versioned with this package. |
+
+Run them from the repository's `justfile`. The `diagnostics` recipe runs a script from the package version pinned in `Directory.Build.props`, so every repository lints with the version it builds with:
+
+```just
+# Run a script that ships with GamesMayer.Diagnostics (the version in Directory.Build.props)
+diagnostics script *args:
+    #!/usr/bin/env sh
+    command -v dotnet > /dev/null || { echo "✗ 'dotnet' is not installed. Install the .NET SDK from https://dotnet.microsoft.com/download"; exit 1; }
+    v=$(sed -n 's/.*Include="GamesMayer.Diagnostics" Version="\([^"]*\)".*/\1/p' Directory.Build.props | head -1)
+    d="${NUGET_PACKAGES:-$HOME/.nuget/packages}/gamesmayer.diagnostics/$v/tools"
+    if [ ! -d "$d" ]; then echo "GamesMayer.Diagnostics $v is not restored. Open the project in your IDE or run dotnet restore."; exit 1; fi
+    sh "$d/{{script}}" {{args}}
+
+# Check that the installed .NET SDK is in the supported range
+require-dotnet:
+    @just diagnostics require-dotnet.sh
+
+# Check C# style with GAMESMAYER Diagnostics
+lint *args: require-dotnet
+    @just diagnostics lint-cs.sh --dir=Assets/Source {{args}}
+
+# Fix C# style where the analyzers can
+lint-fix:
+    @just lint --fix
+```
+
+The scripts are read from the NuGet cache, so the package must be restored once (opening the project in the IDE or `dotnet restore`) before the first `just lint`.
+
 ## Local Development
 
 ```sh
@@ -277,13 +313,13 @@ Releases are published by the [Release workflow](.github/workflows/release.yml) 
 1. Bump `<Version>` in the csproj and commit it.
 2. Tag that commit with the same version, prefixed with `v`, and push the tag:
    ```sh
-   git tag v0.2.1
-   git push origin v0.2.1
+   git tag v0.3.0
+   git push origin v0.3.0
    ```
 
 The workflow:
 
-1. Fails if the tag does not match `<Version>` (e.g. `v0.2.1` requires `<Version>0.2.1</Version>`).
+1. Fails if the tag does not match `<Version>` (e.g. `v0.3.0` requires `<Version>0.3.0</Version>`).
 2. Runs the test suite (a failure stops the release).
 3. Packs `GamesMayer.Diagnostics` and pushes it to [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics) using [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) (no stored API key). The nuget.org policy is bound to this repository and `release.yml`, and the `NUGET_USER` repository secret holds the nuget.org profile name that owns the policy. New versions can take a few minutes to be indexed after the workflow finishes.
 4. Creates a [GitHub Release](https://github.com/gamesmayer/diagnostics/releases) with auto-generated notes, attaching `editorconfig.source`, `editorconfig.root` and the `.nupkg`.
