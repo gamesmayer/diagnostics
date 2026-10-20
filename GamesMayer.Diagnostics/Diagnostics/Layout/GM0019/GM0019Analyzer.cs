@@ -190,6 +190,10 @@ namespace GamesMayer.Diagnostics
             SyntaxToken closeBraceToken,
             bool isEmptyEnclosure)
         {
+            // Declarations without a body (record R(int A);, class C : B;) have no braces.
+            if (openBraceToken.IsMissing || closeBraceToken.IsMissing || openBraceToken.IsKind(SyntaxKind.None) || closeBraceToken.IsKind(SyntaxKind.None))
+                return;
+
             if (!isEmptyEnclosure)
             {
                 return;

@@ -28,7 +28,7 @@ namespace GamesMayer.Diagnostics
             description: "An element within a C# code file is out of order in relation to the other elements in the code.");
 
         // Order of elements at file/namespace level
-        private static readonly ImmutableArray<SyntaxKind> OuterOrder = ImmutableArray.Create(
+        internal static readonly ImmutableArray<SyntaxKind> OuterOrder = ImmutableArray.Create(
             SyntaxKind.NamespaceDeclaration,
             SyntaxKind.FileScopedNamespaceDeclaration,
             SyntaxKind.DelegateDeclaration,
@@ -38,7 +38,7 @@ namespace GamesMayer.Diagnostics
             SyntaxKind.ClassDeclaration);
 
         // Order of elements inside a type
-        private static readonly ImmutableArray<SyntaxKind> TypeMemberOrder = ImmutableArray.Create(
+        internal static readonly ImmutableArray<SyntaxKind> TypeMemberOrder = ImmutableArray.Create(
             SyntaxKind.FieldDeclaration,
             SyntaxKind.PropertyDeclaration,
             SyntaxKind.ConstructorDeclaration,
@@ -155,7 +155,7 @@ namespace GamesMayer.Diagnostics
             }
         }
 
-        private static SyntaxKind GetOrderingKind(SyntaxKind kind)
+        internal static SyntaxKind GetOrderingKind(SyntaxKind kind)
         {
             switch (kind)
             {

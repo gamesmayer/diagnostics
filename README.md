@@ -11,7 +11,7 @@
 The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.2">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.3">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
@@ -213,22 +213,22 @@ Ported from [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnal
 | ID                                            | Description                                                          | Fixable | Default |
 | --------------------------------------------- | -------------------------------------------------------------------- | ------- | ------- |
 | [GM1200](docs/Diagnostics/Ordering/GM1200.md) | Using directives must be placed outside namespace declarations       | No      | Yes     |
-| [GM1201](docs/Diagnostics/Ordering/GM1201.md) | Elements must appear in the correct order                            | No      | Yes     |
-| [GM1202](docs/Diagnostics/Ordering/GM1202.md) | Elements must be ordered by access level                             | No      | Yes     |
-| [GM1203](docs/Diagnostics/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | No      | Yes     |
-| [GM1204](docs/Diagnostics/Ordering/GM1204.md) | Static elements must appear before instance elements                 | No      | Yes     |
+| [GM1201](docs/Diagnostics/Ordering/GM1201.md) | Elements must appear in the correct order                            | Yes      | Yes     |
+| [GM1202](docs/Diagnostics/Ordering/GM1202.md) | Elements must be ordered by access level                             | Yes      | Yes     |
+| [GM1203](docs/Diagnostics/Ordering/GM1203.md) | Constant fields must appear before non-constant fields               | Yes      | Yes     |
+| [GM1204](docs/Diagnostics/Ordering/GM1204.md) | Static elements must appear before instance elements                 | Yes      | Yes     |
 | [GM1205](docs/Diagnostics/Ordering/GM1205.md) | Partial elements must declare an access modifier                     | No      | Yes     |
 | [GM1206](docs/Diagnostics/Ordering/GM1206.md) | Declaration keywords must follow order (access → static → other)     | No      | Yes     |
 | [GM1207](docs/Diagnostics/Ordering/GM1207.md) | The keyword `protected` must come before `internal`                  | No      | Yes     |
-| [GM1208](docs/Diagnostics/Ordering/GM1208.md) | System using directives must be placed before other using directives | No      | Yes     |
-| [GM1209](docs/Diagnostics/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | No      | Yes     |
-| [GM1210](docs/Diagnostics/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | No      | Yes     |
-| [GM1211](docs/Diagnostics/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | No      | Yes     |
+| [GM1208](docs/Diagnostics/Ordering/GM1208.md) | System using directives must be placed before other using directives | Yes      | Yes     |
+| [GM1209](docs/Diagnostics/Ordering/GM1209.md) | Using alias directives must be placed after other using directives   | Yes      | Yes     |
+| [GM1210](docs/Diagnostics/Ordering/GM1210.md) | Using directives must be ordered alphabetically by namespace         | Yes      | Yes     |
+| [GM1211](docs/Diagnostics/Ordering/GM1211.md) | Using alias directives must be ordered alphabetically by alias name  | Yes      | Yes     |
 | [GM1212](docs/Diagnostics/Ordering/GM1212.md) | A get accessor must appear before a set/init accessor                | No      | Yes     |
 | [GM1213](docs/Diagnostics/Ordering/GM1213.md) | An add accessor must appear before a remove accessor                 | No      | Yes     |
-| [GM1214](docs/Diagnostics/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | No      | Yes     |
-| [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | No      | Yes     |
-| [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | No      | Yes     |
+| [GM1214](docs/Diagnostics/Ordering/GM1214.md) | Readonly fields must appear before non-readonly fields               | Yes      | Yes     |
+| [GM1215](docs/Diagnostics/Ordering/GM1215.md) | Using static directives must be ordered alphabetically               | Yes      | Yes     |
+| [GM1216](docs/Diagnostics/Ordering/GM1216.md) | Using static directives must be placed at the correct location       | Yes      | Yes     |
 
 ## Usage
 
@@ -313,13 +313,13 @@ Releases are published by the [Release workflow](.github/workflows/release.yml) 
 1. Bump `<Version>` in the csproj and commit it.
 2. Tag that commit with the same version, prefixed with `v`, and push the tag:
    ```sh
-   git tag v0.3.2
-   git push origin v0.3.2
+   git tag v0.3.3
+   git push origin v0.3.3
    ```
 
 The workflow:
 
-1. Fails if the tag does not match `<Version>` (e.g. `v0.3.2` requires `<Version>0.3.2</Version>`).
+1. Fails if the tag does not match `<Version>` (e.g. `v0.3.3` requires `<Version>0.3.3</Version>`).
 2. Runs the test suite (a failure stops the release).
 3. Packs `GamesMayer.Diagnostics` and pushes it to [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics) using [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) (no stored API key). The nuget.org policy is bound to this repository and `release.yml`, and the `NUGET_USER` repository secret holds the nuget.org profile name that owns the policy. New versions can take a few minutes to be indexed after the workflow finishes.
 4. Creates a [GitHub Release](https://github.com/gamesmayer/diagnostics/releases) with auto-generated notes, attaching `editorconfig.source`, `editorconfig.root` and the `.nupkg`.

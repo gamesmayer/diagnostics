@@ -410,5 +410,35 @@ class Test {
 ";
             await CreateTest(testCode).RunAsync();
         }
+
+        [Fact]
+        public async Task LambdaArgument_InIfCondition_NoDiagnostic()
+        {
+            var testCode = @"
+using System;
+class Test {
+    bool Any(Func<int, bool> predicate, int token) => true;
+    public void Method(int id) {
+        if (Any(x => x == id, 1)) { }
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task LambdaArgument_InStatement_ReportsArgs()
+        {
+            var testCode = @"
+using System;
+class Test {
+    bool Any(Func<int, bool> predicate, int token) => true;
+    public void Method(int id) {
+        bool found = Any([|x => x == id|], [|1|]);
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
     }
 }

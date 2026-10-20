@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -60,7 +61,7 @@ namespace GamesMayer.Diagnostics
             var openParenLine = tree.GetLineSpan(openParenToken.Span).StartLinePosition.Line;
             var closeParenLine = tree.GetLineSpan(closeParenToken.Span).StartLinePosition.Line;
 
-            if (openParenLine == closeParenLine)
+            if (openParenLine == closeParenLine || ListLayoutUtils.IsInlineList(items, openParenToken, closeParenToken))
                 return;
 
             for (int i = 1; i < items.Count; i++)

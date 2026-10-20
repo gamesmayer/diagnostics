@@ -203,5 +203,14 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task RecordWithoutBody_NoDiagnostic()
+        {
+            var testCode = @"namespace System.Runtime.CompilerServices { class IsExternalInit { } }
+
+record Point(int X, int Y);";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

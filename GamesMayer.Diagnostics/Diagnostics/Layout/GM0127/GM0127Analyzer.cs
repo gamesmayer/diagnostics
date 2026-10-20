@@ -50,6 +50,10 @@ namespace GamesMayer.Diagnostics
             var argList = (ArgumentListSyntax)context.Node;
             var arguments = argList.Arguments;
 
+            // GM0017 keeps control structure clauses on one line: a long condition is extracted instead.
+            if (ControlClauseUtils.IsInClauseHeader(argList))
+                return;
+
             int minArguments = GetMinimumArguments(context);
             var configOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
 

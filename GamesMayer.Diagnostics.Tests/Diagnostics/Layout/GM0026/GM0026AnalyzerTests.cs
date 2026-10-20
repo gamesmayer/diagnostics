@@ -109,5 +109,22 @@ namespace GamesMayer.Diagnostics.Tests
 }";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
+
+        [Fact]
+        public async Task SingleArgumentWrappingItself_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void Check(bool condition) { }
+
+    void M(int a, int b, int c)
+    {
+        Check(a == 1 ||
+            b == 2 ||
+            c == 3);
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

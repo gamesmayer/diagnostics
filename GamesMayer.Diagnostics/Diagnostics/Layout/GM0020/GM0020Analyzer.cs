@@ -91,6 +91,12 @@ namespace GamesMayer.Diagnostics
 
             var configuredStyle = GetConfiguredStyle(context);
 
+            // GM0017 keeps control structure clauses on one line (foreach (var x in new[] { a, b })).
+            if (ControlClauseUtils.IsInClauseHeader(context.Node))
+            {
+                return;
+            }
+
             switch (context.Node)
             {
                 case NamespaceDeclarationSyntax namespaceDeclaration:

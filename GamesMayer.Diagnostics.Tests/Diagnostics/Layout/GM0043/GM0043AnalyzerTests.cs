@@ -119,12 +119,13 @@ class Test {
         }
 
         [Fact]
-        public async Task ThreeOperands_Or_InIfCondition_AllSameLine_Diagnostic()
+        public async Task ThreeOperands_Or_InIfCondition_AllSameLine_NoDiagnostic()
         {
+            // GM0017 keeps the clause on one line; a long condition is extracted into a local variable.
             var testCode = @"
 class Test {
     public void Method(bool a, bool b, bool c) {
-        if (a || {|GM0043:b|} || {|GM0043:c|}) { }
+        if (a || b || c) { }
     }
 }
 ";
@@ -240,6 +241,21 @@ class Test {
     }
 }
 ";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task ManyOperands_InIfCondition_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M(int a, int b, int c, int d, int e)
+    {
+        if (a > 0 && b > 0 && c > 0 && d > 0 && e > 0)
+        {
+        }
+    }
+}";
             await VerifyCS.VerifyAnalyzerAsync(testCode);
         }
     }

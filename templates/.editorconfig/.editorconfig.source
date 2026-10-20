@@ -41,6 +41,7 @@ dotnet_diagnostic.IDE0059.severity = warning  # Unnecessary assignment of a valu
 # Namespaces
 dotnet_diagnostic.IDE0130.severity = none     # Namespace does not match folder structure
 csharp_style_namespace_declarations = block_scoped:warning
+dotnet_diagnostic.IDE0160.severity = warning  # Convert to block scoped namespace
 
 # var usage
 csharp_style_var_for_built_in_types = false:warning
@@ -71,6 +72,14 @@ dotnet_diagnostic.IDE0029.severity = warning  # Use coalescing expression (??) w
 dotnet_diagnostic.IDE0270.severity = warning  # Null check can be simplified
 
 # Naming conventions
+
+## Private constants: PascalCase (more specific than the private fields rule below, so it wins)
+dotnet_naming_rule.private_constants_pascal_case.symbols = private_constants
+dotnet_naming_rule.private_constants_pascal_case.style = pascal_case_style
+dotnet_naming_rule.private_constants_pascal_case.severity = warning
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.applicable_accessibilities = private
+dotnet_naming_symbols.private_constants.required_modifiers = const
 
 ## Private fields: _camelCase (underscore prefix required)
 dotnet_naming_rule.private_fields_underscore_camel_case.symbols = private_fields

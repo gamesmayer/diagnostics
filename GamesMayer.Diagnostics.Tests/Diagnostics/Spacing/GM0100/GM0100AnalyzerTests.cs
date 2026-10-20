@@ -132,5 +132,21 @@ dotnet_diagnostic.GM0100.enabled = true"));
 
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task EmptyConditionSection_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    void M()
+    {
+        for (int i = 0; ; i++)
+        {
+            break;
+        }
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

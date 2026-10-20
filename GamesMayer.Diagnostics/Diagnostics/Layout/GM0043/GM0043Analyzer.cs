@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -37,6 +38,10 @@ namespace GamesMayer.Diagnostics
         private static void AnalyzeBinaryExpression(SyntaxNodeAnalysisContext context)
         {
             var binary = (BinaryExpressionSyntax)context.Node;
+
+            // GM0017 keeps control structure clauses on one line: a long condition is extracted instead.
+            if (ControlClauseUtils.IsInClauseHeader(binary))
+                return;
 
             if (IsNestedInSameOperator(binary))
                 return;

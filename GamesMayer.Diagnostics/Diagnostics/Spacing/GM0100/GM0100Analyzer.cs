@@ -51,6 +51,10 @@ namespace GamesMayer.Diagnostics
             if (prevToken.IsKind(SyntaxKind.None))
                 return;
 
+            // An empty section (for (int i = 0; ; i++)): the space belongs to the previous semicolon (GM0099).
+            if (prevToken.IsKind(SyntaxKind.SemicolonToken))
+                return;
+
             if (!TryHasSpaceBetweenTokens(context.Node.SyntaxTree, prevToken, semicolon, out var hasSpace))
                 return;
 

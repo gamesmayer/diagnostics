@@ -345,5 +345,24 @@ dotnet_diagnostic.GM0020.style = K&R");
 [*.cs]
 {body}";
         }
+
+        [Fact]
+        public async Task ArrayInitializer_InForEachHeader_NoDiagnostic()
+        {
+            var testCode = @"class Foo
+{
+    int M(int first, int second)
+    {
+        int total = 0;
+        foreach (int value in new[] { first, second })
+        {
+            total += value;
+        }
+
+        return total;
+    }
+}";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
     }
 }

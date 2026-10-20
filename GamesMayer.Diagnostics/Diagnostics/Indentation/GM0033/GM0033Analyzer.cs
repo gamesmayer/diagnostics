@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using GamesMayer.Diagnostics.Utils;
 
 namespace GamesMayer.Diagnostics
 {
@@ -60,7 +61,7 @@ namespace GamesMayer.Diagnostics
             var closeParenLine = tree.GetLineSpan(closeParenToken.Span).StartLinePosition.Line;
 
             // The rule applies only to multi-line lists.
-            if (openParenLine == closeParenLine)
+            if (openParenLine == closeParenLine || ListLayoutUtils.IsInlineList(items, openParenToken, closeParenToken))
             {
                 return;
             }

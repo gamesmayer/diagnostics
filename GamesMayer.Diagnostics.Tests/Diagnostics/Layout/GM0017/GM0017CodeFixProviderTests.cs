@@ -96,5 +96,68 @@ namespace GamesMayer.Diagnostics.Tests
             };
             await test.RunAsync();
         }
+
+        [Fact]
+        public async Task IfStatement_ExpandedCall_CollapsesWithoutSpaceBeforeParen_Fix()
+        {
+            var testCode = @"class Foo
+{
+    bool Any(int a, int b) => a == b;
+
+    void M(int x)
+    {
+        {|GM0017:if (Any
+        (
+            x,
+            1
+        ))|}
+        { }
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    bool Any(int a, int b) => a == b;
+
+    void M(int x)
+    {
+        if (Any(x, 1))
+        { }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0017Analyzer, GM0017CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task IfStatement_StringWithDoubleSpaces_KeepsString_Fix()
+        {
+            var testCode = @"class Foo
+{
+    void M(string s)
+    {
+        {|GM0017:if (s ==
+            ""a  b"")|}
+        { }
+    }
+}";
+            var fixedCode = @"class Foo
+{
+    void M(string s)
+    {
+        if (s == ""a  b"")
+        { }
+    }
+}";
+            var test = new CSharpCodeFixTest<GM0017Analyzer, GM0017CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
     }
 }
