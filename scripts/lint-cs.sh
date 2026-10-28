@@ -1,90 +1,99 @@
 #!/usr/bin/env sh
+set -eu
 
-set -e
-
-FIX=false
-DIR="."
-SLN=""
-
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+trap 'exit 1' HUP INT TERM
+: > "$work/dirs"
+: > "$work/watch"
+fix=false
+sln=""
+mode=""
 for arg in "$@"; do
     case "$arg" in
-        --fix) FIX=true ;;
-        --dir=*) DIR="${arg#--dir=}" ;;
-        --sln=*) SLN="${arg#--sln=}" ;;
+        --fix) fix=true ;;
+        --dir=*) printf '%s\n' "${arg#--dir=}" >> "$work/dirs" ;;
+        --sln=*) sln=${arg#--sln=} ;;
+        --watch=*) printf '%s\n' "${arg#--watch=}" >> "$work/watch" ;;
+        --changed|--staged)
+            if [ -n "$mode" ] && [ "$mode" != "$arg" ]; then
+                echo '[C# Linter] --changed and --staged cannot be combined.' >&2
+                exit 1
+            fi
+            mode=$arg
+            ;;
+        *) echo "[C# Linter] Unknown argument: $arg" >&2; exit 1 ;;
     esac
 done
+[ -s "$work/dirs" ] || printf '.\n' > "$work/dirs"
 
-if [ -z "$SLN" ]; then
+if [ -n "$mode" ]; then
+    . "$(dirname "$0")/lint-changes.sh"
+    lint_changes_collect "$mode" "$work/changes"
+    if [ -n "$sln" ]; then
+        printf '%s\n' "$sln" >> "$work/watch"
+    else
+        for candidate in ./*.slnx; do
+            [ ! -f "$candidate" ] || printf '%s\n' "$candidate" >> "$work/watch"
+        done
+    fi
+    set --
+    while IFS= read -r path; do set -- "$@" "$path"; done < "$work/watch"
+    : > "$work/selected"
+    while IFS= read -r dir; do
+        if lint_changes_match "$work/changes" "$dir" "$@"; then
+            printf '%s\n' "$dir" >> "$work/selected"
+        fi
+    done < "$work/dirs"
+    mv "$work/selected" "$work/dirs"
+    if [ ! -s "$work/dirs" ]; then
+        echo '[C# Linter] No relevant changes.'
+        exit 0
+    fi
+fi
+
+if [ -z "$sln" ]; then
     set -- *.slnx
     if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
-        echo "[C# Linter] Expected exactly one .slnx in $(pwd). Pass --sln=<file> to choose one."
+        echo "[C# Linter] Expected exactly one .slnx in $(pwd). Pass --sln=<file> to choose one." >&2
         exit 1
     fi
-    SLN="$1"
+    sln=$1
 fi
 
-if [ "$DIR" = "." ]; then
-    INCLUDE_PATTERN="**/*.cs"
-else
-    INCLUDE_PATTERN="$DIR/**/*.cs"
+# dotnet format accepts directory paths; pass them as separate arguments, without glob patterns.
+set --
+while IFS= read -r dir; do set -- "$@" "$dir"; done < "$work/dirs"
+if "$fix"; then
+    find "$@" -name '*.cs' -exec cksum {} + | sort > "$work/before"
 fi
-
-if $FIX; then
-    echo "[C# Linter] Fixing files..."
-    VERIFY_ARG=""
-else
-    echo "[C# Linter] Checking files..."
-    VERIFY_ARG="--verify-no-changes"
-fi
-
-if $FIX; then
-    pre_checksums=$(mktemp)
-    find "$DIR" -name "*.cs" | sort | xargs cksum 2>/dev/null > "$pre_checksums" || true
-fi
-
-file_count=$(find "$DIR" -name "*.cs" | wc -l | tr -d ' ')
-echo "[C# Linter] Analyzing $file_count file(s)..."
-
+file_count=$(find "$@" -name '*.cs' | wc -l | tr -d ' ')
+printf '[C# Linter] %s: %s file(s)\n' "$sln" "$file_count"
+# A trailing slash makes each include a directory prefix in dotnet format.
+set -- "$sln" --include
+while IFS= read -r dir; do set -- "$@" "${dir%/}/"; done < "$work/dirs"
+set -- "$@" --severity warn
+if ! "$fix"; then set -- "$@" --verify-no-changes; fi
 exit_code=0
-output_style=$(dotnet format style "$SLN" --include "$INCLUDE_PATTERN" --severity warn $VERIFY_ARG 2>&1) || exit_code=1
-output_analyzers=$(dotnet format analyzers "$SLN" --include "$INCLUDE_PATTERN" --severity warn $VERIFY_ARG 2>&1) || exit_code=1
+output_style=$(dotnet format style "$@" 2>&1) || exit_code=1
+output_analyzers=$(dotnet format analyzers "$@" 2>&1) || exit_code=1
 output=$(printf '%s\n%s' "$output_style" "$output_analyzers")
-printf '%s\n' "$output" | sed 's| \[[^]]*\.csproj\]$||' | grep -v "Warnings were encountered while loading the workspace" || true
+printf '%s\n' "$output" | sed 's| \[[^]]*\.csproj\]$||' | grep -v 'Warnings were encountered while loading the workspace' || true
 issue_count=$(printf '%s\n' "$output" | grep -c ': warning\|: error\|Unable to fix' || true)
 
-if $FIX; then
-    post_checksums=$(mktemp)
-    find "$DIR" -name "*.cs" | sort | xargs cksum 2>/dev/null > "$post_checksums" || true
-    fixed_files=$(diff "$pre_checksums" "$post_checksums" | grep '^>' | awk '{print $NF}')
-    rm -f "$pre_checksums" "$post_checksums"
+if "$fix"; then
+    set --
+    while IFS= read -r dir; do set -- "$@" "$dir"; done < "$work/dirs"
+    find "$@" -name '*.cs' -exec cksum {} + | sort > "$work/after"
+    fixed_files=$(diff "$work/before" "$work/after" | grep '^>' | sed 's/^> [0-9]* [0-9]* //')
     fixed_count=$(printf '%s\n' "$fixed_files" | grep -c '.' || true)
     if [ "$fixed_count" -gt 0 ]; then
-        echo ""
         echo "[C# Linter] Fixed $fixed_count file(s):"
         printf '%s\n' "$fixed_files" | sed 's/^/  /'
     fi
 fi
-
-if [ "$exit_code" -ne 0 ]; then
-    echo ""
-    if $FIX; then
-        echo "[C# Linter] $issue_count issue(s) found. Fix the errors above."
-    else
-        echo "[C# Linter] $issue_count issue(s) found. Run with --fix to apply fixes automatically."
-    fi
+if [ "$exit_code" -ne 0 ] || { "$fix" && [ "$issue_count" -gt 0 ]; }; then
+    echo "[C# Linter] $issue_count issue(s) found. Run with --fix or fix the remaining errors manually."
     exit 1
 fi
-
-if $FIX; then
-    if [ "$issue_count" -gt 0 ]; then
-        echo ""
-        echo "[C# Linter] $issue_count issue(s) could not be fixed automatically. Fix them manually."
-        exit 1
-    elif [ "$fixed_count" -gt 0 ]; then
-        echo "[C# Linter] Done."
-    else
-        echo "[C# Linter] No issues found."
-    fi
-else
-    echo "[C# Linter] No issues found."
-fi
+echo '[C# Linter] No issues found.'

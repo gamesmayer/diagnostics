@@ -11,7 +11,7 @@
 The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.5">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.6">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
@@ -253,43 +253,69 @@ A ready-to-use example covering all diagnostics is available at [`templates/.edi
 
 ## Scripts
 
-The package ships the scripts every GAMESMAYER repository uses to lint C# in its `tools/` folder. They run with the local .NET SDK:
+The runner ships in **GamesMayer.Diagnostics**, in the NuGet package's `tools/` folder. Its tests live in the Diagnostics repository. Each repository declares its inputs in a small root `.lint.sh`; it keeps no runner or lists of individual .NET projects.
 
-| Script | Purpose |
-| --- | --- |
-| `lint-cs.sh [--dir=<folder>] [--sln=<file>] [--fix]` | Runs `dotnet format style` and `dotnet format analyzers` (`--severity warn`) on the `.cs` files under `--dir`, loading `--sln` (default: the only `.slnx` in the current folder). Without `--fix` it only checks (`--verify-no-changes`) and fails on any issue. |
-| `require-dotnet.sh [min] [max]` | Fails unless `dotnet` is installed and its SDK version is in the range (default `3.0`–`10.0`). The range is versioned with this package. |
+A multiplayer game such as Ratastrophe needs two lines:
 
-Run them from the repository's `justfile`. The `diagnostics` recipe runs a script from the package version pinned in `Directory.Build.props`, so every repository lints with the version it builds with:
+```sh
+lint_solution Ratastrophe.slnx
+lint_unity projects/Ratastrophe.Client
+```
+
+The framework declares its module groups and shared-code synchronization too:
+
+```sh
+lint_groups projects/*/
+lint_solution GamesMayer.Framework.slnx
+lint_unity projects/*/*.Client --sln=client.slnx
+lint_before_unity just upm-sync
+```
+
+- `lint_solution <solution…>` reads the projects from `dotnet sln list`. Adding a project to the solution needs no lint configuration change.
+- `lint_unity <host…> [--sln=<filename>]` finds authored `Assets/Source` and embedded packages' `Source` and `Tests` directories. It excludes vendored plugins and shared-code copies. The default solution is `<host-folder-name>.slnx`; `--sln` overrides its filename for each host.
+- `lint_groups <directory…>` optionally selects all targets in a group together. Group names are accepted on the command line, such as `just lint Core Shop`.
+- `lint_before_unity <command> [args…]` runs once after .NET lint, before selected Unity targets. It never runs for a .NET-only selection or when nothing changed.
+- `lint_watch <path…>` optionally declares additional repository-wide inputs, such as a custom JSON configuration file.
+
+`just lint` checks everything; `just lint-changed` checks directories with changes against `HEAD`, including untracked files. `--staged` checks the index instead, as the pre-commit hook does. `--fix` works in either mode. Explicit group/project names select those scopes in full. The runner collects Git changes once and batches selected directories by solution, running `dotnet format style` and `dotnet format analyzers` once each per selected solution.
+
+Selection includes C#, project and solution files, assembly definitions/references and lint settings, including deletions and both sides of moves. Ancestor `.editorconfig`, `.globalconfig`, `.props`, `.targets` and `global.json` changes invalidate descendant scopes automatically. The lint configuration and declared root solutions are repository-wide inputs. No formatter or synchronization runs when nothing relevant changed. Paths in `.lint.sh` are repository-relative; quote paths containing spaces.
+
+Use the same recipes in each repository's root `justfile`. `diagnostics` loads the version pinned in `Directory.Build.props`; restore it once before the first run.
 
 ```just
-# Run a script that ships with GamesMayer.Diagnostics (the version in Directory.Build.props)
 diagnostics script *args:
     #!/usr/bin/env sh
-    command -v dotnet > /dev/null || { echo "✗ 'dotnet' is not installed. Install the .NET SDK from https://dotnet.microsoft.com/download"; exit 1; }
+    command -v dotnet > /dev/null || { echo "Install the .NET SDK first."; exit 1; }
     v=$(sed -n 's/.*Include="GamesMayer.Diagnostics" Version="\([^"]*\)".*/\1/p' Directory.Build.props | head -1)
     d="${NUGET_PACKAGES:-$HOME/.nuget/packages}/gamesmayer.diagnostics/$v/tools"
-    if [ ! -d "$d" ]; then echo "GamesMayer.Diagnostics $v is not restored. Open the project in your IDE or run dotnet restore."; exit 1; fi
+    if [ ! -d "$d" ]; then echo "Restore GamesMayer.Diagnostics $v first."; exit 1; fi
     sh "$d/{{script}}" {{args}}
 
-# Check that the installed .NET SDK is in the supported range
 require-dotnet:
     @just diagnostics require-dotnet.sh
 
-# Check C# style with GAMESMAYER Diagnostics
 lint *args: require-dotnet
-    @just diagnostics lint-cs.sh --dir=Assets/Source {{args}}
+    @just diagnostics lint.sh {{args}}
 
-# Fix C# style where the analyzers can
-lint-fix:
-    @just lint --fix
+lint-changed *args: require-dotnet
+    #!/usr/bin/env sh
+    set -- {{args}}
+    case " $* " in *" --staged "*) ;; *) set -- --changed "$@" ;; esac
+    exec just diagnostics lint.sh "$@"
+
+lint-fix *args:
+    @just lint --fix {{args}}
 ```
 
-The scripts are read from the NuGet cache, so the package must be restored once (opening the project in the IDE or `dotnet restore`) before the first `just lint`.
+The lower-level `lint-cs.sh [--sln=<file>] [--dir=<folder>…] [--fix] [--changed | --staged] [--watch=<path>…]` remains available for direct use. Repeated `--dir` arguments share one solution load per formatter. Without `--sln`, it expects exactly one `.slnx` in the working directory. The flags `--changed` and `--staged` cannot be combined. `lint-changes.sh` provides the shared Git selection functions, while `require-dotnet.sh [min] [max]` checks the installed SDK range.
 
 ## Local Development
 
 ```sh
+# Test Git selection, runner orchestration and real dotnet formatting
+sh scripts/tests/run.sh
+
 # Pack to local feed (builds implicitly)
 dotnet pack GamesMayer.Diagnostics/GamesMayer.Diagnostics.csproj -c Release -o nupkg
 
