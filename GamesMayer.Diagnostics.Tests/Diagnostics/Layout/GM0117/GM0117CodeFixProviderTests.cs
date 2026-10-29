@@ -7,6 +7,47 @@ namespace GamesMayer.Diagnostics.Tests
 
     public class GM0117CodeFixProviderTests
     {
+        [Theory]
+        [InlineData("Call(1, 2)")]
+        [InlineData("System.Math.Max(1, 2)")]
+        [InlineData("-1")]
+        [InlineData("(int)1L")]
+        [InlineData("new int()")]
+        public async Task CompoundExpression_OnOpenBraceLine_Fix(string expression)
+        {
+            var testCode = @"class C
+{
+    int[] M()
+    {
+        return new[]
+        { {|GM0117:" + expression + @"|},
+            2
+        };
+    }
+
+    static int Call(int a, int b) { return a + b; }
+}";
+            var fixedCode = @"class C
+{
+    int[] M()
+    {
+        return new[]
+        {
+            " + expression + @",
+            2
+        };
+    }
+
+    static int Call(int a, int b) { return a + b; }
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+            await test.RunAsync();
+        }
+
         [Fact]
         public async Task FirstItem_OnOpenBraceLine_Fix()
         {

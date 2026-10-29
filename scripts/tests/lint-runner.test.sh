@@ -104,12 +104,12 @@ git add projects/Core
 run 2 --staged
 reset_case
 printf '// edit\n' >> projects/Economy/Economy.Shared/File.cs
-run 4 --changed --fix
+run 8 --changed --fix
 # Both .NET projects in the selected module share a single workspace run.
 sed -n '1p' "$LINT_TEST_LOG" | grep -Fq '<projects/Economy/Economy.Shared/>'
 sed -n '1p' "$LINT_TEST_LOG" | grep -Fq '<projects/Economy/Economy.Server/>'
-[ "$(sed -n '3p' "$LINT_TEST_EVENTS")" = sync ]
-if grep -q -- '--verify-no-changes' "$LINT_TEST_LOG"; then exit 1; fi
+[ "$(sed -n '5p' "$LINT_TEST_EVENTS")" = sync ]
+[ "$(grep -c -- '--verify-no-changes' "$LINT_TEST_LOG")" = 4 ]
 if grep -q 'Plugins\|GamesMayer.Shared' "$LINT_TEST_LOG"; then exit 1; fi
 reset_case
 printf '// edit\n' >> projects/Testing/Testing.Server/File.cs

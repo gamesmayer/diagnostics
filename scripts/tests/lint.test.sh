@@ -11,9 +11,22 @@ cat > "$work/bin/dotnet" <<'STUB'
 #!/usr/bin/env sh
 printf '<%s> ' "$@" >> "$LINT_TEST_LOG"
 printf '\n' >> "$LINT_TEST_LOG"
-if [ "${2:-}" = style ] && [ -n "${LINT_TEST_FIX_FILE:-}" ]; then
-    printf '// fixed\n' >> "$LINT_TEST_FIX_FILE"
-fi
+case " $* " in
+    *' --verify-no-changes '*)
+        if [ "${LINT_TEST_VERIFY_FAIL:-0}" = 1 ]; then
+            echo 'File.cs(1,1): warning GM0023: still invalid'
+            exit 2
+        fi
+        ;;
+    *)
+        if [ "${2:-}" = style ] && [ -n "${LINT_TEST_FIX_FILE:-}" ]; then
+            printf '// fixed\n' >> "$LINT_TEST_FIX_FILE"
+        fi
+        if [ "${2:-}" = analyzers ] && [ -n "${LINT_TEST_UNSTABLE_FILE:-}" ]; then
+            printf '// changed again\n' >> "$LINT_TEST_UNSTABLE_FILE"
+        fi
+        ;;
+esac
 exit "${LINT_TEST_EXIT:-0}"
 STUB
 chmod +x "$work/bin/dotnet"
@@ -76,11 +89,11 @@ expect 0 --staged
 git add Client
 expect 2 --staged
 export LINT_TEST_FIX_FILE='Client/Assets/Source/File with spaces.cs'
-expect 2 --changed --fix
+expect 4 --changed --fix
 grep -Fq 'Fixed 1 file(s)' "$work/output"
 grep -Fq "$LINT_TEST_FIX_FILE" "$work/output"
 unset LINT_TEST_FIX_FILE
-grep -q -- '--verify-no-changes' "$LINT_TEST_LOG" && exit 1
+[ "$(grep -c -- '--verify-no-changes' "$LINT_TEST_LOG")" = 2 ]
 reset_case
 
 printf 'class New {}\n' > 'Client/Assets/Source/New file.cs'
@@ -137,6 +150,19 @@ grep -q '<Client/Assets/Source/>' "$LINT_TEST_LOG"
 export LINT_TEST_EXIT=1
 expect_failure --dir=Client/Assets/Source --sln=Client/client.slnx --changed
 unset LINT_TEST_EXIT
+# A successful fix invocation cannot conceal diagnostics in the fresh verification.
+export LINT_TEST_VERIFY_FAIL=1
+expect_failure --dir=Client/Assets/Source --sln=Client/client.slnx --fix
+grep -q GM0023 "$work/output"
+if grep -q 'No issues found' "$work/output"; then exit 1; fi
+unset LINT_TEST_VERIFY_FAIL
+# Incompatible or oscillating fixers stop at the pass limit instead of looping indefinitely.
+export LINT_TEST_UNSTABLE_FILE='Client/Assets/Source/File with spaces.cs'
+: > "$LINT_TEST_LOG"
+expect_failure --dir=Client/Assets/Source --sln=Client/client.slnx --fix
+grep -q 'did not stabilize after 6 passes' "$work/output"
+[ "$(grep -c '<analyzers>' "$LINT_TEST_LOG")" = 7 ]
+unset LINT_TEST_UNSTABLE_FILE
 expect_failure --changed --staged
 expect_failure --unknown
 # Multiple directories share one pair of format calls and only changed directories are selected.

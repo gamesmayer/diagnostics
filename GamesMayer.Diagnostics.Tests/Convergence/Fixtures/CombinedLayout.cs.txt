@@ -1,0 +1,134 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Sample
+{
+
+    public class LayoutCases
+    {
+        public sealed class Item
+        {
+            public int Id { get; set; }
+            public int Group { get; set; }
+            public int[] Values { get; set; }
+            public Item Child { get; set; }
+        }
+
+        public static Item[] Items => new[]
+        {
+            new Item { Id = 1, Group = 2, Values = new[] { 1, 2, 3, 4 } },
+            new Item { Id = 2, Group = 3, Values = new[] { 4, 3, 2, 1 } }
+        }
+            .OrderBy
+            (
+            item => item.Group
+        )
+            .ThenBy
+            (
+            item => item.Id
+        )
+            .ToArray();
+
+        public static int[] SelectIds(IEnumerable<Item> items)
+        {
+            return items
+                .Where
+                (
+                item => item.Group > 0 && item.Id > 0
+            )
+                .Select
+                (
+                item => item.Id
+            )
+                .ToArray();
+        }
+
+        public static List<(int From, int To)> SelectPairs(IEnumerable<Item> items, int offset)
+        {
+            List<(int From, int To)> pairs = items
+                .Where
+                (
+                item => item.Group > offset && item.Id > offset
+            )
+                .Select
+                (
+                item => (Math.Max(item.Id, offset), Math.Min(item.Group, offset))
+            )
+                .ToList();
+
+            return pairs;
+        }
+
+        public static Item Build(int first, int second, int third, int fourth)
+        {
+            Item result = new Item
+            {
+                Id = Math.Max(first, Math.Min(second, Math.Max(third, fourth))),
+                Group = first + second + third + fourth,
+                Values = new[] { first, second, third, fourth },
+                Child = new Item { Id = second, Group = third, Values = new[] { fourth, third, second, first } }
+            };
+
+            return result;
+        }
+
+        public static Item[] Project(IEnumerable<Item> items, int offset)
+        {
+            return items
+                .Select
+                (
+                item => new Item
+                {
+                    Id = item.Id + offset,
+                    Group = item.Group,
+                    Values = item.Values
+                        .Select
+                        (
+                        value => Math.Max(value, offset)
+                    )
+                        .ToArray(),
+                    Child = new Item { Id = offset, Group = item.Id }
+                }
+            )
+                .ToArray();
+        }
+
+        public static Item[] FactoryCalls()
+        {
+            Item[] points = new[]
+            { Build(0, 0, 0, 0), Build(1, 2, 3, 4)
+            };
+
+            return points;
+        }
+
+        public static Item[] MultipleDeclarators(Item a, Item b)
+        {
+            Item[] first = Copy(new[] { a, b }), second = Copy(new[] { b, a });
+
+            return Copy(first.Concat(second).ToArray());
+        }
+
+        public static Item[] Copy(Item[] items)
+        {
+            return items;
+        }
+
+        public static bool Matches(IEnumerable<Item> items, int first, int second, int third, int fourth)
+        {
+            bool matches = items.Any(item => item.Id == first || item.Id == second || item.Group == third || item.Group == fourth);
+
+            if (matches)
+            {
+                matches = SelectIds(items).Length > 0;
+            }
+            else
+            {
+                matches = Build(first, second, third, fourth).Id == 0;
+            }
+
+            return matches;
+        }
+    }
+}

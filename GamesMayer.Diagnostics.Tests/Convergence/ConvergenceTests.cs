@@ -36,6 +36,24 @@ namespace GamesMayer.Diagnostics.Tests
 
         public static IEnumerable<object[]> Samples => new[]
         {
+            new object[] { "CombinedLayout", File.ReadAllText(Path.Combine(Path.GetDirectoryName(FindTemplate())!, "..", "..", "GamesMayer.Diagnostics.Tests", "Convergence", "Fixtures", "CombinedLayout.cs.txt")) },
+            new object[] { "MultilineFluentLambda", @"namespace Sample
+{
+    using System.Linq;
+
+    public class Queries
+    {
+        public int[] Run(int[] values)
+        {
+            return values
+                .Select
+                (
+                value => value + 1
+            )
+                .ToArray();
+        }
+    }
+}" },
             new object[] { "WrappedSingleArgument", @"namespace Sample
 {
     public class Checks
@@ -188,6 +206,28 @@ namespace System.Runtime.CompilerServices
 
             Assert.True(remaining.IsEmpty, $"{name}: {string.Join(", ", remaining.Select(d => d.Id + " " + d.Location.GetLineSpan().StartLinePosition))}\n{finalText}");
             Assert.Equal(finalText, (await (await FixPassAsync(document)).GetTextAsync()).ToString());
+        }
+
+        [Fact]
+        public async Task CombinedLayout_ExercisesInteractingRules_AndRemainsValid()
+        {
+            var source = (string)Samples.First(sample => (string)sample[0] == "CombinedLayout")[1];
+            var document = CreateDocument(source);
+            var ids = (await GetFixableDiagnosticsAsync(document)).Select(d => d.Id).ToList();
+
+            Assert.Contains("GM0023", ids);
+            Assert.Contains("GM0028", ids);
+            Assert.DoesNotContain("GM0123", ids);
+
+            document = await FixPassAsync(document);
+            var introducedIds = (await GetFixableDiagnosticsAsync(document)).Select(d => d.Id).ToList();
+            Assert.Contains("GM0123", introducedIds);
+
+            for (var pass = 1; pass < MaxPasses; pass++)
+                document = await FixPassAsync(document);
+
+            var compilation = (await document.Project.GetCompilationAsync())!;
+            Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
         }
 
         [Fact]

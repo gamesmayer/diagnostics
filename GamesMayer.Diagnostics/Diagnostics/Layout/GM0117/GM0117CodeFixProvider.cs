@@ -47,7 +47,9 @@ namespace GamesMayer.Diagnostics
             var sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var token = root.FindToken(tokenPosition);
 
-            var expression = token.Parent?.FirstAncestorOrSelf<ExpressionSyntax>();
+            // A call starts with an IdentifierName (or MemberAccess), but the array owns the
+            // complete invocation. Select the direct initializer item rather than its first subexpression.
+            var expression = token.Parent?.FirstAncestorOrSelf<ExpressionSyntax>(node => node.Parent is InitializerExpressionSyntax);
             if (expression?.Parent is not InitializerExpressionSyntax initializer)
                 return document;
 

@@ -64,9 +64,12 @@ fi
 # dotnet format accepts directory paths; pass them as separate arguments, without glob patterns.
 set --
 while IFS= read -r dir; do set -- "$@" "$dir"; done < "$work/dirs"
-if "$fix"; then
-    find "$@" -name '*.cs' -exec cksum {} + | sort > "$work/before"
-fi
+snapshot_sources() {
+    set --
+    while IFS= read -r dir; do set -- "$@" "$dir"; done < "$work/dirs"
+    find "$@" -name '*.cs' -exec cksum {} + | sort
+}
+if "$fix"; then snapshot_sources > "$work/before"; fi
 file_count=$(find "$@" -name '*.cs' | wc -l | tr -d ' ')
 printf '[C# Linter] %s: %s file(s)\n' "$sln" "$file_count"
 # A trailing slash makes each include a directory prefix in dotnet format.
@@ -76,15 +79,37 @@ set -- "$@" --severity warn
 if ! "$fix"; then set -- "$@" --verify-no-changes; fi
 exit_code=0
 output_style=$(dotnet format style "$@" 2>&1) || exit_code=1
-output_analyzers=$(dotnet format analyzers "$@" 2>&1) || exit_code=1
+if "$fix"; then
+    # Fixing a layout anchor can expose diagnostics already processed by dotnet format
+    # (e.g. a fluent-chain indent moves the opening parenthesis after its arguments were fixed).
+    # Style runs once; repeat analyzer fixes on their own output until it stops changing.
+    pass=0
+    while :; do
+        snapshot_sources > "$work/pass-before"
+        output_analyzers=$(dotnet format analyzers "$@" 2>&1) || exit_code=1
+        snapshot_sources > "$work/pass-after"
+        pass=$((pass + 1))
+        if [ "$exit_code" -ne 0 ] || cmp -s "$work/pass-before" "$work/pass-after"; then break; fi
+        if [ "$pass" -ge 6 ]; then
+            echo '[C# Linter] Analyzer fixes did not stabilize after 6 passes.' >&2
+            exit_code=1
+            break
+        fi
+    done
+    # Success means the corrected source passes a fresh check, not merely that fixers ran.
+    output_style_check=$(dotnet format style "$@" --verify-no-changes 2>&1) || exit_code=1
+    output_analyzers_check=$(dotnet format analyzers "$@" --verify-no-changes 2>&1) || exit_code=1
+    output_style=$(printf '%s\n%s' "$output_style" "$output_style_check")
+    output_analyzers=$(printf '%s\n%s' "$output_analyzers" "$output_analyzers_check")
+else
+    output_analyzers=$(dotnet format analyzers "$@" 2>&1) || exit_code=1
+fi
 output=$(printf '%s\n%s' "$output_style" "$output_analyzers")
 printf '%s\n' "$output" | sed 's| \[[^]]*\.csproj\]$||' | grep -v 'Warnings were encountered while loading the workspace' || true
 issue_count=$(printf '%s\n' "$output" | grep -c ': warning\|: error\|Unable to fix' || true)
 
 if "$fix"; then
-    set --
-    while IFS= read -r dir; do set -- "$@" "$dir"; done < "$work/dirs"
-    find "$@" -name '*.cs' -exec cksum {} + | sort > "$work/after"
+    snapshot_sources > "$work/after"
     fixed_files=$(diff "$work/before" "$work/after" | grep '^>' | sed 's/^> [0-9]* [0-9]* //')
     fixed_count=$(printf '%s\n' "$fixed_files" | grep -c '.' || true)
     if [ "$fixed_count" -gt 0 ]; then
