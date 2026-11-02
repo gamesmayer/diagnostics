@@ -54,6 +54,10 @@ namespace GamesMayer.Diagnostics
             if (ControlClauseUtils.IsInClauseHeader(argList))
                 return;
 
+            // A hole of a regular interpolated string can't span lines before C# 11: the expression is extracted instead.
+            if (InterpolationUtils.IsInSingleLineHole(argList))
+                return;
+
             int minArguments = GetMinimumArguments(context);
             var configOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Node.SyntaxTree);
 

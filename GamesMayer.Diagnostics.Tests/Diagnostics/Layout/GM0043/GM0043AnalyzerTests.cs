@@ -10,6 +10,19 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0043AnalyzerTests
     {
         [Fact]
+        public async Task ThreeOperands_InARegularInterpolationHole_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    public string Method(bool a, bool b, bool c) {
+        return $""Any {a || b || c}"";
+    }
+}
+";
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task TwoOperands_Or_NoDiagnostic()
         {
             var testCode = @"

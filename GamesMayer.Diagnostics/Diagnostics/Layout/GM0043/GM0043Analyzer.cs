@@ -40,7 +40,7 @@ namespace GamesMayer.Diagnostics
             var binary = (BinaryExpressionSyntax)context.Node;
 
             // GM0017 keeps control structure clauses on one line: a long condition is extracted instead.
-            if (ControlClauseUtils.IsInClauseHeader(binary))
+            if (ControlClauseUtils.IsInClauseHeader(binary) || InterpolationUtils.IsInSingleLineHole(binary))
                 return;
 
             if (IsNestedInSameOperator(binary))

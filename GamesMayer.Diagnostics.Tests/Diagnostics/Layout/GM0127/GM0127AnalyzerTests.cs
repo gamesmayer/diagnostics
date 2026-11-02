@@ -16,6 +16,34 @@ namespace GamesMayer.Diagnostics.Tests
             };
 
         [Fact]
+        public async Task FourArgs_InARegularInterpolationHole_NoDiagnostic()
+        {
+            var testCode = @"
+class Test {
+    string Format(int a, int b, int c, int d) => """";
+    public string Method() {
+        return $""Value {Format(1, 2, 3, 4)}"";
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
+        public async Task FourArgs_InAVerbatimInterpolationHole_ReportsAllArgs()
+        {
+            var testCode = @"
+class Test {
+    string Format(int a, int b, int c, int d) => """";
+    public string Method() {
+        return $@""Value {Format({|GM0127:1|}, {|GM0127:2|}, {|GM0127:3|}, {|GM0127:4|})}"";
+    }
+}
+";
+            await CreateTest(testCode).RunAsync();
+        }
+
+        [Fact]
         public async Task ThreeArgs_AllOnOneLine_NoDiagnostic()
         {
             var testCode = @"

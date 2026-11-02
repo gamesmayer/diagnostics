@@ -230,6 +230,60 @@ namespace System.Runtime.CompilerServices
             Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
         }
 
+        // Before C# 11 an interpolation hole of a regular `$"..."` string can't span lines, so no rule may split it:
+        // Unity compiles C# 9, and a hole split by `--fix` there breaks the build (CS8967).
+        [Fact]
+        public async Task InterpolationHoles_StayOnOneLine_AndCompileAsCSharp9()
+        {
+            var source = @"namespace Sample
+{
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class Messages
+    {
+        public static string Format(int a, int b, int c, int d) => string.Empty;
+
+        public static void Check(bool condition, string message) { }
+
+        public void Run(IEnumerable<string> names, int count)
+        {
+            Check(count == 0, $""Unbound: {string.Join("", "", names.Select(name => name.Trim()))}"");
+            Check(count > 1, $""Formatted {Format(count, count + 1, count + 2, count + 3)} and {names.Count(name => name.Length > 0 && name.Length < 10 && name != ""x"")}"");
+        }
+    }
+}";
+            var document = CreateDocument(source);
+            var holes = (await document.GetSyntaxRootAsync())!.DescendantNodes()
+                .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InterpolationSyntax>()
+                .Select(hole => hole.Span)
+                .ToList();
+            var insideHoles = (await GetFixableDiagnosticsAsync(document))
+                .Where(d => holes.Any(hole => hole.Contains(d.Location.SourceSpan)))
+                .Select(d => d.Id)
+                .Distinct()
+                .OrderBy(id => id)
+                .ToList();
+
+            Assert.True(insideHoles.Count == 0, $"Reported inside interpolation holes: {string.Join(", ", insideHoles)}");
+
+            for (var pass = 0; pass < MaxPasses; pass++)
+                document = await FixPassAsync(document);
+
+            var root = (await document.GetSyntaxRootAsync())!;
+            var splitHoles = root.DescendantNodes()
+                .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InterpolationSyntax>()
+                .Where(hole => hole.ToString().Contains('\n'))
+                .Select(hole => hole.ToString())
+                .ToList();
+            var finalText = (await document.GetTextAsync()).ToString();
+            var csharp9 = CSharpSyntaxTree.ParseText(finalText, new CSharpParseOptions(LanguageVersion.CSharp9));
+
+            Assert.True(splitHoles.Count == 0, $"Split interpolation holes: {string.Join(" | ", splitHoles)}\n{finalText}");
+            Assert.Empty(csharp9.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
+            Assert.Empty(await GetFixableDiagnosticsAsync(document));
+        }
+
         [Fact]
         public async Task Analyzers_ReportOnTheSamples()
         {
