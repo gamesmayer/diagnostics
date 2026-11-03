@@ -41,4 +41,29 @@ grep -q IDE0007 "$work/output"
 sh "$scripts/lint-cs.sh" '--dir=Project with spaces' --sln=Test.slnx --fix > "$work/output" 2>&1 || { cat "$work/output" >&2; exit 1; }
 grep -q 'var value = 1;' 'Project with spaces/File.cs'
 sh "$scripts/lint-cs.sh" '--dir=Project with spaces' --sln=Test.slnx > "$work/output" 2>&1 || { cat "$work/output" >&2; exit 1; }
+# IDE0011 (braces): dotnet format reports and fixes it only with its dotnet_diagnostic severity, as the template sets it
+cat >> .editorconfig <<'CONFIG'
+csharp_prefer_braces = true:warning
+dotnet_diagnostic.IDE0011.severity = warning
+CONFIG
+cat > 'Project with spaces/File.cs' <<'CS'
+public static class Example
+{
+    public static int Run(int value)
+    {
+        if (value > 0) value = 2;
+
+        return value;
+    }
+}
+CS
+if sh "$scripts/lint-cs.sh" '--dir=Project with spaces' --sln=Test.slnx > "$work/output" 2>&1; then
+    echo 'Expected the real formatter to detect the IDE0011 violation.' >&2
+    cat "$work/output" >&2
+    exit 1
+fi
+grep -q IDE0011 "$work/output"
+sh "$scripts/lint-cs.sh" '--dir=Project with spaces' --sln=Test.slnx --fix > "$work/output" 2>&1 || { cat "$work/output" >&2; exit 1; }
+grep -q '^        {$' 'Project with spaces/File.cs'
+sh "$scripts/lint-cs.sh" '--dir=Project with spaces' --sln=Test.slnx > "$work/output" 2>&1 || { cat "$work/output" >&2; exit 1; }
 printf 'Diagnostics real dotnet formatter test passed.\n'
