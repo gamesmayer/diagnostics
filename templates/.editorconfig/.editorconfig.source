@@ -28,6 +28,7 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
 csharp_prefer_braces = true:warning
+dotnet_diagnostic.IDE0011.severity = warning  # Add braces (dotnet format ignores the option's :warning suffix)
 
 # Using directives
 dotnet_diagnostic.IDE0005.severity = none  # Remove unnecessary using directives
