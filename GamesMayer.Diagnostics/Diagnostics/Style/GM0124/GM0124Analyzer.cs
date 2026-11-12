@@ -41,6 +41,10 @@ namespace GamesMayer.Diagnostics
                 if (commaToken.IsMissing || commaToken.Parent == null || commaToken.Parent.ContainsDiagnostics)
                     continue;
 
+                // The commas of `[,]` are the array's rank, not a list's separators: removing one changes the type.
+                if (commaToken.Parent.IsKind(SyntaxKind.ArrayRankSpecifier))
+                    continue;
+
                 var nextToken = commaToken.GetNextToken();
                 if (nextToken == default || nextToken.IsMissing)
                     continue;

@@ -284,6 +284,46 @@ namespace System.Runtime.CompilerServices
             Assert.Empty(await GetFixableDiagnosticsAsync(document));
         }
 
+        // EF Core writes seed data as a multidimensional array (`new object[,] { { … }, { … } }`): its rows are nested
+        // initializers, which only compile while the array keeps its rank.
+        [Fact]
+        public async Task MultidimensionalArrayInitializers_StillCompile()
+        {
+            var source = @"namespace Sample
+{
+    public class Builder
+    {
+        public void InsertData(string table, string[] columns, object[,] values) { }
+
+        public void Up(Builder migrationBuilder)
+        {
+            migrationBuilder.InsertData(
+                table: ""Permissions"",
+                columns: new[] { ""Code"", ""Description"" },
+                values: new object[,]
+                {
+                    { ""api.docs.read"", ""api.docs.read"" },
+                    { ""availability.manage"", ""availability.manage"" }
+                });
+        }
+    }
+}";
+            var document = CreateDocument(source);
+
+            for (var pass = 0; pass < MaxPasses; pass++)
+            {
+                foreach (var id in (await GetFixableDiagnosticsAsync(document)).Select(d => d.Id).Distinct().OrderBy(id => id))
+                {
+                    document = await FixIdAsync(document, id);
+                    var errors = (await document.Project.GetCompilationAsync())!.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+
+                    Assert.True(errors.Count == 0, $"{id} broke the code: {string.Join(", ", errors.Select(e => e.Id))}\n{await document.GetTextAsync()}");
+                }
+            }
+
+            Assert.Empty(await GetFixableDiagnosticsAsync(document));
+        }
+
         [Fact]
         public async Task Analyzers_ReportOnTheSamples()
         {
@@ -343,31 +383,36 @@ namespace System.Runtime.CompilerServices
             var ids = (await GetFixableDiagnosticsAsync(document)).Select(d => d.Id).Distinct().OrderBy(id => id).ToList();
 
             foreach (var id in ids)
+                document = await FixIdAsync(document, id);
+
+            return document;
+        }
+
+        private static async Task<Document> FixIdAsync(Document document, string id)
+        {
+            var diagnostics = (await GetFixableDiagnosticsAsync(document)).Where(d => d.Id == id).ToImmutableArray();
+
+            if (diagnostics.IsEmpty)
+                return document;
+
+            var provider = CodeFixProviders.First(p => p.FixableDiagnosticIds.Contains(id));
+            var context = new FixAllContext(
+                document,
+                provider,
+                FixAllScope.Document,
+                null,
+                new[] { id },
+                new DiagnosticProvider(diagnostics),
+                CancellationToken.None);
+            var action = await provider.GetFixAllProvider()!.GetFixAsync(context);
+
+            if (action == null)
+                return document;
+
+            foreach (var operation in await action.GetOperationsAsync(CancellationToken.None))
             {
-                var diagnostics = (await GetFixableDiagnosticsAsync(document)).Where(d => d.Id == id).ToImmutableArray();
-
-                if (diagnostics.IsEmpty)
-                    continue;
-
-                var provider = CodeFixProviders.First(p => p.FixableDiagnosticIds.Contains(id));
-                var context = new FixAllContext(
-                    document,
-                    provider,
-                    FixAllScope.Document,
-                    null,
-                    new[] { id },
-                    new DiagnosticProvider(diagnostics),
-                    CancellationToken.None);
-                var action = await provider.GetFixAllProvider()!.GetFixAsync(context);
-
-                if (action == null)
-                    continue;
-
-                foreach (var operation in await action.GetOperationsAsync(CancellationToken.None))
-                {
-                    if (operation is ApplyChangesOperation apply)
-                        document = apply.ChangedSolution.GetDocument(document.Id)!;
-                }
+                if (operation is ApplyChangesOperation apply)
+                    document = apply.ChangedSolution.GetDocument(document.Id)!;
             }
 
             return document;
