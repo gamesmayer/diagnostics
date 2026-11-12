@@ -11,7 +11,7 @@
 The package is published on [NuGet.org](https://www.nuget.org/packages/GamesMayer.Diagnostics). Reference it in `Directory.Build.props`:
 
 ```xml
-<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.9">
+<PackageReference Include="GamesMayer.Diagnostics" Version="0.3.10">
   <PrivateAssets>all</PrivateAssets>
   <IncludeAssets>analyzers</IncludeAssets>
 </PackageReference>
