@@ -10,6 +10,21 @@ namespace GamesMayer.Diagnostics.Tests
     public class GM0094AnalyzerTests
     {
         [Fact]
+        public async Task ArrayRankAndOmittedTypeArguments_NoDiagnostic()
+        {
+            var testCode = @"using System.Collections.Generic;
+
+class Foo
+{
+    object[,] values = new object[,] { { 1, 2 } };
+    int[,,] cube = new int[2, 2, 2];
+    System.Type open = typeof(Dictionary<,>);
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task SpaceAfterComma_ArgumentList_DefaultSetting_NoDiagnostic()
         {
             var testCode = @"class Foo

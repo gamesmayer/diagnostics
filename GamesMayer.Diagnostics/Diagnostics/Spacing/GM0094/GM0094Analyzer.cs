@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
@@ -40,6 +42,10 @@ namespace GamesMayer.Diagnostics
             foreach (var token in root.DescendantTokens())
             {
                 if (!token.IsKind(SyntaxKind.CommaToken))
+                    continue;
+
+                // `object[,]` and `Dictionary<,>` have nothing after their commas: never `object[, ]`.
+                if (token.Parent is ArrayRankSpecifierSyntax || (token.Parent is TypeArgumentListSyntax arguments && arguments.Arguments.Any(argument => argument is OmittedTypeArgumentSyntax)))
                     continue;
 
                 var nextToken = token.GetNextToken();

@@ -7,6 +7,59 @@ namespace GamesMayer.Diagnostics.Tests
 
     public class GM0117CodeFixProviderTests
     {
+        [Fact]
+        public async Task NestedRows_EachItemOnItsOwnLine_Fix()
+        {
+            var testCode = @"class C
+{
+    object[,] values = new object[,]
+    {
+        { {|GM0117:1|}, {|GM0117:2|}
+        },
+        { {|GM0117:3|}, {|GM0117:4|}
+        }
+    };
+}";
+            var fixedCode = @"class C
+{
+    object[,] values = new object[,]
+    {
+        {
+            1,
+            2
+        },
+        {
+            3,
+            4
+        }
+    };
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+            };
+
+            await test.RunAsync();
+        }
+
+        [Fact]
+        public async Task SingleLineNestedRows_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    int[][] values = new[] { new[] { 1, 2 }, new[] { 3, 4 } };
+    object[,] rows = new object[,] { { 1, 2 }, { 3, 4 } };
+}";
+            var test = new CSharpCodeFixTest<GM0117Analyzer, GM0117CodeFixProvider, XUnitVerifier>
+            {
+                TestCode = testCode,
+                FixedCode = testCode,
+            };
+
+            await test.RunAsync();
+        }
+
         [Theory]
         [InlineData("Call(1, 2)")]
         [InlineData("System.Math.Max(1, 2)")]

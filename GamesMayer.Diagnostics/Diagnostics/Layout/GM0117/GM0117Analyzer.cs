@@ -18,7 +18,7 @@ namespace GamesMayer.Diagnostics
             category: "Layout",
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
-            description: "Each item in the initializer of an array declaration must be on its own dedicated line.");
+            description: "Each item in the initializer of an array declaration, and of each of its nested rows, must be on its own dedicated line.");
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptor);
@@ -29,7 +29,8 @@ namespace GamesMayer.Diagnostics
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(AnalyzeNode,
                 SyntaxKind.ArrayCreationExpression,
-                SyntaxKind.ImplicitArrayCreationExpression);
+                SyntaxKind.ImplicitArrayCreationExpression,
+                SyntaxKind.ArrayInitializerExpression);
         }
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
@@ -40,6 +41,9 @@ namespace GamesMayer.Diagnostics
                 initializer = arrayCreation.Initializer;
             else if (context.Node is ImplicitArrayCreationExpressionSyntax implicitArrayCreation)
                 initializer = implicitArrayCreation.Initializer;
+            // A row of a multidimensional or jagged array (`{ { 1, 2 }, { 3, 4 } }`) is laid out like the array itself.
+            else if (context.Node is InitializerExpressionSyntax nested && nested.Parent is InitializerExpressionSyntax)
+                initializer = nested;
             else
                 return;
 
