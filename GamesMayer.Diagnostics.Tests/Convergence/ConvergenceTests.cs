@@ -285,9 +285,9 @@ namespace System.Runtime.CompilerServices
         }
 
         // EF Core writes seed data as a multidimensional array (`new object[,] { { … }, { … } }`): its rows are nested
-        // initializers, which only compile while the array keeps its rank.
+        // initializers, which only compile while the array keeps its rank, and are laid out like any other initializer.
         [Fact]
-        public async Task MultidimensionalArrayInitializers_StillCompile()
+        public async Task MultidimensionalArrayInitializers_StillCompile_AndExpandTheirRows()
         {
             var source = @"namespace Sample
 {
@@ -322,6 +322,37 @@ namespace System.Runtime.CompilerServices
             }
 
             Assert.Empty(await GetFixableDiagnosticsAsync(document));
+            Assert.Equal(@"namespace Sample
+{
+    public class Builder
+    {
+        public void InsertData(string table, string[] columns, object[,] values) { }
+
+        public void Up(Builder migrationBuilder)
+        {
+            migrationBuilder.InsertData
+            (
+                table: ""Permissions"",
+                columns: new[]
+                {
+                    ""Code"",
+                    ""Description""
+                },
+                values: new object[,]
+                {
+                    {
+                        ""api.docs.read"",
+                        ""api.docs.read""
+                    },
+                    {
+                        ""availability.manage"",
+                        ""availability.manage""
+                    }
+                }
+            );
+        }
+    }
+}", (await document.GetTextAsync()).ToString().Replace("\r\n", "\n"));
         }
 
         [Fact]
