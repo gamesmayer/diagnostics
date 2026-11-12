@@ -51,6 +51,42 @@ namespace GamesMayer.Diagnostics.Tests
         }
 
         [Fact]
+        public async Task MultidimensionalArrayRank_NoDiagnostic()
+        {
+            var testCode = @"class C
+{
+    object[,] values = new object[,]
+    {
+        { 1, 2 },
+        { 3, 4 }
+    };
+
+    int[,,] cube = new int[2, 2, 2];
+
+    System.Type type = typeof(int[,]);
+
+    void M(object[,] rows) { }
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
+        public async Task MultidimensionalArrayInitializerTrailingComma_Diagnostic()
+        {
+            var testCode = @"class C
+{
+    object[,] values = new object[,]
+    {
+        { 1, 2 },
+        { 3, 4 }{|GM0124:,|}
+    };
+}";
+
+            await VerifyCS.VerifyAnalyzerAsync(testCode);
+        }
+
+        [Fact]
         public async Task NonTrailingCommas_NoDiagnostic()
         {
             var testCode = @"class C
